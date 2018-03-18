@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+            <!-- Required meta tags -->
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+            <title>{% block title %}{% endblock %}</title>
+
+            <!-- Bootstrap CSS -->
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+            <!-- jQuery -->
+            <script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}"></script>
+            <!-- Popper.js -->
+            <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+            <!-- Bootstrap.js -->
+            <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        {% block inhead %}
+        {% endblock %}
+    </head>
+
+    <body>
+        <!-- Main container -->
+        <div class="container" style="max-width: 750px">
+
+            <!-- Choose language -->
+            <div class="container-fluid" align="right">
+                Change language: En <a href="">Ru</a> <a href="">Fr</a> <a href="">Esp</a>
+            </div>
+            <!-- Choose language END -->
+
+            <!-- Intro block -->
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col"><img src="{{ url_for('static', filename='img/teddy_photo.jpg') }}"></div>
+                    <div class="col">
+                        <span class="lead">
+                            Hello, my name is Teddy.
+                            <br><br>
+                            My dream is to circumnavigate the globe.
+                            <br><br>
+                            Can you help me?
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <!-- Intro block END -->
+
+            <!-- Flashed messages -->
+            <div>
+                {% with messages = get_flashed_messages(with_categories=True) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="{{ category }}">
+                            {{ message|safe }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </div>
+            <!-- Flashed messages END -->
+
+            <!-- Main contents -->
+            <div>
+                {% block body %}
+
+                {% endblock %}
+            </div>
+            <!-- Main contents END -->
+
+            <!-- Footer -->
+            <div class="lead" style="font-size: 12pt">
+                <br>
+                Made by <a href="https://iuriid.github.io/" target="_blank">Iurii Dziuban</a> (c) 2018
+                <br>
+                .
+            </div>
+            <!-- Footer END -->
+
+        </div>
+        <!-- Main container END-->
+    </body>
+</html>

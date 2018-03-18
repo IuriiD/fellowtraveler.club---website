@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% from '_formhelpers.html' import render_field %}
+
+{% block title %}
+    Teddygo - please help me to realize my dream
+{% endblock %}
+
+{% block inhead %}
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+{% endblock %}
+
+{% block body %}
+
+    <!--
+    <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1UgBsp0NYrSmBzBrUzAnucKhaywY" width="750" height="540"></iframe>
+    <a class="twitter-timeline" href="https://twitter.com/SpaceX?ref_src=twsrc%5Etfw">Tweets by SpaceX</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    -->
+
+    <form role="form" action="/" method="POST" enctype="multipart/form-data">
+        <dl>
+            {{ whereisteddynowform.csrf_token }}
+            {{ render_field(whereisteddynowform.author) }}
+            {{ render_field(whereisteddynowform.location) }}
+            {{ render_field(whereisteddynowform.photo) }}
+            {{ render_field(whereisteddynowform.comment) }}
+            {{ render_field(whereisteddynowform.secret_code) }}
+            {{ render_field(whereisteddynowform.recaptcha) }}
+            <br>
+            {{ whereisteddynowform.submit(class_="btn btn-primary") }}
+        </dl>
+    </form>
+{% endblock %}
