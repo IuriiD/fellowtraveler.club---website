@@ -9,29 +9,30 @@ from wtforms.validators import DataRequired, Length
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf.recaptcha import RecaptchaField
 from pymongo import MongoClient
+from passlib.hash import sha256_crypt
 from random import randint
+from flask_googlemaps import GoogleMaps
+from flask_googlemaps import Map
 
-from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY
-from tg_functions import valid_url_extension, valid_url_mimetype, image_exists
-
+from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY
+from tg_functions import photo_check_save, get_location_history
 RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
 
 app = Flask(__name__)
+GoogleMaps(app, key=GOOGLE_MAPS_API_KEY)
 app.config.from_object(__name__)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 app.secret_key = FLASK_SECRET_KEY
 
 class WhereisTeddyNow(FlaskForm):
-    author = StringField('Please name yourself', validators=[DataRequired('Please name yourself'),
-                              Length(2, 50, 'Please enter a name 2-50 characters long')])
-    location = StringField('Where is Teddy now?', validators=[DataRequired('Please define at least a country and city'),
+    author = StringField('Please state your name', validators=[Length(-1, 50, 'Your name is a bit too long (50 characters max)')])
+    location = StringField('Where is Teddy now? (required)', validators=[DataRequired('Please define at least a country and city'),
                               Length(2, 120, 'Location name shouldn\'t be longer than 120 characters')])
-    photo = FileField('Upload a photo')
-    comment = TextAreaField('Add some comment (optionally)', validators=[Length(-1, 280, 'Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters')])
-    secret_code = PasswordField('Secret code from the toy', validators=[DataRequired('Please enter the code which you can find on the label attached to the toy'),
-                              Length(6, 6, 'Wrong secret code')])
-    recaptcha = RecaptchaField()
+    comment = TextAreaField('Add a comment', validators=[Length(-1, 280, 'Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters')])
+    secret_code = PasswordField('Secret code from the toy (required)', validators=[DataRequired('Please enter the code which you can find on the label attached to the toy'),
+                              Length(6, 6, 'Secret code must have 6 digits')])
+    #recaptcha = RecaptchaField()
     submit = SubmitField('Submit')
 
 @app.route('/index/', methods=['GET', 'POST'])
@@ -39,41 +40,72 @@ class WhereisTeddyNow(FlaskForm):
 @csrf.exempt
 def index():
     try:
+        traveller = 'Teddy'
         whereisteddynowform = WhereisTeddyNow()
 
         # POST-request
-        if request.method == 'POST' and whereisteddynowform.validate_on_submit():
-            # Prepare DB
-            client = MongoClient()
-            db = client.TeddyGo
-            collection = db.Teddy
+        if request.method == 'POST':
+            # Get travellers history (will be substituted with timeline embedded from Twitter )
+            locations_history = get_location_history(traveller)[0]
+            teddy_locations = get_location_history(traveller)[1]
 
-            author = whereisteddynowform.author.data
-            location = whereisteddynowform.location.data
-            comment = whereisteddynowform.comment.data
+            # Get user's input
+            if whereisteddynowform.validate_on_submit():
+                # Get user's input
+                author = whereisteddynowform.author.data
+                if author == '':
+                    author = "Anonymous"
+                location = whereisteddynowform.location.data
+                comment = whereisteddynowform.comment.data
+                secret_code = whereisteddynowform.secret_code.data
 
-            photo_filename = request.files['photo'].filename
-            flash(
-                'photo_filename: {}'.format(photo_filename),
-                'alert alert-warning alert-dismissible fade show')
-            if valid_url_extension(photo_filename) and valid_url_mimetype(photo_filename):
-                file_name_wo_extension = os.path.splitext(photo_filename)[0]
-                file_extension = os.path.splitext(photo_filename)[1]
-                path = 'uploads/' + file_name_wo_extension + '-' + str(randint(1, 10000)) + file_extension
-                request.files['photo'].save(os.path.join(app.static_folder, path))
+                # Get photos (4 at max)
+                photos = request.files.getlist('photo')
+                photos_list = []
+                for n in range(len(photos)):
+                    if n<4:
+                        path = photo_check_save(photos[n])
+                        if path != 'error':
+                            photos[n].save(os.path.join(app.static_folder, path))
+                            photos_list.append(path)
+                        else:
+                            # At least one of images is invalid. Messages are flashed from photo_check_save()
+                            return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_locations=teddy_locations)
+                if len(photos)>4:
+                    flash(
+                        'Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded',
+                        'alert alert-warning alert-dismissible fade show')
+
+                # Save data to DB
+                # Connect to DB 'TeddyGo'
+                client = MongoClient()
+                db = client.TeddyGo
+
+                # Check secret code in collection 'travellers'
+                collection_travellers = db.travellers
+                teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
+                if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
+                    flash('Invalid secret code', 'alert alert-warning alert-dismissible fade show')
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_locations=teddy_locations)
+                else:
+                    # Prepare dictionary with new location info
+                    new_teddy_location = {
+                        'author': author,
+                        'location': location,
+                        'comment': comment,
+                        'photos': photos_list
+                    }
+
+                    # Connect to collection and insert document
+                    collection_teddy = db[traveller]
+                    new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
             else:
-                flash(
-                    'Invalid image extension (not ".jpg", ".jpeg", ".png", ".gif" or ".bmp") or invalid image format',
-                    'alert alert-warning alert-dismissible fade show')
-                return render_template('index.html', whereisteddynowform=whereisteddynowform)
-        else:
-            flash(
-                'Invalid data was entered',
-                'alert alert-warning alert-dismissible fade show')
-            return render_template('index.html', whereisteddynowform=whereisteddynowform)
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_locations=teddy_locations)
+
         # GET request
-        wheewisteddynowform = WhereisTeddyNow()
-        return render_template('index.html', whereisteddynowform=whereisteddynowform)
+        # Get travellers history (will be substituted with timeline embedded from Twitter )
+        locations_history = get_location_history(traveller)
+        return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_locations=teddy_locations)
 
     except Exception as error:
         return redirect(url_for('index'))
