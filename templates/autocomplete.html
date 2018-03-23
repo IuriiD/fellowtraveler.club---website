@@ -88,15 +88,16 @@
         width: 345px;
       }
     </style>
-
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=places"></script>
-      {{ JSGlue.include() }}
+
   </head>
   <body>
 
     <br>
     <input id="pac-input" class="controls" type="text" placeholder="Search Box">
     <div id="map" style="width: 750px; height: 400px;"></div>
+
     <script>
       // This example adds a search box to a map, using the Google Place Autocomplete
       // feature. People can enter geographical searches. The search box will return a
@@ -168,20 +169,37 @@
             } else {
               bounds.extend(place.geometry.location);
             }
-            // My code
-            var latlong = JSON.stringify({"lat": place.geometry.location.lat(), 'lng': place.geometry.location.lng()});
-            //alert(latlong);
 
-        $http.get('http://localhost:5000/get_lat_lng' + $latlong);
+            // TeddyGo project code added for passiong data (point name, latitude and longitude) to Flask
+              var whataddress = document.getElementById("pac-input").value;
+              var geodata = {
+                    "lat": place.geometry.location.lat(),
+                    'lng': place.geometry.location.lng(),
+                    'addr': whataddress
+                };
+            //alert(JSON.stringify(place.geometry.location()));
+            //alert(whataddress);
 
+            $.ajax({
+                url: '/get_lat_lng',
+                data: JSON.stringify(geodata, null, '\t'),
+                contentType: 'application/json;charset=UTF-8',
+                type: 'POST',
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
           });
           map.fitBounds(bounds);
         });
       }
-
 
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=places&callback=initAutocomplete"
          async defer></script>
   </body>
 </html>
+
