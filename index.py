@@ -10,7 +10,6 @@ from flask_wtf.csrf import CSRFProtect
 from flask_wtf.recaptcha import RecaptchaField
 from pymongo import MongoClient
 from passlib.hash import sha256_crypt
-import json
 from flask_jsglue import JSGlue
 #from random import randint
 #from flask_googlemaps import GoogleMaps
@@ -29,8 +28,8 @@ app.secret_key = FLASK_SECRET_KEY
 
 class WhereisTeddyNow(FlaskForm):
     author = StringField('Please state your name', validators=[Length(-1, 50, 'Your name is a bit too long (50 characters max)')])
-    location = StringField('Where is Teddy now? (required)', validators=[DataRequired('Please define at least a country and city'),
-                              Length(2, 120, 'Location name shouldn\'t be longer than 120 characters')])
+    #location = StringField('Where is Teddy now? (required)', validators=[DataRequired('Please define at least a country and city'),
+    #                          Length(2, 120, 'Location name shouldn\'t be longer than 120 characters')])
     comment = TextAreaField('Add a comment', validators=[Length(-1, 280, 'Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters')])
     secret_code = PasswordField('Secret code from the toy (required)', validators=[DataRequired('Please enter the code which you can find on the label attached to the toy'),
                               Length(6, 6, 'Secret code must have 6 digits')])
@@ -111,6 +110,17 @@ def index():
 
     except Exception as error:
         return redirect(url_for('index'))
+
+@app.route("/get_lat_lng", methods=["POST"])
+def get_lat_lng():
+    print('Flask!')
+    if request.method == "POST":
+        print('It\'s POST!')
+        latitude = request.json.get('lat')
+        longitude = request.json.get('lng')
+        address = request.json.get('addr')
+        print('{}, {}, {}'.format(latitude, longitude, address))
+    return 'Post triggered'
 
 @app.errorhandler(404)
 @csrf.exempt

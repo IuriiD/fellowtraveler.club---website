@@ -6,8 +6,20 @@
 {% endblock %}
 
 {% block inhead %}
-    {# reCaptcha #}
+    {# JSGlue for using url_for in jQuery #}
+    {{ JSGlue.include() }}
+
+    {# Stylesheet for the Google map with autocomplete field to ented address #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/google.maps.autocomplete.css') }}">
+
+    {# reCaptcha script #}
     <script src='https://www.google.com/recaptcha/api.js'></script>
+
+    {# Scripts for GoogleMaps with autocomplete field #}
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=places"></script>
+    <script src="{{ url_for('static', filename='js/google.maps.autocomplete.js') }}"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=places&callback=initAutocomplete"
+         async defer></script>
 {% endblock %}
 
 {% block body %}
@@ -43,14 +55,20 @@
         </div>
     {% endif %}
 
-
+    <hr>
+    <b>Where Teddy is now or was on the photo? (required)</b>
+    <div>
+        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+        <div id="map" style="height: 400px;"></div>
+    </div>
+    <br>
     <form role="form" action="/" method="POST" enctype="multipart/form-data">
         <dl>
             {{ whereisteddynowform.csrf_token }}
             {{ render_field(whereisteddynowform.author) }}
-            {{ render_field(whereisteddynowform.location) }}
+            {#  { render_field(whereisteddynowform.location) }#}
             <div>
-                <b>Upload a photo (up to 4 shots)</b>
+                <b>Upload up to 4 photos/place</b>
                 <p>
                     <input type="file" accept="image/*" name="photo" id="photo" multiple>
                 </p>
@@ -63,11 +81,3 @@
         </dl>
     </form>
 {% endblock %}
-
-[
-[
-{'photos': [], 'author': 'Andy', 'comment': 'London', 'location': '51.5287718, -0.2416816', 'time': '2018-03-19 09:17:27'},
-{'photos': [], 'author': 'Sam', 'comment': 'Kiev', 'location': '50.4021368, 30.2525098', 'time': '2018-03-19 09:16:53'},
-{'photos': [], 'author': 'Iurii', 'comment': 'Enter coordinates', 'location': '49.4312235, 31.9791902', 'time': '2018-03-19 09:15:33'}
-]
-]

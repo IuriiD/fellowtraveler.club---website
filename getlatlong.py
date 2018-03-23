@@ -1,6 +1,4 @@
-from flask import Flask, request, jsonify, render_template, session
-import sys
-import json
+from flask import Flask, request, render_template
 from flask_jsglue import JSGlue
 
 app = Flask(__name__)
