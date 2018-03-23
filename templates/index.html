@@ -2,13 +2,12 @@
 {% from '_formhelpers.html' import render_field %}
 
 {% block title %}
-    Teddygo - please help me to realize my dream
+    Hi! My name is Teddy and I have a dream
 {% endblock %}
 
 {% block inhead %}
     {# reCaptcha #}
     <script src='https://www.google.com/recaptcha/api.js'></script>
-    {{ teddy_locations.js }}
 {% endblock %}
 
 {% block body %}
@@ -22,9 +21,6 @@
     {% if locations_history|length>0 %}
         <div>
             <b>My travel so far:</b>
-        </div>
-        <div>
-            {{ teddy_locations.html }}
         </div>
         <div>
             {% for location_data in locations_history %}
@@ -67,3 +63,11 @@
         </dl>
     </form>
 {% endblock %}
+
+[
+[
+{'photos': [], 'author': 'Andy', 'comment': 'London', 'location': '51.5287718, -0.2416816', 'time': '2018-03-19 09:17:27'},
+{'photos': [], 'author': 'Sam', 'comment': 'Kiev', 'location': '50.4021368, 30.2525098', 'time': '2018-03-19 09:16:53'},
+{'photos': [], 'author': 'Iurii', 'comment': 'Enter coordinates', 'location': '49.4312235, 31.9791902', 'time': '2018-03-19 09:15:33'}
+]
+]

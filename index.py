@@ -10,17 +10,19 @@ from flask_wtf.csrf import CSRFProtect
 from flask_wtf.recaptcha import RecaptchaField
 from pymongo import MongoClient
 from passlib.hash import sha256_crypt
-from random import randint
-from flask_googlemaps import GoogleMaps
-from flask_googlemaps import Map
+import json
+from flask_jsglue import JSGlue
+#from random import randint
+#from flask_googlemaps import GoogleMaps
+#from flask_googlemaps import Map
 
 from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY
 from tg_functions import photo_check_save, get_location_history
 RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
 
 app = Flask(__name__)
-GoogleMaps(app, key=GOOGLE_MAPS_API_KEY)
-app.config.from_object(__name__)
+#GoogleMaps(app, key=GOOGLE_MAPS_API_KEY)
+jsglue = JSGlue(app)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 app.secret_key = FLASK_SECRET_KEY
@@ -36,7 +38,8 @@ class WhereisTeddyNow(FlaskForm):
     submit = SubmitField('Submit')
 
 @app.route('/index/', methods=['GET', 'POST'])
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST']) # later index page will aggragate info for several travellers
+@app.route('/teddy/', methods=['GET', 'POST'])
 @csrf.exempt
 def index():
     try:
@@ -46,8 +49,7 @@ def index():
         # POST-request
         if request.method == 'POST':
             # Get travellers history (will be substituted with timeline embedded from Twitter )
-            locations_history = get_location_history(traveller)[0]
-            teddy_locations = get_location_history(traveller)[1]
+            locations_history = get_location_history(traveller)
 
             # Get user's input
             if whereisteddynowform.validate_on_submit():
@@ -70,7 +72,7 @@ def index():
                             photos_list.append(path)
                         else:
                             # At least one of images is invalid. Messages are flashed from photo_check_save()
-                            return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_locations=teddy_locations)
+                            return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
                 if len(photos)>4:
                     flash(
                         'Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded',
@@ -86,7 +88,7 @@ def index():
                 teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
                     flash('Invalid secret code', 'alert alert-warning alert-dismissible fade show')
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_locations=teddy_locations)
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
                 else:
                     # Prepare dictionary with new location info
                     new_teddy_location = {
@@ -100,12 +102,12 @@ def index():
                     collection_teddy = db[traveller]
                     new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
             else:
-                return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_locations=teddy_locations)
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
 
         # GET request
         # Get travellers history (will be substituted with timeline embedded from Twitter )
         locations_history = get_location_history(traveller)
-        return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_locations=teddy_locations)
+        return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
 
     except Exception as error:
         return redirect(url_for('index'))

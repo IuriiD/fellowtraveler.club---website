@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify, render_template, session
 import sys
 import json
-#from flask_jsglue import JSGlue
+from flask_jsglue import JSGlue
 
 app = Flask(__name__)
-#jsglue = JSGlue(app)
+jsglue = JSGlue(app)
 
 @app.route('/index/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST'])

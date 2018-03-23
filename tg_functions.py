@@ -68,6 +68,8 @@ def get_location_history(traveller):
     db = client.TeddyGo
     teddys_locations = db[traveller].find().sort([('_id', -1)])
     locations_history = []
+
+    '''
     teddy_locations = Map(
         identifier="teddy_locations",
         lat=37.4419,
@@ -77,6 +79,7 @@ def get_location_history(traveller):
         style="height:720px;width:400px;margin:1;",
         markers=[]
     )
+    '''
 
     for location in teddys_locations:
         location_data = {
@@ -87,6 +90,7 @@ def get_location_history(traveller):
             'photos': location['photos']
         }
         locations_history.append(location_data)
+        '''
         lat = float(location_data['location'].split(', ')[0])
         long = float(location_data['location'].split(', ')[1])
         teddy_locations['markers'].append(
@@ -97,5 +101,6 @@ def get_location_history(traveller):
                 'infobox': '{} - {}'.format(location_data['author'], location_data['time'])
             }
         )
+        '''
 
-    return [locations_history, teddy_locations]
+    return locations_history
