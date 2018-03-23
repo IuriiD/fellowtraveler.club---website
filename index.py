@@ -112,6 +112,7 @@ def index():
         return redirect(url_for('index'))
 
 @app.route("/get_lat_lng", methods=["POST"])
+@csrf.exempt
 def get_lat_lng():
     print('Flask!')
     if request.method == "POST":

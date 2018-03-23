@@ -1,22 +1,36 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <title>Places Searchbox</title>
+{% extends "layout.html" %}
+{% from '_formhelpers.html' import render_field %}
+
+{% block title %}
+    Hi! My name is Teddy and I have a dream
+{% endblock %}
+
+{% block inhead %}
+    {# JSGlue for using url_for in jQuery #}
     {{ JSGlue.include() }}
+
+    {# Stylesheet for the Google map with autocomplete field to ented address #}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/google.maps.autocomplete.css') }}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    {# reCaptcha script #}
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
+    {# Scripts for GoogleMaps with autocomplete field #}
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=places"></script>
     <script src="{{ url_for('static', filename='js/google.maps.autocomplete.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=places&callback=initAutocomplete"
          async defer></script>
-  </head>
-  <body>
+{% endblock %}
+
+
+{% block body %}
+    <hr>
+
+    <b>Where Teddy is now or was on the photo? (required)</b>
 
     <br>
     <input id="pac-input" class="controls" type="text" placeholder="Search Box">
     <div id="map" style="width: 750px; height: 400px;"></div>
-  </body>
-</html>
+
+{% endblock %}
 

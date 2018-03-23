@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, render_template, request
 from flask_jsglue import JSGlue
 
 app = Flask(__name__)

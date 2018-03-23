@@ -56,15 +56,17 @@
     {% endif %}
 
     <hr>
+
     <b>Where Teddy is now or was on the photo? (required)</b>
     <div>
         <input id="pac-input" class="controls" type="text" placeholder="Search Box">
         <div id="map" style="height: 400px;"></div>
     </div>
+
     <br>
     <form role="form" action="/" method="POST" enctype="multipart/form-data">
         <dl>
-            {{ whereisteddynowform.csrf_token }}
+            {#  { whereisteddynowform.csrf_token }#}
             {{ render_field(whereisteddynowform.author) }}
             {#  { render_field(whereisteddynowform.location) }#}
             <div>
