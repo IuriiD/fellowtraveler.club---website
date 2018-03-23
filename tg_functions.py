@@ -71,7 +71,7 @@ def get_location_history(traveller):
     for location in teddys_locations:
         location_data = {
             'author': location['author'],
-            'location': location['location'],
+            'location': location['formatted_address'],
             'time': '{} {}'.format(location['_id'].generation_time.date(), location['_id'].generation_time.time()),
             'comment': location['comment'],
             'photos': location['photos']

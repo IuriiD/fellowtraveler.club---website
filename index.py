@@ -38,25 +38,40 @@ class WhereisTeddyNow(FlaskForm):
 
 @app.route('/index/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST']) # later index page will aggragate info for several travellers
-@app.route('/teddy/', methods=['GET', 'POST'])
+#@app.route('/teddy/', methods=['GET', 'POST'])
 @csrf.exempt
 def index():
+    print('Index!')
     try:
         traveller = 'Teddy'
         whereisteddynowform = WhereisTeddyNow()
 
         # POST-request
         if request.method == 'POST':
+            print('Index-Post')
             # Get travellers history (will be substituted with timeline embedded from Twitter )
             locations_history = get_location_history(traveller)
+            print('locations_history: {}'.format(locations_history))
+
+            # Check if user entered some location (required parameter) (data is passed from jQuery to Flask and
+            # saved in session
+            if 'latitude' not in session:
+                print('Here1')
+                flash('Please enter Teddy\'s location (current or on the photo)',
+                        'alert alert-warning alert-dismissible fade show')
+                print('No data in session!')
+                return render_template('index.html', whereisteddynowform=whereisteddynowform,
+                                       locations_history=locations_history)
 
             # Get user's input
+            print('Here2')
             if whereisteddynowform.validate_on_submit():
+                print('Here4')
                 # Get user's input
                 author = whereisteddynowform.author.data
                 if author == '':
                     author = "Anonymous"
-                location = whereisteddynowform.location.data
+                #location = whereisteddynowform.location.data
                 comment = whereisteddynowform.comment.data
                 secret_code = whereisteddynowform.secret_code.data
 
@@ -92,7 +107,9 @@ def index():
                     # Prepare dictionary with new location info
                     new_teddy_location = {
                         'author': author,
-                        'location': location,
+                        'longitude': float(session['longitude']),
+                        'latitude': float(session['latitude']),
+                        'formatted_address': session['formatted_address'],
                         'comment': comment,
                         'photos': photos_list
                     }
@@ -100,28 +117,34 @@ def index():
                     # Connect to collection and insert document
                     collection_teddy = db[traveller]
                     new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
+                    # Clear data from session
+                    session.pop('latitude', None)
+                    session.pop('longitude', None)
+                    session.pop('formatted_address', None)
             else:
+                print('Here3')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
 
         # GET request
         # Get travellers history (will be substituted with timeline embedded from Twitter )
+        print('Index-Get')
         locations_history = get_location_history(traveller)
         return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
 
     except Exception as error:
         return redirect(url_for('index'))
 
-@app.route("/get_lat_lng", methods=["POST"])
+@app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt
-def get_lat_lng():
-    print('Flask!')
+def get_geodata_from_gm():
     if request.method == "POST":
-        print('It\'s POST!')
         latitude = request.json.get('lat')
         longitude = request.json.get('lng')
         address = request.json.get('addr')
-        print('{}, {}, {}'.format(latitude, longitude, address))
-    return 'Post triggered'
+        session['latitude'] = latitude
+        session['longitude'] = longitude
+        session['formatted_address'] = address
+    return 'get_geodata_from_gm()'
 
 @app.errorhandler(404)
 @csrf.exempt

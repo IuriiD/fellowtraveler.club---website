@@ -49,6 +49,14 @@
             </div>
             <!-- Intro block END -->
 
+            <!-- Travelled so far block -->
+            <div>
+                {% block travelled_so_far %}
+
+                {% endblock %}
+            </div>
+            <!-- Travelled so far block END -->
+
             <!-- Flashed messages -->
             <div>
                 {% with messages = get_flashed_messages(with_categories=True) %}

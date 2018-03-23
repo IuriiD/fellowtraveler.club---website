@@ -22,8 +22,7 @@
          async defer></script>
 {% endblock %}
 
-{% block body %}
-
+{% block travelled_so_far %}
     <!--
     <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1UgBsp0NYrSmBzBrUzAnucKhaywY" width="750" height="540"></iframe>
 
@@ -56,7 +55,9 @@
     {% endif %}
 
     <hr>
+{% endblock %}
 
+{% block body %}
     <b>Where Teddy is now or was on the photo? (required)</b>
     <div>
         <input id="pac-input" class="controls" type="text" placeholder="Search Box">
@@ -66,7 +67,7 @@
     <br>
     <form role="form" action="/" method="POST" enctype="multipart/form-data">
         <dl>
-            {#  { whereisteddynowform.csrf_token }#}
+            {{ whereisteddynowform.csrf_token }}
             {{ render_field(whereisteddynowform.author) }}
             {#  { render_field(whereisteddynowform.location) }#}
             <div>
