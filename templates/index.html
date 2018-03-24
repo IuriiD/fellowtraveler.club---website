@@ -20,6 +20,9 @@
     <script src="{{ url_for('static', filename='js/google.maps.autocomplete.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=places&callback=initAutocomplete"
          async defer></script>
+
+    {# JS to display Teddy's travel so far #}
+    {{ teddy_map.js }}
 {% endblock %}
 
 {% block travelled_so_far %}
@@ -33,6 +36,11 @@
         <div>
             <b>My travel so far:</b>
         </div>
+
+        <div>
+            {{ teddy_map.html }}
+        </div>
+
         <div>
             {% for location_data in locations_history %}
                 <p>

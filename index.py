@@ -12,15 +12,15 @@ from pymongo import MongoClient
 from passlib.hash import sha256_crypt
 from flask_jsglue import JSGlue
 #from random import randint
-#from flask_googlemaps import GoogleMaps
-#from flask_googlemaps import Map
+from flask_googlemaps import GoogleMaps
+from flask_googlemaps import Map
 
 from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY
 from tg_functions import photo_check_save, get_location_history
 RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
 
 app = Flask(__name__)
-#GoogleMaps(app, key=GOOGLE_MAPS_API_KEY)
+GoogleMaps(app, key=GOOGLE_MAPS_API_KEY)
 jsglue = JSGlue(app)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
@@ -49,9 +49,22 @@ def index():
         # POST-request
         if request.method == 'POST':
             print('Index-Post')
+
             # Get travellers history (will be substituted with timeline embedded from Twitter )
-            locations_history = get_location_history(traveller)
-            print('locations_history: {}'.format(locations_history))
+            whereteddywas = get_location_history(traveller)
+            locations_history = whereteddywas['locations_history']
+
+            # Prepare a map
+            teddy_map = Map(
+                identifier="teddy_map",
+                lat=whereteddywas['start_lat'],
+                lng=whereteddywas['start_long'],
+                zoom=8,
+                language="en",
+                style="height:480px;width:720px;margin:1;",
+                markers=whereteddywas['mymarkers'],
+                fit_markers_to_bounds = True
+            )
 
             # Check if user entered some location (required parameter) (data is passed from jQuery to Flask and
             # saved in session
@@ -61,7 +74,7 @@ def index():
                         'alert alert-warning alert-dismissible fade show')
                 print('No data in session!')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform,
-                                       locations_history=locations_history)
+                                       locations_history=locations_history, teddy_map=teddy_map)
 
             # Get user's input
             print('Here2')
@@ -86,7 +99,7 @@ def index():
                             photos_list.append(path)
                         else:
                             # At least one of images is invalid. Messages are flashed from photo_check_save()
-                            return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
+                            return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map)
                 if len(photos)>4:
                     flash(
                         'Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded',
@@ -102,7 +115,7 @@ def index():
                 teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
                     flash('Invalid secret code', 'alert alert-warning alert-dismissible fade show')
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map)
                 else:
                     # Prepare dictionary with new location info
                     new_teddy_location = {
@@ -123,13 +136,28 @@ def index():
                     session.pop('formatted_address', None)
             else:
                 print('Here3')
-                return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map)
 
         # GET request
         # Get travellers history (will be substituted with timeline embedded from Twitter )
         print('Index-Get')
-        locations_history = get_location_history(traveller)
-        return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history)
+
+        # Get travellers history (will be substituted with timeline embedded from Twitter )
+        whereteddywas = get_location_history(traveller)
+        locations_history = whereteddywas['locations_history']
+
+        # Prepare a map
+        teddy_map = Map(
+            identifier="teddy_map",
+            lat=whereteddywas['start_lat'],
+            lng=whereteddywas['start_long'],
+            zoom=8,
+            language="en",
+            style="height:480px;width:720px;margin:1;",
+            markers=whereteddywas['mymarkers'],
+            fit_markers_to_bounds=True
+        )
+        return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map)
 
     except Exception as error:
         return redirect(url_for('index'))

@@ -67,14 +67,45 @@ def get_location_history(traveller):
     client = MongoClient()
     db = client.TeddyGo
     teddys_locations = db[traveller].find().sort([('_id', -1)])
+
+    # Prepare a list of info blocks about traveller's locations and data to create a map
     locations_history = []
+    mymarkers = []
+    start_lat = None
+    start_long = None
     for location in teddys_locations:
+        author = location['author']
+        comment = location['comment']
+        photos = location['photos']
+
         location_data = {
-            'author': location['author'],
+            'author': author,
             'location': location['formatted_address'],
             'time': '{} {}'.format(location['_id'].generation_time.date(), location['_id'].generation_time.time()),
-            'comment': location['comment'],
-            'photos': location['photos']
+            'comment': comment,
+            'photos': photos
         }
         locations_history.append(location_data)
-    return locations_history
+
+        if start_lat == None:
+            start_lat = location['latitude']
+            start_long = location['longitude']
+        infobox = ''
+        if len(photos) > 0:
+            infobox += '<img src="static/{}" style="max-height: 70px; max-width:120px"/>'.format(photos[0])
+        infobox += '<br>'
+        infobox += 'By <b>{}</b>'.format(author)
+        if comment != '':
+            infobox += '<br>'
+            infobox += '<i>{}</i>'.format(comment)
+
+        mymarkers.append(
+            {
+                'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+                'lat': location['latitude'],
+                'lng': location['longitude'],
+                'infobox': infobox
+            }
+        )
+
+    return {'locations_history': locations_history, 'start_lat': start_lat, 'start_long': start_long, 'mymarkers': mymarkers}
