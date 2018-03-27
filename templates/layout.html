@@ -65,7 +65,7 @@
                     <div class="w-50">
                         <!-- Choose language block -->
                         <div class="container-fluid" align="right">
-                            Change language: En <a href="">Ru</a> <a href="">Fr</a> <a href="">Esp</a>
+                            Change language: {% if language != 'en' %}<a href="/language/en">{% endif %}En{% if language != 'en' %}</a>{% endif %} {% if language != 'de' %}<a href="/language/de">{% endif %}De{% if language != 'de' %}</a>{% endif %} {% if language != 'ru' %}<a href="/language/ru">{% endif %}Ru{% if language != 'ru' %}</a>{% endif %} {% if language != 'fr' %}<a href="/language/fr">{% endif %}Fr{% if language != 'fr' %}</a>{% endif %}
                         </div>
 
                         <!-- Webchat -->

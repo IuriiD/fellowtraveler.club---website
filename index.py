@@ -13,12 +13,18 @@ from passlib.hash import sha256_crypt
 from flask_jsglue import JSGlue
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
+from flask_babel import Babel, gettext
 import twitter
 
 from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET
 
 from tg_functions import photo_check_save, get_location_history
 RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
+LANGUAGES = {
+    'en': 'English',
+    'ru': 'Русский',
+    'de': 'Deutsch'
+}
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -27,6 +33,7 @@ csrf.init_app(app)
 app.secret_key = FLASK_SECRET_KEY
 GoogleMaps(app, key=GOOGLE_MAPS_API_KEY)
 jsglue = JSGlue(app)
+babel = Babel(app)
 twitter_api = twitter.Api(consumer_key=TWITTER_CONSUMER_KEY, consumer_secret=TWITTER_CONSUMER_SECRET, access_token_key=TWITTER_ACCESS_TOKEN_KEY, access_token_secret=TWITTER_ACCESS_TOKEN_SECRET)
 
 class WhereisTeddyNow(FlaskForm):
@@ -36,6 +43,16 @@ class WhereisTeddyNow(FlaskForm):
                               Length(6, 6, 'Secret code must have 6 digits')])
     #recaptcha = RecaptchaField()
     submit = SubmitField('Submit')
+
+@babel.localeselector
+def get_locale():
+    user_language = request.cookies.get('UserPreferredLanguage')
+    if user_language:
+        print(user_language)
+        return user_language
+    else:
+        print(str(request.accept_languages.best_match(app.config['LANGUAGES'].keys())))
+        return request.accept_languages.best_match(app.config['LANGUAGES'].keys())
 
 @app.route('/index/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST']) # later index page will aggragate info for several travellers
@@ -67,6 +84,11 @@ def index():
                 fit_markers_to_bounds = True
             )
 
+            # Check for preferred language
+            user_language = request.cookies.get('UserPreferredLanguage')
+            if not user_language:
+                user_language = 'en'
+
             # Check if user entered some location (required parameter) (data is passed from jQuery to Flask and
             # saved in session
             if 'latitude' not in session:
@@ -75,7 +97,7 @@ def index():
                         'alert alert-warning alert-dismissible fade show')
                 print('No data in session!')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform,
-                                       locations_history=locations_history, teddy_map=teddy_map)
+                                       locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
             # Get user's input
             print('Here2')
@@ -100,7 +122,7 @@ def index():
                             photos_list.append(path)
                         else:
                             # At least one of images is invalid. Messages are flashed from photo_check_save()
-                            return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map)
+                            return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
                 if len(photos)>4:
                     flash(
                         'Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded',
@@ -116,7 +138,7 @@ def index():
                 teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
                     flash('Invalid secret code', 'alert alert-warning alert-dismissible fade show')
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map)
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
                 else:
                     # Prepare dictionary with new location info
                     new_teddy_location = {
@@ -149,7 +171,7 @@ def index():
                     session.pop('formatted_address', None)
             else:
                 print('Here3')
-                return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map)
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
         # GET request
         # Get travellers history (will be substituted with timeline embedded from Twitter )
@@ -170,7 +192,12 @@ def index():
             markers=whereteddywas['mymarkers'],
             fit_markers_to_bounds=True
         )
-        return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map)
+
+        # Check for preferred language
+        user_language = request.cookies.get('UserPreferredLanguage')
+        if not user_language:
+            user_language = 'en'
+        return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
     except Exception as error:
         return redirect(url_for('index'))
@@ -186,6 +213,15 @@ def get_geodata_from_gm():
         session['longitude'] = longitude
         session['formatted_address'] = address
     return 'get_geodata_from_gm()'
+
+@app.route("/language/<lang_code>")
+@csrf.exempt
+def user_language_to_coockie(lang_code):
+    redirect_to_index = redirect('/')
+    response = app.make_response(redirect_to_index)
+    response.set_cookie('UserPreferredLanguage', lang_code)
+    print('Language preferences ({}) saved to coockie'.format(lang_code))
+    return response
 
 @app.errorhandler(404)
 @csrf.exempt
