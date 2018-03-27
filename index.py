@@ -21,22 +21,19 @@ from tg_functions import photo_check_save, get_location_history
 RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
 
 app = Flask(__name__)
+app.config.from_object(__name__)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 app.secret_key = FLASK_SECRET_KEY
-jsglue = JSGlue(app)
 GoogleMaps(app, key=GOOGLE_MAPS_API_KEY)
+jsglue = JSGlue(app)
 twitter_api = twitter.Api(consumer_key=TWITTER_CONSUMER_KEY, consumer_secret=TWITTER_CONSUMER_SECRET, access_token_key=TWITTER_ACCESS_TOKEN_KEY, access_token_secret=TWITTER_ACCESS_TOKEN_SECRET)
 
 class WhereisTeddyNow(FlaskForm):
     author = StringField('Your name', validators=[Length(-1, 50, 'Your name is a bit too long (50 characters max)')])
-    email = StringField('Your email address', validators=[Length(-1, 50, 'Your email addres is a bit too long (60 characters max)')])
     comment = TextAreaField('Add a comment', validators=[Length(-1, 280, 'Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters')])
-    media_url = StringField('',
-                        validators=[Length(-1, 200, 'Invalid URL')])
     secret_code = PasswordField('Secret code from the toy (required)', validators=[DataRequired('Please enter the code which you can find on the label attached to the toy'),
                               Length(6, 6, 'Secret code must have 6 digits')])
-    get_updates_by_email = BooleanField('Get updates of Teddy\'s location by email')
     #recaptcha = RecaptchaField()
     submit = SubmitField('Submit')
 
@@ -134,6 +131,18 @@ def index():
                     # Connect to collection and insert document
                     collection_teddy = db[traveller]
                     new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
+                    print('new_teddy_location_id: {}'.format(new_teddy_location_id))
+
+                    # Post to Twitter
+                    '''
+                    newstatus = 'Teddy with {} in {}'.format(new_teddy_location['author'], new_teddy_location['formatted_address'])
+                    if comment != '':
+                        newstatus += '. {} wrote: {}'.format(new_teddy_location['author'], new_teddy_location['comment'])
+                    status = twitter_api.PostUpdate(status=newstatus, media=new_teddy_location['photos'], latitude=new_teddy_location['latitude'],
+                                                    longitude=new_teddy_location['longitude'], display_coordinates=True)
+                    print(status.text)
+                    '''
+
                     # Clear data from session
                     session.pop('latitude', None)
                     session.pop('longitude', None)
@@ -157,7 +166,7 @@ def index():
             lng=whereteddywas['start_long'],
             zoom=8,
             language="en",
-            style="height:480px;width:720px;margin:1;",
+            style="height:480px;width:700px;margin:1;",
             markers=whereteddywas['mymarkers'],
             fit_markers_to_bounds=True
         )

@@ -23,64 +23,170 @@
 
     <body>
         <!-- Main container -->
-        <div class="container" style="max-width: 750px">
+        <div class="container" style="max-width: 768px">
 
-            <!-- Choose language -->
-            <div class="container-fluid" align="right">
-                Change language: En <a href="">Ru</a> <a href="">Fr</a> <a href="">Esp</a>
+            <!-- Badge, chat and update location button -->
+            <div class="container">
+                <div class="row">
+                    <!-- Badge and update location button -->
+                    <div class="w-50">
+                        <div>
+                            <img src="{{ url_for('static', filename='img/teddy_photo3.jpg') }}" style="height: 256px; width: 384px">
+                        </div>
+                        <div>
+                            Name: <b>Teddy</b>
+                            <br>
+                            Contacts:
+                            <br>
+                            <a href=""><b>FB Messenger</b></a> | <a href=""><b>Telegram</b></a> | <a href=""><b>Viber</b></a>
+                            <br>
+                            <a href=""><b>www.teddygo.com/teddy</b></a>
+                            <br>
+                            Follow me:
+                            <br>
+                            <a href=""><b>Facebook</b></a> | <a href=""><b>Twitter</b></a> | <a href=""><b>Instagram</b></a>
+                            <br>
+                            <form action="/subscribe">
+                                Get updates by email:
+                                <br>
+                                <input type="email" about="E-mail">
+                                <input type="submit">
+                            </form>
+                        </div>
+
+                        <!-- Update location button -->
+                        <br>
+                        <div>
+                            <button type="button" class="alert btn-success" role="alert">Update Teddy's location</button>
+                        </div>
+                    </div>
+
+                    <!-- Chat -->
+                    <div class="w-50">
+                        <!-- Choose language block -->
+                        <div class="container-fluid" align="right">
+                            Change language: En <a href="">Ru</a> <a href="">Fr</a> <a href="">Esp</a>
+                        </div>
+
+                        <!-- Webchat -->
+                        <iframe width="384" height="500" src="https://console.dialogflow.com/api-client/demo/embedded/plotbot">
+                        </iframe>
+                    </div>
+                </div>
+
+                <!-- Disclaimer and precautions block -->
+                <div class="alert alert-info" role="alert">
+                    No, it's not a trick and supposed to be safe but please see <a href="">safety info</a> and <a href="">disclaimer</a>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             </div>
-            <!-- Choose language END -->
 
-            <!-- Intro block -->
-            <div class="container-fluid">
-                <div class="row align-items-center">
-                    <div class="col"><img src="{{ url_for('static', filename='img/teddy_photo.jpg') }}"></div>
+
+            <!-- Collapse with travel map, timeline and add new location form -->
+            <div id="accordion" style="width: 100%">
+              <div class="card">
+                <div class="card-header" id="headingOne">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Map of my journey so far
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                  <div class="card-body">
+                    {% block travelmap %}
+                    {% endblock %}
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header" id="headingTwo">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                      Travel timeline
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+                  <div class="card-body">
+                    {% block traveltimeline %}
+                    {% endblock %}
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header" id="headingThree">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                      Update Teddy's location
+                    </button>
+                  </h5>
+                </div>
+                <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+                  <div class="card-body">
+                    <!-- Flashed messages -->
+                    <div>
+                        {% with messages = get_flashed_messages(with_categories=True) %}
+                          {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="{{ category }}">
+                                    {{ message|safe }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                          {% endif %}
+                        {% endwith %}
+                    </div>
+                    <!-- Flashed messages END -->
+
+                    {% block updatelocation %}
+                    {% endblock %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Collapse with travel map, timeline and add new location form END -->
+
+            <!-- Footer -->
+            <br>
+            <div>
+                <div class="row">
+                    <!-- Badge and update location button -->
                     <div class="col">
-                        <span class="lead">
-                            Hello! My name is Teddy and I have a dream.
-                            <br><br>
-                            I want to circumnavigate the globe.
-                            <br><br>
-                            Will you become a part of my journey?
-                            <br><br><h6>No, it's not a trick and supposed to be safe but please see <a href="">safety info</a> and <a href="">disclaimer</a></h6>
-                        </span>
+                        Contacts:
+                    </div>
+                    <div class="col">
+                        <a href=""><b>FB Messenger</b></a> | <a href=""><b>Telegram</b></a> | <a href=""><b>Viber</b></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- Badge and update location button -->
+                    <div class="col">
+                        Follow me:
+                    </div>
+                    <div class="col">
+                        <a href=""><b>Facebook</b></a> | <a href=""><b>Twitter</b></a> | <a href=""><b>Instagram</b></a>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- Badge and update location button -->
+                    <div class="col">
+                        Get updates by email:
+                    </div>
+                    <div class="col">
+                        <form action="/subscribe">
+                            <input type="email" about="E-mail">
+                            <input type="submit">
+                        </form>
                     </div>
                 </div>
             </div>
-            <!-- Intro block END -->
-
-            <!-- Travelled so far block -->
-            <div>
-                {% block travelled_so_far %}
-
-                {% endblock %}
-            </div>
-            <!-- Travelled so far block END -->
-
-            <!-- Flashed messages -->
-            <div>
-                {% with messages = get_flashed_messages(with_categories=True) %}
-                  {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="{{ category }}">
-                            {{ message|safe }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    {% endfor %}
-                  {% endif %}
-                {% endwith %}
-            </div>
-            <!-- Flashed messages END -->
-
-            <!-- Main contents -->
-            <div>
-                {% block body %}
-
-                {% endblock %}
-            </div>
-            <!-- Main contents END -->
 
             <!-- Footer -->
             <div class="lead" style="font-size: 12pt">

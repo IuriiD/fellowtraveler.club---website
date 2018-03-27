@@ -25,29 +25,17 @@
     {{ teddy_map.js }}
 {% endblock %}
 
-{% block travelled_so_far %}
+{% block travelmap %}
     <!--
     <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1UgBsp0NYrSmBzBrUzAnucKhaywY" width="750" height="540"></iframe>
     -->
-        <div>
-            <b>My travel so far:</b>
-        </div>
-        <div>
-            {{ teddy_map.html }}
-        </div>
-        <div>
-            <a class="twitter-timeline" href="https://twitter.com/IuriiD?ref_src=twsrc%5Etfw">My travel so far:</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-        </div>
-{#
+    <div>
+        {{ teddy_map.html }}
+    </div>
+{% endblock %}
+
+{% block traveltimeline %}
     {% if locations_history|length>0 %}
-        <div>
-            <b>My travel so far:</b>
-        </div>
-
-        <div>
-            {{ teddy_map.html }}
-        </div>
-
         <div>
             {% for location_data in locations_history %}
                 <p>
@@ -65,14 +53,13 @@
                             {% endfor %}
                     {% endif %}
                 </p>
+                <hr>
             {% endfor %}
         </div>
     {% endif %}
- #}
-    <hr>
 {% endblock %}
 
-{% block body %}
+{% block updatelocation %}
     <b>Where Teddy is now or was on the photo? (required)</b>
     <div>
         <input id="pac-input" class="controls" type="text" placeholder="Search Box">
@@ -84,52 +71,14 @@
         <dl>
             {{ whereisteddynowform.csrf_token }}
             {{ render_field(whereisteddynowform.author) }}
-            {{ render_field(whereisteddynowform.email) }}
             <div>
                 <b>Upload up to 4 photos/place</b>
                 <p>
                     <input type="file" accept="image/*" name="photo" id="photo" multiple>
                 </p>
             </div>
-
-
-
-            <!-- Image upload/paste URL form -->
-            <div id="exampleAccordion" data-children=".item">
-                <div class="item">
-                    <a data-toggle="collapse" data-parent="#exampleAccordion" href="#exampleAccordion2" role="button" aria-expanded="false" aria-controls="exampleAccordion2">
-                        <strong>
-                            Paste image URL
-                        </strong>
-                    </a>
-                    or
-                    <a data-toggle="collapse" data-parent="#exampleAccordion" href="#exampleAccordion1" role="button" aria-expanded="true" aria-controls="exampleAccordion1">
-                        <strong>
-                            Upload image
-                        </strong>
-                    </a>
-                    <div id="exampleAccordion1" class="collapse" role="tabpanel">
-                        <p class="mb-3">
-                            Upload files
-                        </p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div id="exampleAccordion2" class="collapse show" role="tabpanel">
-                        <p class="mb-3">
-                            Provide links
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <!-- Image upload/paste URL form END -->
-
             {{ render_field(whereisteddynowform.comment) }}
             {{ render_field(whereisteddynowform.secret_code) }}
-            <div>
-                <input type="checkbox" aria-label="Checkbox for following text input">
-                <b>Get updates of Teddy's location by email</b>
-            </div>
             {# { render_field(whereisteddynowform.recaptcha) } #}
             <br>
             {{ whereisteddynowform.submit(class_="btn btn-primary") }}
