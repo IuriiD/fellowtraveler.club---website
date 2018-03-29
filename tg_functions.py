@@ -90,7 +90,7 @@ def get_location_history(traveller):
         if start_lat == None:
             start_lat = location['latitude']
             start_long = location['longitude']
-        infobox = ''
+        infobox = '{}<br>'.format(location['time'])
         if len(photos) > 0:
             infobox += '<img src="static/{}" style="max-height: 70px; max-width:120px"/>'.format(photos[0])
         infobox += '<br>'
@@ -109,3 +109,100 @@ def get_location_history(traveller):
         )
 
     return {'locations_history': locations_history, 'start_lat': start_lat, 'start_long': start_long, 'mymarkers': mymarkers}
+
+def make_speech(ourspeech, oursource, outputcontext):
+    '''
+        Composes response for different platforms
+    '''
+    basic_txt_message = ourspeech["speech"]
+    if "rich_messages" in ourspeech:
+        rich_messages = ourspeech["rich_messages"]
+    else:
+        rich_messages = []
+
+    res = {
+        'speech': basic_txt_message,
+        'displayText': basic_txt_message,
+        'source': oursource,
+
+        'messages': [message for message in rich_messages],
+        'contextOut': outputcontext
+    }
+    return res
+
+def last_location_shown(req):
+    '''
+        From JSON-response got from webhook retrieves context 'location_shown' and value of parameter 'locationN'
+        (last shown location's number; -1 if we only start to display locations
+    '''
+    contexts = req.get('result').get('contexts')
+    last_location = -1
+    for context in contexts:
+        if context['name'] == 'location_shown':
+            last_location = context.get('parameters').get('locationN')
+    return last_location
+
+def show_next_location(req, locations_history, last_location_shown):
+    total_locations = len(locations_history)
+    contexts = req.get('result').get('contexts')
+    if (last_location_shown + 1) > total_locations:
+        # all locations have been shown
+        payload = {
+            "speech": "That\'s all my travel so far",
+            "rich_messages": [
+                {
+                    "platform": "telegram",
+                    "type": 0,
+                    "speech": "That\'s all my travel so far"
+                }
+            ]
+        }
+        for context in contexts:
+            if context['name'] == 'location_shown':
+                context['parameters']['locationN'] = -1
+    else:
+        location_to_show = locations_history[last_location_shown + 1]
+        author = location_to_show['author']
+        location = location_to_show['formatted_address'].split()[0]
+        time = location_to_show['time']
+        comment = location_to_show['comment']
+        photos = location_to_show['photos']
+        title = "{} - {}".format(time, location)
+        if len(photos) > 0:
+            imageUrl = "https://iuriid.github.io/img/pb-3.jpg"
+        else:
+            imageUrl = ""
+        if len(comment) > 0:
+            subtitle = "{} wrote: {}".format(author, comment)
+        else:
+            subtitle = ""
+        if (last_location_shown + 1) < total_locations:
+            buttons = [
+                {
+                    "postback": "Show next location",
+                    "text": "Show next place"
+                }
+            ]
+        else:
+            buttons = []
+
+        for context in contexts:
+            if context['name'] == 'location_shown':
+                context['parameters']['locationN'] = last_location_shown + 1
+
+        payload = {
+            "speech": "{}\n{}\n{}".format(title, subtitle, imageUrl),
+            "rich_messages": [
+                {
+                    "platform": "telegram",
+                    "type": 1,
+                    "title": title,
+                    "subtitle": subtitle,
+                    "imageUrl": imageUrl,
+                    "buttons": buttons
+                }
+            ]
+        }
+
+    response = {"status": "ok", "payload": payload, 'updated_context': contexts}
+    return response

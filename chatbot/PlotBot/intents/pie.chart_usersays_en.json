@@ -1,0 +1,198 @@
+[
+  {
+    "id": "5823ab49-2364-4d1b-a63b-2409e6e9177a",
+    "data": [
+      {
+        "text": "bubble map",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "4359d67f-6427-4d51-a29f-13a635f38447",
+    "data": [
+      {
+        "text": "circular diagram",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "b8ea8e61-ac99-4bdb-aad9-d5e20a8f7c3d",
+    "data": [
+      {
+        "text": "piechart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "85464d51-29b6-4e46-aedf-0863cb6dbbce",
+    "data": [
+      {
+        "text": "disc chart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "81b8a65e-892a-4826-8e40-96f2f1ff3904",
+    "data": [
+      {
+        "text": "circular chart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "f553f5b3-56e5-423b-950e-c7545cce8e82",
+    "data": [
+      {
+        "text": "sector diagram",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 10,
+    "updated": 1520176099
+  },
+  {
+    "id": "5cab9d06-1dbe-4fd2-b212-c510a16ceafd",
+    "data": [
+      {
+        "text": "round chart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "c48b1a4e-9a94-4dd3-b379-56b4f814b87b",
+    "data": [
+      {
+        "text": "pie diagram",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "4059975c-2da2-4496-9604-3ffa89bb48e8",
+    "data": [
+      {
+        "text": "pie chart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "12f74624-8195-4fcc-a17e-ae57990df4eb",
+    "data": [
+      {
+        "text": "circle chart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "abb0db31-abe2-40b5-b502-6db20a443a01",
+    "data": [
+      {
+        "text": "pie graph",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "3ca93c28-0c0f-432d-97c5-ce2ce7c41897",
+    "data": [
+      {
+        "text": "pie",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "b0fbdfdd-a57f-4666-9d16-76386f80b8ec",
+    "data": [
+      {
+        "text": "circle graph",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  },
+  {
+    "id": "8ad074f5-4d57-42e6-b604-89f804f5f564",
+    "data": [
+      {
+        "text": "eye chart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1520176099
+  }
+]

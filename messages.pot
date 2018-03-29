@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-27 10:07+0000\n"
+"POT-Creation-Date: 2018-03-27 12:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,303 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
 
-#: mybabel.py:18
+#: index.py:41
+msgid "Your name"
+msgstr ""
+
+#: index.py:41
+msgid "Your name is a bit too long (50 characters max)"
+msgstr ""
+
+#: index.py:42
+msgid "Add a comment"
+msgstr ""
+
+#: index.py:42
+msgid ""
+"Sorry but comments are uploaded to Twitter and thus can't be longer than "
+"280 characters"
+msgstr ""
+
+#: index.py:43
+msgid "Secret code from the toy (required)"
+msgstr ""
+
+#: index.py:43
+msgid "Please enter the code which you can find on the label attached to the toy"
+msgstr ""
+
+#: index.py:44
+msgid "Secret code must have 6 digits"
+msgstr ""
+
+#: index.py:46
+msgid "Submit"
+msgstr ""
+
+#: index.py:95
+msgid "Please enter Teddy's location (current or on the photo)"
+msgstr ""
+
+#: index.py:108
+msgid "Anonymous"
+msgstr ""
+
+#: index.py:127
+msgid ""
+"Comments are uploaded to Twitter and thus can't have more than 4 images "
+"each. Only the first 4 photos were uploaded"
+msgstr ""
+
+#: index.py:139
+msgid "Invalid secret code"
+msgstr ""
+
+#: mybabel.py:18 templates/babel.html:8
 msgid "Hello man"
 msgstr ""
+
+#: templates/index.html:5
+msgid "Hi! My name is Teddy and I have a dream"
+msgstr ""
+
+#: templates/index.html:42
+msgid "Author"
+msgstr ""
+
+#: templates/index.html:44
+msgid "Time"
+msgstr ""
+
+#: templates/index.html:46
+msgid "Location"
+msgstr ""
+
+#: templates/index.html:49
+msgid "Photos"
+msgstr ""
+
+#: templates/index.html:63
+msgid "Where Teddy is now or was on the photo? (required)"
+msgstr ""
+
+#: templates/index.html:75
+msgid "Upload up to 4 photos/place"
+msgstr ""
+
+#: templates/layout.html:37
+msgid "Name"
+msgstr ""
+
+#: templates/layout.html:39 templates/layout.html:162
+msgid "Contacts"
+msgstr ""
+
+#: templates/layout.html:45 templates/layout.html:171
+msgid "Follow me"
+msgstr ""
+
+#: templates/layout.html:50 templates/layout.html:180
+msgid "Get updates by email"
+msgstr ""
+
+#: templates/layout.html:60 templates/layout.html:125
+msgid "Update Teddy's location"
+msgstr ""
+
+#: templates/layout.html:68
+msgid "Change language"
+msgstr ""
+
+#: templates/layout.html:79
+msgid ""
+"No, it's not a trick and supposed to be safe but please see <a "
+"href=\"\">safety info</a> and <a href=\"\">disclaimer</a>"
+msgstr ""
+
+#: templates/layout.html:93
+msgid "Map of my journey so far"
+msgstr ""
+
+#: templates/layout.html:109
+msgid "Travel timeline"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/flask_wtf/file.py:51
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:203
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:243
+msgid "This field is required."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/flask_wtf/file.py:85
+msgid "File does not have an approved extension: {extensions}"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/flask_wtf/file.py:90
+msgid "File does not have an approved extension."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/passlib/ext/django/utils.py:957
+msgid "algorithm"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:56
+#, python-format
+msgid "Invalid field name '%s'."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:64
+#, python-format
+msgid "Field must be equal to %(other_name)s."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:97
+#, python-format
+msgid "Field must be at least %(min)d character long."
+msgid_plural "Field must be at least %(min)d characters long."
+msgstr[0] ""
+msgstr[1] ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:100
+#, python-format
+msgid "Field cannot be longer than %(max)d character."
+msgid_plural "Field cannot be longer than %(max)d characters."
+msgstr[0] ""
+msgstr[1] ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:103
+#, python-format
+msgid "Field must be between %(min)d and %(max)d characters long."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:139
+#, python-format
+msgid "Number must be at least %(min)s."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:141
+#, python-format
+msgid "Number must be at most %(max)s."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:143
+#, python-format
+msgid "Number must be between %(min)s and %(max)s."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:275
+msgid "Invalid input."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:301
+msgid "Invalid email address."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:335
+msgid "Invalid IP address."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:386
+msgid "Invalid Mac address."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:415
+msgid "Invalid URL."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:436
+msgid "Invalid UUID."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:464
+#, python-format
+msgid "Invalid value, must be one of: %(values)s."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:496
+#, python-format
+msgid "Invalid value, can't be any of: %(values)s."
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/csrf/core.py:98
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/csrf/form.py:47
+msgid "Invalid CSRF Token"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/csrf/session.py:61
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:58
+msgid "CSRF token missing"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/csrf/session.py:69
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:66
+msgid "CSRF failed"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/csrf/session.py:74
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:71
+msgid "CSRF token expired"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:87
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:164
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:166
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/django/fields.py:95
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:125
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:127
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:180
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:185
+#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:472
+msgid "Not a valid choice"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:185
+msgid "Not a valid list"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:204
+msgid "Not a valid integer list"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:63
+msgid "Please input a date/time value"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:75
+#: tg_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:83
+msgid "Invalid date/time input"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:465
+msgid "Invalid Choice: could not coerce"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:498
+msgid "Invalid choice(s): one or more data inputs could not be coerced"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:505
+#, python-format
+msgid "'%(value)s' is not a valid choice for this field"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:588
+msgid "Not a valid integer value"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:654
+msgid "Not a valid decimal value"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:681
+msgid "Not a valid float value"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:742
+msgid "Not a valid datetime value"
+msgstr ""
+
+#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:759
+msgid "Not a valid date value"
+msgstr ""
+

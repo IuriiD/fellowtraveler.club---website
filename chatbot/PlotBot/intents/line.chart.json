@@ -1,0 +1,109 @@
+{
+  "id": "f72a4059-53f5-412b-8a0b-8d34b0d9564a",
+  "name": "line.chart",
+  "auto": true,
+  "contexts": [
+    "mychart",
+    "chartname"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "line-chart",
+          "parameters": {},
+          "lifespan": 1
+        },
+        {
+          "name": "linechart-followup",
+          "parameters": {},
+          "lifespan": 2
+        }
+      ],
+      "parameters": [
+        {
+          "id": "75407886-03e6-4870-98de-3997fca93a4b",
+          "required": false,
+          "dataType": "@chart-types",
+          "name": "chart-types",
+          "value": "$chart-types",
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "platform": "telegram",
+          "lang": "en",
+          "speech": "So we\u0027ll be making a $chart-types."
+        },
+        {
+          "type": 3,
+          "platform": "telegram",
+          "lang": "en",
+          "imageUrl": "https://iuriid.github.io/img/line.chart.styles.jpg"
+        },
+        {
+          "type": 2,
+          "platform": "telegram",
+          "lang": "en",
+          "title": "In what style?",
+          "replies": [
+            "Basic",
+            "Horizontal",
+            "Stacked"
+          ]
+        },
+        {
+          "type": 0,
+          "platform": "facebook",
+          "lang": "en",
+          "speech": "So we\u0027ll be making a $chart-types."
+        },
+        {
+          "type": 3,
+          "platform": "facebook",
+          "lang": "en",
+          "imageUrl": "https://iuriid.github.io/img/line.chart.styles.jpg"
+        },
+        {
+          "type": 2,
+          "platform": "facebook",
+          "lang": "en",
+          "title": "In what style?",
+          "replies": [
+            "Basic",
+            "Horizontal",
+            "Stacked"
+          ]
+        },
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": [
+            "So we\u0027ll be making a $chart-types. Should it be basic (usual), horizontal or stacked?",
+            "Ok. In what style - basic (usual), horizontal or stacked?",
+            "Ok. Now please choose a style for our $chart-types (basic, horizontal, stacked)"
+          ]
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "facebook": false,
+        "telegram": false
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1520840815,
+  "fallbackIntent": false,
+  "events": []
+}

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from flask import Flask, render_template, url_for, request, redirect, flash, session
+from flask import Flask, render_template, url_for, request, redirect, flash, session, make_response, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Length, URL
@@ -18,12 +18,13 @@ import twitter
 
 from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET
 
-from tg_functions import photo_check_save, get_location_history
+import tg_functions
 RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
 LANGUAGES = {
     'en': 'English',
     'ru': 'Русский',
-    'de': 'Deutsch'
+    'de': 'Deutsch',
+    'fr': 'Français'
 }
 
 app = Flask(__name__)
@@ -37,22 +38,20 @@ babel = Babel(app)
 twitter_api = twitter.Api(consumer_key=TWITTER_CONSUMER_KEY, consumer_secret=TWITTER_CONSUMER_SECRET, access_token_key=TWITTER_ACCESS_TOKEN_KEY, access_token_secret=TWITTER_ACCESS_TOKEN_SECRET)
 
 class WhereisTeddyNow(FlaskForm):
-    author = StringField('Your name', validators=[Length(-1, 50, 'Your name is a bit too long (50 characters max)')])
-    comment = TextAreaField('Add a comment', validators=[Length(-1, 280, 'Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters')])
-    secret_code = PasswordField('Secret code from the toy (required)', validators=[DataRequired('Please enter the code which you can find on the label attached to the toy'),
-                              Length(6, 6, 'Secret code must have 6 digits')])
+    author = StringField(gettext('Your name'), validators=[Length(-1, 50, gettext('Your name is a bit too long (50 characters max)'))])
+    comment = TextAreaField(gettext('Add a comment'), validators=[Length(-1, 280, gettext('Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters'))])
+    secret_code = PasswordField(gettext('Secret code from the toy (required)'), validators=[DataRequired(gettext('Please enter the code which you can find on the label attached to the toy')),
+                              Length(6, 6, gettext('Secret code must have 6 digits'))])
     #recaptcha = RecaptchaField()
-    submit = SubmitField('Submit')
+    submit = SubmitField(gettext('Submit'))
 
 @babel.localeselector
 def get_locale():
     user_language = request.cookies.get('UserPreferredLanguage')
     if user_language:
-        print(user_language)
         return user_language
     else:
-        print(str(request.accept_languages.best_match(app.config['LANGUAGES'].keys())))
-        return request.accept_languages.best_match(app.config['LANGUAGES'].keys())
+        return request.accept_languages.best_match(LANGUAGES.keys())
 
 @app.route('/index/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST']) # later index page will aggragate info for several travellers
@@ -69,7 +68,7 @@ def index():
             print('Index-Post')
 
             # Get travellers history (will be substituted with timeline embedded from Twitter )
-            whereteddywas = get_location_history(traveller)
+            whereteddywas = tg_functions.get_location_history(traveller)
             locations_history = whereteddywas['locations_history']
 
             # Prepare a map
@@ -93,8 +92,8 @@ def index():
             # saved in session
             if 'latitude' not in session:
                 print('Here1')
-                flash('Please enter Teddy\'s location (current or on the photo)',
-                        'alert alert-warning alert-dismissible fade show')
+                flash(gettext('Please enter Teddy\'s location (current or on the photo)',
+                        'alert alert-warning alert-dismissible fade show'))
                 print('No data in session!')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform,
                                        locations_history=locations_history, teddy_map=teddy_map, language=user_language)
@@ -106,7 +105,7 @@ def index():
                 # Get user's input
                 author = whereisteddynowform.author.data
                 if author == '':
-                    author = "Anonymous"
+                    author = gettext("Anonymous")
                 #location = whereisteddynowform.location.data
                 comment = whereisteddynowform.comment.data
                 secret_code = whereisteddynowform.secret_code.data
@@ -116,7 +115,7 @@ def index():
                 photos_list = []
                 for n in range(len(photos)):
                     if n<4:
-                        path = photo_check_save(photos[n])
+                        path = tg_functions.photo_check_save(photos[n])
                         if path != 'error':
                             photos[n].save(os.path.join(app.static_folder, path))
                             photos_list.append(path)
@@ -125,8 +124,8 @@ def index():
                             return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
                 if len(photos)>4:
                     flash(
-                        'Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded',
-                        'alert alert-warning alert-dismissible fade show')
+                        gettext('Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded',
+                        'alert alert-warning alert-dismissible fade show'))
 
                 # Save data to DB
                 # Connect to DB 'TeddyGo'
@@ -137,7 +136,7 @@ def index():
                 collection_travellers = db.travellers
                 teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
-                    flash('Invalid secret code', 'alert alert-warning alert-dismissible fade show')
+                    flash(gettext('Invalid secret code', 'alert alert-warning alert-dismissible fade show'))
                     return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
                 else:
                     # Prepare dictionary with new location info
@@ -178,7 +177,7 @@ def index():
         print('Index-Get')
 
         # Get travellers history (will be substituted with timeline embedded from Twitter )
-        whereteddywas = get_location_history(traveller)
+        whereteddywas = tg_functions.get_location_history(traveller)
         locations_history = whereteddywas['locations_history']
 
         # Prepare a map
@@ -220,13 +219,40 @@ def user_language_to_coockie(lang_code):
     redirect_to_index = redirect('/')
     response = app.make_response(redirect_to_index)
     response.set_cookie('UserPreferredLanguage', lang_code)
-    print('Language preferences ({}) saved to coockie'.format(lang_code))
+    print('Preferred language, {}, was saved to coockie'.format(lang_code.upper()))
     return response
 
 @app.errorhandler(404)
 @csrf.exempt
 def page_not_found(error):
     return render_template('404.html'), 404
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    # Get request parameters
+    req = request.get_json(silent=True, force=True)
+    action = req.get('result').get('action')
+
+    # TeddyGo - show timeline
+    if action == "teddygo_show_timeline":
+        # Get context 'location_shown' (the number of location that was shown)
+        # Get locations history
+        # Display location # location_shown + 1 (if exists)
+        # If it's not the last locations in DB, attach button 'Show next place'
+        locations_history = tg_functions.get_location_history('Teddy')['locations_history']
+        last_location_shown = tg_functions.last_location_shown(req)
+        next_location = tg_functions.show_next_location(req, locations_history, last_location_shown)
+        ourspeech = next_location["payload"]
+        updated_context = next_location["updated_context"]
+        res = tg_functions.make_speech(ourspeech, action, updated_context)
+
+    else:
+        # If the request is not of our actions throw an error
+        res = {
+            'speech': 'Something wrong happened',
+            'displayText': 'Something wrong happened'
+        }
+    return make_response(jsonify(res))
 
 # Run Flask server
 if __name__ == '__main__':

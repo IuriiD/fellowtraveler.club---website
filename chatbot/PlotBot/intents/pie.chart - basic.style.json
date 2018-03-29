@@ -1,0 +1,63 @@
+{
+  "id": "23b4d7db-eec9-4561-a4e2-601942fb1275",
+  "name": "pie.chart - basic.style",
+  "auto": true,
+  "contexts": [
+    "mychart",
+    "pie-chart",
+    "piechart-followup"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "piechart-basicstyle-followup",
+          "parameters": {},
+          "lifespan": 11
+        }
+      ],
+      "parameters": [
+        {
+          "id": "e97dcbe5-02f9-450a-8355-a2d8372f64a4",
+          "required": false,
+          "dataType": "@pie-chart-styles",
+          "name": "pie-chart-styles",
+          "value": "$pie-chart-styles",
+          "isList": false
+        },
+        {
+          "id": "62586488-bb94-47b6-ab0a-e3c12f5a4f21",
+          "required": false,
+          "dataType": "@chart-types",
+          "name": "chart-types",
+          "value": "#pie-chart.chart-types",
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": [
+            "Ok. So it will be a $pie-chart-styles #pie-chart.chart-types.\n\nNow please enter your data series (one at a time), for eg. \u0027Product 1: 63\u0027 or just \u002763\u0027 (series name [optionally]: one number)",
+            "So we\u0027ll be drawing a $pie-chart-styles #pie-chart.chart-types.\n\nNow please enter your data series (one at a time), for eg. \u0027Product 1: 63\u0027 or just \u002763\u0027 (series name [optionally]: one number)"
+          ]
+        }
+      ],
+      "defaultResponsePlatforms": {},
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1519112959,
+  "fallbackIntent": false,
+  "events": []
+}

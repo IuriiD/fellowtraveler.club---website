@@ -1,0 +1,76 @@
+[
+  {
+    "value": "scatter chart",
+    "synonyms": [
+      "xy",
+      "scatter",
+      "scatter plot",
+      "point chart",
+      "point plot",
+      "scatter chart",
+      "scatter diagram",
+      "scattergraph",
+      "dot diagram",
+      "point-by-point plot",
+      "point by point",
+      "scater",
+      "scater chart",
+      "dots",
+      "points"
+    ]
+  },
+  {
+    "value": "line chart",
+    "synonyms": [
+      "line",
+      "line chart",
+      "linechart",
+      "line plot",
+      "line schedule",
+      "linear chart",
+      "curve chart",
+      "run chart",
+      "curve plot",
+      "line graph",
+      "line diagram",
+      "linear schedule",
+      "line graphics",
+      "line drawing"
+    ]
+  },
+  {
+    "value": "pie chart",
+    "synonyms": [
+      "pie",
+      "pie chart",
+      "piechart",
+      "pie graph",
+      "eye chart",
+      "bubble map",
+      "circular diagram",
+      "sector diagram",
+      "circular chart",
+      "circle graph",
+      "disc chart",
+      "pie diagram",
+      "round chart",
+      "circle chart"
+    ]
+  },
+  {
+    "value": "bar chart",
+    "synonyms": [
+      "bar chart",
+      "barchart",
+      "bar",
+      "bar plot",
+      "barr chart",
+      "column graph",
+      "column chart",
+      "bar diagram",
+      "bar graph",
+      "column diagram",
+      "column"
+    ]
+  }
+]

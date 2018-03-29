@@ -1,0 +1,157 @@
+[
+  {
+    "id": "ec40f3ee-41c7-4bfc-8b9d-ea8f31763bcc",
+    "data": [
+      {
+        "text": "ordinary",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  },
+  {
+    "id": "615d1f1c-7921-4f55-af48-a129cb6e66d0",
+    "data": [
+      {
+        "text": "basi",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  },
+  {
+    "id": "7ff692e1-f4de-4ee6-82a2-fbe9818ea666",
+    "data": [
+      {
+        "text": "basic",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      },
+      {
+        "text": " style",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  },
+  {
+    "id": "77a48da6-2742-4f0f-9e47-78f57b76c03c",
+    "data": [
+      {
+        "text": "basic",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  },
+  {
+    "id": "9a5800e8-df33-4171-a974-84c8632e4656",
+    "data": [
+      {
+        "text": "I don\u0027t know",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  },
+  {
+    "id": "4633218c-ab6f-4059-9f81-0c2a300b7820",
+    "data": [
+      {
+        "text": "simple",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  },
+  {
+    "id": "2f06a7c2-43f3-4497-9526-3ab9d038147f",
+    "data": [
+      {
+        "text": "basic",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      },
+      {
+        "text": " style please",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  },
+  {
+    "id": "a54c81c4-eb92-4326-886b-29c5ceaebe86",
+    "data": [
+      {
+        "text": "basic",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      },
+      {
+        "text": " ",
+        "userDefined": false
+      },
+      {
+        "text": "pie chart",
+        "meta": "@sys.ignore",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  },
+  {
+    "id": "e6224d32-0e5e-4032-81c3-c53bdefd934a",
+    "data": [
+      {
+        "text": "usual",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  },
+  {
+    "id": "9f5fb591-5ad2-4a2d-920f-d72068075aac",
+    "data": [
+      {
+        "text": "basoc",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434016
+  }
+]

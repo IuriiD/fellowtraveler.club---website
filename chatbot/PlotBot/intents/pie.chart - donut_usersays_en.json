@@ -1,0 +1,58 @@
+[
+  {
+    "id": "18f6bd1e-35e5-4e71-9707-bfd047cf2304",
+    "data": [
+      {
+        "text": "donut",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434197
+  },
+  {
+    "id": "9edb6738-9779-48f2-b50b-a4eafaf3af26",
+    "data": [
+      {
+        "text": "donut pie",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434197
+  },
+  {
+    "id": "bddad2db-940f-4fd6-aa81-d267da6cf3a4",
+    "data": [
+      {
+        "text": "with a hole",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434197
+  },
+  {
+    "id": "70c6e4fd-4566-49b2-b7ae-820d8a197989",
+    "data": [
+      {
+        "text": "ring pie",
+        "alias": "pie-chart-styles",
+        "meta": "@pie-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518434197
+  }
+]

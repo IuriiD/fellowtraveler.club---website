@@ -1,0 +1,152 @@
+[
+  {
+    "id": "7799006d-988a-45dc-a3d6-6313fc8908b9",
+    "data": [
+      {
+        "text": "basoc",
+        "alias": "bar-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518355192
+  },
+  {
+    "id": "983f68ab-1c8d-4389-ab3c-c51a40577c95",
+    "data": [
+      {
+        "text": "basic",
+        "alias": "bar-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": false
+      },
+      {
+        "text": " ",
+        "userDefined": false
+      },
+      {
+        "text": "bar chart",
+        "meta": "@sys.ignore",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0
+  },
+  {
+    "id": "9dc5665a-c985-4a16-8408-fbb24a18e480",
+    "data": [
+      {
+        "text": "ordinary",
+        "alias": "bar-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0
+  },
+  {
+    "id": "c277cd4c-83f8-4002-846d-6cfdf16efe77",
+    "data": [
+      {
+        "text": "basic",
+        "alias": "bar-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": false
+      },
+      {
+        "text": " style",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518175614
+  },
+  {
+    "id": "d1ac5f5d-1b7b-41cd-a946-11a5652f33f0",
+    "data": [
+      {
+        "text": "basic",
+        "alias": "bar-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0
+  },
+  {
+    "id": "25f278bd-138a-488a-a999-df213b33df91",
+    "data": [
+      {
+        "text": "usual",
+        "alias": "bar-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0
+  },
+  {
+    "id": "ec73d68e-782d-4578-bc2b-373fbab27f0e",
+    "data": [
+      {
+        "text": "simple",
+        "alias": "bar-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1
+  },
+  {
+    "id": "d5edf0db-a8c8-480f-8808-dff46ac97b74",
+    "data": [
+      {
+        "text": "basi",
+        "alias": "bar-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518355192
+  },
+  {
+    "id": "a5e90f83-95b7-4f9b-88a1-f7fce534f9f8",
+    "data": [
+      {
+        "text": "I don\u0027t know",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518175614
+  },
+  {
+    "id": "72b1845b-5ae3-42dc-9b99-6895dfad9990",
+    "data": [
+      {
+        "text": "basic",
+        "alias": "bar-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": false
+      },
+      {
+        "text": " style please",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518175614
+  }
+]

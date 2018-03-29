@@ -1,0 +1,66 @@
+{
+  "id": "33f81a52-7133-430e-896d-03df4566491d",
+  "name": "line.chart - stacked.style",
+  "auto": true,
+  "contexts": [
+    "mychart",
+    "line-chart",
+    "linechart-followup"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "linechart-basicstyle-followup",
+          "parameters": {},
+          "lifespan": 11
+        }
+      ],
+      "parameters": [
+        {
+          "id": "79826086-f2b2-499c-8807-8efe36805188",
+          "required": false,
+          "dataType": "@bar-chart-styles",
+          "name": "line-chart-styles",
+          "value": "$line-chart-styles",
+          "isList": false
+        },
+        {
+          "id": "51df0174-db1b-4e4b-a74e-b7dc19d0de04",
+          "required": false,
+          "dataType": "@chart-types",
+          "name": "chart-types",
+          "value": "#line-chart.chart-types",
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": [
+            "Ok. So you need a $line-chart-styles #line-chart.chart-types.\n\nTo add your data series please enter something like \u0027Fibonacci: 1, 2, 4, 8, 16, 32\u0027 or just \u00274.4; 3.1; 4.8; 5.2\u0027 (\u0027series name [optionally]: numbers\u0027)",
+            "So we\u0027ll be drawing a $line-chart-styles #line-chart.chart-types.\n\nTo add your data series please enter something like \u0027Fibonacci: 1, 2, 4, 8, 16, 32\u0027 or just \u00274.4; 3.1; 4.8; 5.2\u0027 (\u0027series name [optionally]: numbers\u0027)"
+          ]
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "facebook": true,
+        "telegram": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1519112827,
+  "fallbackIntent": false,
+  "events": []
+}

@@ -1,0 +1,109 @@
+{
+  "id": "4bc480a3-58c0-4302-a30e-77650a104a2d",
+  "name": "pie.chart",
+  "auto": true,
+  "contexts": [
+    "mychart",
+    "chartname"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "pie-chart",
+          "parameters": {},
+          "lifespan": 1
+        },
+        {
+          "name": "piechart-followup",
+          "parameters": {},
+          "lifespan": 2
+        }
+      ],
+      "parameters": [
+        {
+          "id": "1d544c56-f68b-49a3-8b12-9dcbb019c3e5",
+          "required": false,
+          "dataType": "@chart-types",
+          "name": "chart-types",
+          "value": "$chart-types",
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "platform": "telegram",
+          "lang": "en",
+          "speech": "So we\u0027ll be making a $chart-types."
+        },
+        {
+          "type": 3,
+          "platform": "telegram",
+          "lang": "en",
+          "imageUrl": "https://iuriid.github.io/img/pie.chart.styles.jpg"
+        },
+        {
+          "type": 2,
+          "platform": "telegram",
+          "lang": "en",
+          "title": "In what style?",
+          "replies": [
+            "Basic",
+            "Donut",
+            "Half pie"
+          ]
+        },
+        {
+          "type": 0,
+          "platform": "facebook",
+          "lang": "en",
+          "speech": "So we\u0027ll be making a $chart-types."
+        },
+        {
+          "type": 3,
+          "platform": "facebook",
+          "lang": "en",
+          "imageUrl": "https://iuriid.github.io/img/pie.chart.styles.jpg"
+        },
+        {
+          "type": 2,
+          "platform": "facebook",
+          "lang": "en",
+          "title": "In what style?",
+          "replies": [
+            "Basic",
+            "Donut",
+            "Half pie"
+          ]
+        },
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": [
+            "So we\u0027ll be making a $chart-types. Should it be basic (usual), donut (with a hole) or half-pie?",
+            "Ok. In what style - basic (usual), donut (with a hole) or half-pie?",
+            "Ok. Now please choose a style for our $chart-types - basic (usual), donut (with a hole) or half-pie"
+          ]
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "facebook": false,
+        "telegram": false
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1520176099,
+  "fallbackIntent": false,
+  "events": []
+}

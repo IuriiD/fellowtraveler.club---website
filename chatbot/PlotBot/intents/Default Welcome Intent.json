@@ -1,0 +1,57 @@
+{
+  "id": "12ec2ffc-76cf-4b51-a9a8-350f9b97c0f4",
+  "name": "Default Welcome Intent",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "input.welcome",
+      "affectedContexts": [
+        {
+          "name": "welcome",
+          "parameters": {},
+          "lifespan": 1
+        },
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        }
+      ],
+      "parameters": [],
+      "messages": [
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": [
+            "Hello! I\u0027m a PlotBot. Together we can build some nice charts. Ready to start?",
+            "Hi! I\u0027m a PlotBot. I\u0027m here to build charts. Need one?",
+            "Hi! I\u0027m a PlotBot. Need a chart?"
+          ]
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "telegram": true,
+        "facebook": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1519028140,
+  "fallbackIntent": false,
+  "events": [
+    {
+      "name": "WELCOME"
+    },
+    {
+      "name": "FACEBOOK_WELCOME"
+    },
+    {
+      "name": "TELEGRAM_WELCOME"
+    }
+  ]
+}

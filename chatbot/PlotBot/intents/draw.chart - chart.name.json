@@ -1,0 +1,131 @@
+{
+  "id": "7b7389b1-922a-4fcd-962f-be14ccabf59f",
+  "name": "draw.chart - chart.name",
+  "auto": true,
+  "contexts": [
+    "draw-chart"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "drawchart-chartname",
+      "affectedContexts": [
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "chartname",
+          "parameters": {},
+          "lifespan": 2
+        }
+      ],
+      "parameters": [
+        {
+          "id": "dea5dc7a-f87b-4ffa-989b-e4b1e9b6e7d4",
+          "required": false,
+          "dataType": "@sys.any",
+          "name": "chartname",
+          "value": "$chartname",
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "platform": "telegram",
+          "lang": "en",
+          "speech": "Ok. I can build line, bar, pie or scatter charts:"
+        },
+        {
+          "type": 3,
+          "platform": "telegram",
+          "lang": "en",
+          "imageUrl": "https://iuriid.github.io/img/chart.types.jpg"
+        },
+        {
+          "type": 2,
+          "platform": "telegram",
+          "lang": "en",
+          "title": "Which one do you need?",
+          "replies": [
+            "Line",
+            "Bar",
+            "Scatter",
+            "Pie"
+          ]
+        },
+        {
+          "type": 0,
+          "platform": "facebook",
+          "lang": "en",
+          "speech": "Ok. I can build line, bar, pie or scatter charts:"
+        },
+        {
+          "type": 3,
+          "platform": "facebook",
+          "lang": "en",
+          "imageUrl": "https://iuriid.github.io/img/chart.types.jpg"
+        },
+        {
+          "type": 2,
+          "platform": "facebook",
+          "lang": "en",
+          "title": "Which one do you need?",
+          "replies": [
+            "Line",
+            "Bar",
+            "Scatter",
+            "Pie"
+          ]
+        },
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": [
+            "Ok. What chart type do you need: line, bar, pie or scatter chart?",
+            "Ok. Please choose a chart type (line, bar, pie, scatter).",
+            "Ok. I can build a line, bar, pie or scatter chart. Which one do you need?"
+          ]
+        },
+        {
+          "type": 0,
+          "lang": "en-gb",
+          "speech": []
+        },
+        {
+          "type": 0,
+          "lang": "en-au",
+          "speech": []
+        },
+        {
+          "type": 0,
+          "lang": "en-in",
+          "speech": []
+        },
+        {
+          "type": 0,
+          "lang": "en-us",
+          "speech": []
+        },
+        {
+          "type": 0,
+          "lang": "en-ca",
+          "speech": []
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "telegram": false,
+        "facebook": false
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1520175166,
+  "fallbackIntent": false,
+  "events": []
+}

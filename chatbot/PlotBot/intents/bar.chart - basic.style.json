@@ -1,0 +1,72 @@
+{
+  "id": "7027c7b5-156d-4602-94f7-23df093737bc",
+  "name": "bar.chart - basic.style",
+  "auto": true,
+  "contexts": [
+    "mychart",
+    "barchart-followup",
+    "bar-chart"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "barchart.barchart-basic.style",
+      "affectedContexts": [
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "barchart-basicstyle-followup",
+          "parameters": {},
+          "lifespan": 11
+        }
+      ],
+      "parameters": [
+        {
+          "id": "5e829fed-499a-4198-8d98-fe3b3dc1289d",
+          "required": false,
+          "dataType": "@bar-chart-styles",
+          "name": "bar-chart-styles",
+          "value": "$bar-chart-styles",
+          "isList": false
+        },
+        {
+          "id": "fa4b2ffc-b963-4d2b-920b-ce9daa881c49",
+          "required": false,
+          "dataType": "@chart-types",
+          "name": "chart-types",
+          "value": "#bar-chart.chart-types",
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": [
+            "Ok. So you need a $bar-chart-styles #bar-chart.chart-types.\n\nTo add your data series please enter something like \u0027Fibonacci: 1, 2, 4, 8, 16, 32\u0027 or just \u00274.4; 3.1; 4.8; 5.2\u0027 (\u0027series name [optionally]: numbers\u0027)",
+            "So we\u0027ll be drawing a $bar-chart-styles #bar-chart.chart-types.\n\nTo add your data series please enter enter something like \u0027Fibonacci: 1, 2, 4, 8, 16, 32\u0027 or just \u00274.4; 3.1; 4.8; 5.2\u0027 (\u0027series name [optionally]: numbers\u0027)"
+          ]
+        },
+        {
+          "type": 0,
+          "lang": "en-gb",
+          "speech": []
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "telegram": true,
+        "facebook": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1519111247,
+  "fallbackIntent": false,
+  "events": []
+}

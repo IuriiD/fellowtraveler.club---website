@@ -1,0 +1,60 @@
+{
+  "id": "91c8fc49-c520-4842-a597-7248e0904fc1",
+  "name": "pie.chart - all.styles - add.data",
+  "auto": true,
+  "contexts": [
+    "mychart",
+    "piechart-basicstyle-followup"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "data-series-pie",
+      "affectedContexts": [
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "piechart-basicstyle-followup",
+          "parameters": {},
+          "lifespan": 2
+        },
+        {
+          "name": "ready2plot",
+          "parameters": {},
+          "lifespan": 5
+        }
+      ],
+      "parameters": [
+        {
+          "id": "082d1a44-f0ab-4a34-a792-a61ee31014ad",
+          "required": false,
+          "dataType": "@sys.any",
+          "name": "data-series-0",
+          "value": "$data-series-0",
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": "Alright! $data-series-0.original for our #mychart.pie-chart-styles #mychart.chart-types received.\n\nAdd another data series or let me draw a chart? If something is wrong please write \u0027restart\u0027 to start afresh"
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "facebook": true,
+        "telegram": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1518518379,
+  "fallbackIntent": false,
+  "events": []
+}

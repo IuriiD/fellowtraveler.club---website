@@ -1,0 +1,45 @@
+{
+  "description": "Chatbot to build charts",
+  "language": "en",
+  "shortDescription": "Small talk topics to help make your bot more personable",
+  "examples": "User: Hello!\nUser: How are you?\nUser: Thank you!\nUser: You\u0027re welcome.\nUser: What\u0027s up?\nUser: I\u0027m bored.\nUser: I\u0027m joking.\nUser: Well done!\nUser: Who are you?\nUser: How old are you?\nUser: You\u0027re clever.\nUser: What do you do for fun?",
+  "activeAssistantAgents": [],
+  "disableInteractionLogs": false,
+  "googleAssistant": {
+    "googleAssistantCompatible": false,
+    "project": "small-talk-b69a2",
+    "welcomeIntentSignInRequired": false,
+    "startIntents": [],
+    "systemIntents": [],
+    "endIntentIds": [],
+    "oAuthLinking": {
+      "required": false,
+      "grantType": "AUTH_CODE_GRANT"
+    },
+    "voiceType": "MALE_1",
+    "capabilities": [],
+    "protocolVersion": "V2"
+  },
+  "defaultTimezone": "America/New_York",
+  "webhook": {
+    "url": "http://35.196.100.14/webhook",
+    "headers": {
+      "": ""
+    },
+    "available": true,
+    "useForDomains": false,
+    "cloudFunctionsEnabled": false,
+    "cloudFunctionsInitialized": false
+  },
+  "isPrivate": true,
+  "customClassifierMode": "use.instead",
+  "mlMinConfidence": 0.6,
+  "supportedLanguages": [
+    "en-au",
+    "en-ca",
+    "en-gb",
+    "en-in",
+    "en-us"
+  ],
+  "enableOnePlatformApi": false
+}

@@ -1,0 +1,54 @@
+{
+  "id": "732f49b0-10a7-418a-a0a7-11ca4c820004",
+  "name": "scatter.chart",
+  "auto": true,
+  "contexts": [
+    "mychart",
+    "chartname"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "scatterchart-followup",
+          "parameters": {},
+          "lifespan": 11
+        }
+      ],
+      "parameters": [
+        {
+          "id": "9fb92d06-8824-41e5-880e-7b669d0dd6a5",
+          "required": false,
+          "dataType": "@chart-types",
+          "name": "chart-types",
+          "value": "$chart-types",
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": "Ok. So we are building a $chart-types entitled \u0027#chartname.chartname\u0027.\n\nNow please enter your data series (one at a time), for eg. \u0027TheBigOnes: (1, 2), (2, 4), (3, 5)\u0027 or just \u0027(1, 2), (2, 4), (3, 5) (series name [optionally]: pair[-s] of numbers)."
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "facebook": true,
+        "telegram": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1519113066,
+  "fallbackIntent": false,
+  "events": []
+}

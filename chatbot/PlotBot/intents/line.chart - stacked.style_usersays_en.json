@@ -1,0 +1,39 @@
+[
+  {
+    "id": "1751c691-0477-4751-bd97-41e50f484cb3",
+    "data": [
+      {
+        "text": "stacked",
+        "alias": "line-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": false
+      },
+      {
+        "text": " ",
+        "userDefined": false
+      },
+      {
+        "text": "line",
+        "meta": "@sys.ignore",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518425565
+  },
+  {
+    "id": "d939bf88-31a0-42d8-960a-26b0f1917582",
+    "data": [
+      {
+        "text": "stacked",
+        "alias": "line-chart-styles",
+        "meta": "@bar-chart-styles",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518425565
+  }
+]

@@ -2,7 +2,7 @@
 {% from '_formhelpers.html' import render_field %}
 
 {% block title %}
-    Hi! My name is Teddy and I have a dream
+    {{ gettext('Hi! My name is Teddy and I have a dream') }}
 {% endblock %}
 
 {% block inhead %}
@@ -39,14 +39,14 @@
         <div>
             {% for location_data in locations_history %}
                 <p>
-                    Author: {{ location_data.author }}
+                    {{ gettext('Author') }}: {{ location_data.author }}
                     <br>
-                    Time: {{ location_data.time }}
+                    {{ gettext('Time') }}: {{ location_data.time }}
                     <br>
-                    Location: {{ location_data.location }}
+                    {{ gettext('Location') }}: {{ location_data.location }}
                     {% if location_data.photos|length>0 %}
                         <br>
-                        Photos:
+                        {{ gettext('Photos') }}:
                             {% for photo in location_data.photos %}
                                 <br>
                                 <img src='static/{{ photo }}' class="img-fluid rounded" style="max-width: 750px;">
@@ -60,9 +60,9 @@
 {% endblock %}
 
 {% block updatelocation %}
-    <b>Where Teddy is now or was on the photo? (required)</b>
+    <b>{{ gettext('Where Teddy is now or was on the photo? (required)') }}</b>
     <div>
-        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+        <input id="pac-input" class="controls" type="text" placeholder={{ gettext('Search Box') }}>
         <div id="map" style="height: 400px;"></div>
     </div>
 
@@ -72,7 +72,7 @@
             {{ whereisteddynowform.csrf_token }}
             {{ render_field(whereisteddynowform.author) }}
             <div>
-                <b>Upload up to 4 photos/place</b>
+                <b>{{ gettext('Upload up to 4 photos/place') }}</b>
                 <p>
                     <input type="file" accept="image/*" name="photo" id="photo" multiple>
                 </p>

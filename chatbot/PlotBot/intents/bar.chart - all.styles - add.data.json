@@ -1,0 +1,91 @@
+{
+  "id": "52ed7917-6920-4c68-b6e7-55ef6562d6ce",
+  "name": "bar.chart - all.styles - add.data",
+  "auto": true,
+  "contexts": [
+    "mychart",
+    "barchart-basicstyle-followup"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "data-series-barline",
+      "affectedContexts": [
+        {
+          "name": "mychart",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "ready2plot",
+          "parameters": {},
+          "lifespan": 5
+        },
+        {
+          "name": "barchart-basicstyle-followup",
+          "parameters": {},
+          "lifespan": 2
+        }
+      ],
+      "parameters": [
+        {
+          "id": "093886df-fab2-4fa2-a6b0-35dbfaa99081",
+          "required": false,
+          "dataType": "@sys.any",
+          "name": "data-series-0",
+          "value": "$data-series-0",
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "platform": "telegram",
+          "lang": "en",
+          "speech": "Alright! $data-series-0.original for our #mychart.bar-chart-styles #mychart.chart-types received.\n\nAdd another data series or let me draw a chart? If something is wrong please write \u0027restart\u0027 to start afresh"
+        },
+        {
+          "type": 0,
+          "lang": "en",
+          "speech": "Alright! $data-series-0.original for our #mychart.bar-chart-styles #mychart.chart-types received.\n\nAdd another data series or let me draw a chart? If something is wrong please write \u0027restart\u0027 to start afresh"
+        },
+        {
+          "type": 0,
+          "lang": "en-gb",
+          "speech": []
+        },
+        {
+          "type": 0,
+          "lang": "en-au",
+          "speech": []
+        },
+        {
+          "type": 0,
+          "lang": "en-in",
+          "speech": []
+        },
+        {
+          "type": 0,
+          "lang": "en-us",
+          "speech": []
+        },
+        {
+          "type": 0,
+          "lang": "en-ca",
+          "speech": []
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "telegram": false,
+        "facebook": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "lastUpdate": 1519038953,
+  "fallbackIntent": false,
+  "events": []
+}

@@ -1,0 +1,212 @@
+[
+  {
+    "id": "c262c3f6-1867-40d3-b627-5df20ea5bdd0",
+    "data": [
+      {
+        "text": "dot diagram",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "97500f71-6afe-4267-ab47-39fccdf725a3",
+    "data": [
+      {
+        "text": "scatter plot",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "6f9c4062-cfe9-4667-a32c-06b4565fd0a9",
+    "data": [
+      {
+        "text": "scater chart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "fa85cfd1-8521-46ea-ad0f-89c3778704df",
+    "data": [
+      {
+        "text": "scatter chart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "518a5009-0509-4622-a6e9-99488a5339fc",
+    "data": [
+      {
+        "text": "dots",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "2d873826-229a-4671-951a-fd02be268725",
+    "data": [
+      {
+        "text": "scattergraph",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "fae43d3c-c094-49c0-9218-20022f98a9ea",
+    "data": [
+      {
+        "text": "xy",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "d28023c8-e769-459e-a1f8-a152df851932",
+    "data": [
+      {
+        "text": "points",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "d6da0ed7-157c-4e12-9be7-8775585d5e43",
+    "data": [
+      {
+        "text": "point by point",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "77a9416f-e5e7-4408-bd52-e95f6d8bcab8",
+    "data": [
+      {
+        "text": "point-by-point plot",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "85224596-c9bf-455d-902b-86e71b39be7c",
+    "data": [
+      {
+        "text": "scatter diagram",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "0c90e2e3-29c3-4133-b752-413d34467cd7",
+    "data": [
+      {
+        "text": "point plot",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "7de78643-119d-4135-9bc2-b2c7d2669969",
+    "data": [
+      {
+        "text": "scatter",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "275688e9-3c49-4043-92da-73010417a272",
+    "data": [
+      {
+        "text": "scater",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  },
+  {
+    "id": "94d2f3ea-34c3-4542-b91d-e6966605c5ef",
+    "data": [
+      {
+        "text": "point chart",
+        "alias": "chart-types",
+        "meta": "@chart-types",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 1518524018
+  }
+]

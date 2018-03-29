@@ -1,0 +1,33 @@
+[
+  {
+    "value": "horizontal",
+    "synonyms": [
+      "horizontal",
+      "from left to right",
+      "horiz",
+      "horisontal",
+      "hor"
+    ]
+  },
+  {
+    "value": "basic",
+    "synonyms": [
+      "basic",
+      "simple",
+      "ordinary",
+      "usual",
+      "vertical",
+      "basuc",
+      "basoc",
+      "basi"
+    ]
+  },
+  {
+    "value": "stacked",
+    "synonyms": [
+      "stacked",
+      "stacked chart",
+      "stack"
+    ]
+  }
+]
