@@ -178,7 +178,9 @@ def index():
 
         # Get travellers history (will be substituted with timeline embedded from Twitter )
         whereteddywas = tg_functions.get_location_history(traveller)
+        print('whereteddywas!')
         locations_history = whereteddywas['locations_history']
+        print('locations_history!')
 
         # Prepare a map
         teddy_map = Map(
@@ -191,15 +193,17 @@ def index():
             markers=whereteddywas['mymarkers'],
             fit_markers_to_bounds=True
         )
-
+        print('teddy_map!')
         # Check for preferred language
         user_language = request.cookies.get('UserPreferredLanguage')
         if not user_language:
             user_language = 'en'
+        print("user_language: {}".format(user_language))
         return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
     except Exception as error:
-        return redirect(url_for('index'))
+        print("error: {}".format(error))
+        return error
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt
@@ -228,6 +232,7 @@ def page_not_found(error):
     return render_template('404.html'), 404
 
 @app.route('/webhook', methods=['POST'])
+@csrf.exempt
 def webhook():
     # Get request parameters
     req = request.get_json(silent=True, force=True)
@@ -235,16 +240,10 @@ def webhook():
 
     # TeddyGo - show timeline
     if action == "teddygo_show_timeline":
-        # Get context 'location_shown' (the number of location that was shown)
-        # Get locations history
-        # Display location # location_shown + 1 (if exists)
-        # If it's not the last locations in DB, attach button 'Show next place'
-        locations_history = tg_functions.get_location_history('Teddy')['locations_history']
-        last_location_shown = tg_functions.last_location_shown(req)
-        next_location = tg_functions.show_next_location(req, locations_history, last_location_shown)
-        ourspeech = next_location["payload"]
-        updated_context = next_location["updated_context"]
-        res = tg_functions.make_speech(ourspeech, action, updated_context)
+        location_iteration = tg_functions.show_location('Teddy', req)
+        ourspeech = location_iteration['payload']
+        output_context = location_iteration['updated_context']
+        res = tg_functions.make_speech(ourspeech, action, output_context)
 
     else:
         # If the request is not of our actions throw an error
