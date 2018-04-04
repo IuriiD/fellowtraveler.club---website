@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -67,7 +66,7 @@ def index():
         if request.method == 'POST':
             print('Index-Post')
 
-            # Get travellers history (will be substituted with timeline embedded from Twitter )
+            # Get travellers history
             whereteddywas = tg_functions.get_location_history(traveller)
             locations_history = whereteddywas['locations_history']
 
@@ -92,8 +91,8 @@ def index():
             # saved in session
             if 'latitude' not in session:
                 print('Here1')
-                flash(gettext('Please enter Teddy\'s location (current or on the photo)',
-                        'alert alert-warning alert-dismissible fade show'))
+                flash(gettext('Please enter Teddy\'s location (current or on the photo)'),
+                        'alert alert-warning alert-dismissible fade show')
                 print('No data in session!')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform,
                                        locations_history=locations_history, teddy_map=teddy_map, language=user_language)
@@ -168,6 +167,26 @@ def index():
                     session.pop('latitude', None)
                     session.pop('longitude', None)
                     session.pop('formatted_address', None)
+
+                    # Get travellers history
+                    whereteddywas = tg_functions.get_location_history(traveller)
+                    locations_history = whereteddywas['locations_history']
+
+                    # Prepare a map
+                    teddy_map = Map(
+                        identifier="teddy_map",
+                        lat=whereteddywas['start_lat'],
+                        lng=whereteddywas['start_long'],
+                        zoom=8,
+                        language="en",
+                        style="height:480px;width:720px;margin:1;",
+                        markers=whereteddywas['mymarkers'],
+                        fit_markers_to_bounds=True
+                    )
+
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform,
+                                           locations_history=locations_history, teddy_map=teddy_map,
+                                           language=user_language)
             else:
                 print('Here3')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
@@ -203,15 +222,17 @@ def index():
 
     except Exception as error:
         print("error: {}".format(error))
-        return error
+        return "error: {}".format(error)
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt
 def get_geodata_from_gm():
+    print("get_geodata_from_gm!")
     if request.method == "POST":
-        latitude = request.json.get('lat')
-        longitude = request.json.get('lng')
-        address = request.json.get('addr')
+        mygeodata = request.get_json()
+        latitude = mygeodata.get('lat')
+        longitude = mygeodata.get('lng')
+        address = mygeodata.get('addr')
         session['latitude'] = latitude
         session['longitude'] = longitude
         session['formatted_address'] = address

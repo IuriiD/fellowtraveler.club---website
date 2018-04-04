@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -67,7 +66,6 @@ def get_location_history(traveller):
     client = MongoClient()
     db = client.TeddyGo
     teddys_locations = db[traveller].find().sort([('_id', -1)])
-
     # Prepare a list of info blocks about traveller's locations and data to create a map
     locations_history = []
     mymarkers = []
@@ -85,7 +83,7 @@ def get_location_history(traveller):
             'comment': comment,
             'photos': photos
         }
-        print("location_data: {}".format(location_data))
+        #print("location_data: {}".format(location_data))
         locations_history.append(location_data)
 
         if start_lat == None:
@@ -108,7 +106,6 @@ def get_location_history(traveller):
                 'infobox': infobox
             }
         )
-
     return {'locations_history': locations_history, 'start_lat': start_lat, 'start_long': start_long, 'mymarkers': mymarkers}
 
 def make_speech(ourspeech, oursource, outputcontext):
@@ -229,8 +226,8 @@ def show_location(traveller, req):
                 context['parameters']['locationN'] = int(last_location) + 1
             else:
                 context['parameters']['locationN'] = -1
-    print("Locations N: {}".format(len(allhistory)))
-    print("Last location shown #: {}".format(last_location))
+    #print("Locations N: {}".format(len(allhistory)))
+    #print("Last location shown #: {}".format(last_location))
 
     if (last_location + 1) <= len(allhistory):
         location_to_show = allhistory[last_location + 1]
@@ -242,7 +239,7 @@ def show_location(traveller, req):
         title = "{} - {}".format(time, location)
         if len(photos) > 0:
             imageUrl = url_for('static', filename=photos[0])
-            print("imageUrl: {}".format(imageUrl))
+            #print("imageUrl: {}".format(imageUrl))
         else:
             imageUrl = ""
         if len(comment) > 0:
@@ -313,3 +310,7 @@ def show_location(traveller, req):
 
     response = {"status": "ok", "payload": payload, "updated_context": contexts}
     return response
+
+def print2file(message):
+    with open('error.txt', 'a') as file:
+        file.write(message+'\n')
