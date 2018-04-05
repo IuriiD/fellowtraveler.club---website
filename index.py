@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import datetime
 from flask import Flask, render_template, url_for, request, redirect, flash, session, make_response, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, PasswordField, BooleanField
@@ -28,6 +29,7 @@ LANGUAGES = {
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 5242880 # max photo to upload is 5Mb
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 app.secret_key = FLASK_SECRET_KEY
@@ -47,7 +49,9 @@ class WhereisTeddyNow(FlaskForm):
 @babel.localeselector
 def get_locale():
     user_language = request.cookies.get('UserPreferredLanguage')
-    if user_language:
+    print("user_language: {}".format(user_language))
+    print("autodetect_language: {}".format(request.accept_languages.best_match(LANGUAGES.keys())))
+    if user_language != None:
         return user_language
     else:
         return request.accept_languages.best_match(LANGUAGES.keys())
@@ -83,9 +87,7 @@ def index():
             )
 
             # Check for preferred language
-            user_language = request.cookies.get('UserPreferredLanguage')
-            if not user_language:
-                user_language = 'en'
+            user_language = get_locale()
 
             # Check if user entered some location (required parameter) (data is passed from jQuery to Flask and
             # saved in session
@@ -184,11 +186,19 @@ def index():
                         fit_markers_to_bounds=True
                     )
 
+                    # Check for preferred language
+                    user_language = get_locale()
+
                     return render_template('index.html', whereisteddynowform=whereisteddynowform,
                                            locations_history=locations_history, teddy_map=teddy_map,
                                            language=user_language)
             else:
                 print('Here3')
+                # Clear data from session
+                session.pop('latitude', None)
+                session.pop('longitude', None)
+                session.pop('formatted_address', None)
+
                 return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
         # GET request
@@ -213,16 +223,14 @@ def index():
             fit_markers_to_bounds=True
         )
         print('teddy_map!')
+
         # Check for preferred language
-        user_language = request.cookies.get('UserPreferredLanguage')
-        if not user_language:
-            user_language = 'en'
-        print("user_language: {}".format(user_language))
+        user_language = get_locale()
         return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
     except Exception as error:
         print("error: {}".format(error))
-        return "error: {}".format(error)
+        return redirect(url_for('page_not_found'))
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt
@@ -241,16 +249,23 @@ def get_geodata_from_gm():
 @app.route("/language/<lang_code>")
 @csrf.exempt
 def user_language_to_coockie(lang_code):
+    expire_date = datetime.datetime.now()
+    expire_date = expire_date + datetime.timedelta(days=90)
     redirect_to_index = redirect('/')
     response = app.make_response(redirect_to_index)
-    response.set_cookie('UserPreferredLanguage', lang_code)
+    response.set_cookie('UserPreferredLanguage', lang_code, expires=expire_date)
     print('Preferred language, {}, was saved to coockie'.format(lang_code.upper()))
     return response
 
 @app.errorhandler(404)
 @csrf.exempt
-def page_not_found(error):
+def page_not_found():
     return render_template('404.html'), 404
+
+@app.errorhandler(413)
+@csrf.exempt
+def file_too_big():
+    return render_template('413.html'), 413
 
 @app.route('/webhook', methods=['POST'])
 @csrf.exempt

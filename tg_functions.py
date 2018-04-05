@@ -14,7 +14,12 @@ VALID_IMAGE_EXTENSIONS = [
     ".jpeg",
     ".png",
     ".gif",
-    ".bmp"
+    ".bmp",
+    ".JPG",
+    ".JPEG",
+    ".PNG",
+    ".GIF",
+    ".BMP"
 ]
 
 VALID_IMAGE_MIMETYPES = [
@@ -27,12 +32,13 @@ def valid_url_extension(url, extension_list=VALID_IMAGE_EXTENSIONS):
     A simple method to make sure the URL the user has supplied has
     an image-like file at the tail of the path
     '''
-    return any([url.endswith(e.lower()) for e in extension_list])
+    return any([url.endswith(e) for e in extension_list])
 
 # Validating image mimetype
 def valid_url_mimetype(url, mimetype_list=VALID_IMAGE_MIMETYPES):
     # http://stackoverflow.com/a/10543969/396300
     mimetype, encoding = mimetypes.guess_type(url)
+    print('mimetype: {}'.format(mimetype))
     if mimetype:
         return any([mimetype.startswith(m) for m in mimetype_list])
     else:
@@ -310,7 +316,3 @@ def show_location(traveller, req):
 
     response = {"status": "ok", "payload": payload, "updated_context": contexts}
     return response
-
-def print2file(message):
-    with open('error.txt', 'a') as file:
-        file.write(message+'\n')
