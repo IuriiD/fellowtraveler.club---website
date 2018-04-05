@@ -12,7 +12,7 @@
             <!-- Bootstrap CSS -->
             <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
             <!-- jQuery -->
-            <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+
             <!-- Popper.js -->
             <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
             <!-- Bootstrap.js -->
@@ -151,10 +151,10 @@
               </div>
             </div>
             <!-- Collapse with travel map, timeline and add new location form END -->
-<div>
-                    {% block updatelocation %}
-                    {% endblock %}
-</div>
+            <div>
+                {% block updatelocation %}
+                {% endblock %}
+            </div>
             <!-- Footer -->
             <br>
             <div>
@@ -201,5 +201,8 @@
 
         </div>
         <!-- Main container END-->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=geometry,places"></script>
+
+    <script src="../static/js/google.maps.autocomplete.js"></script>
     </body>
 </html>

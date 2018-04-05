@@ -240,7 +240,9 @@ def get_geodata_from_gm():
         mygeodata = request.get_json()
         latitude = mygeodata.get('lat')
         longitude = mygeodata.get('lng')
-        address = mygeodata.get('addr')
+        address = mygeodata.get('formatted_address')
+        print('lat: {}, long: {}, addr: {}'.format(latitude,longitude,address))
+
         session['latitude'] = latitude
         session['longitude'] = longitude
         session['formatted_address'] = address
@@ -259,13 +261,8 @@ def user_language_to_coockie(lang_code):
 
 @app.errorhandler(404)
 @csrf.exempt
-def page_not_found():
+def page_not_found(error):
     return render_template('404.html'), 404
-
-@app.errorhandler(413)
-@csrf.exempt
-def file_too_big():
-    return render_template('413.html'), 413
 
 @app.route('/webhook', methods=['POST'])
 @csrf.exempt

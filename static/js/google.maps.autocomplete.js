@@ -1,88 +1,137 @@
-      function initAutocomplete() {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 47.7906064, lng: 11.3587162},
-          zoom: 5,
-          mapTypeId: 'roadmap'
-        });
+initialize();
 
-        // Create the search box and link it to the UI element.
-        var input = document.getElementById('pac-input');
-        var searchBox = new google.maps.places.SearchBox(input);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+function initialize() {
 
-        // Bias the SearchBox results towards current map's viewport.
-        map.addListener('bounds_changed', function() {
-          searchBox.setBounds(map.getBounds());
-        });
+    defaultLatLong = {
+        lat: 40.7127753,
+        lng: -74.0059728
+    };
 
-        var markers = [];
-        // Listen for the event fired when the user selects a prediction and retrieve
-        // more details for that place.
-        searchBox.addListener('places_changed', function() {
-          var places = searchBox.getPlaces();
+    var map = new google.maps.Map(document.getElementById('map'), {
+        center: defaultLatLong,
+        zoom: 13,
+        mapTypeId: 'roadmap'
+    });
 
-          if (places.length == 0) {
-            return;
-          }
+    var input = document.getElementById('pac-input');
 
-          // Clear out the old markers.
-          markers.forEach(function(marker) {
-            marker.setMap(null);
-          });
-          markers = [];
+    var autocomplete = new google.maps.places.Autocomplete(input);
 
-          // For each place, get the icon, name and location.
-          var bounds = new google.maps.LatLngBounds();
-          places.forEach(function(place) {
-            if (!place.geometry) {
-              console.log("Returned place contains no geometry");
-              return;
-            }
-            var icon = {
-              url: place.icon,
-              size: new google.maps.Size(71, 71),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(17, 34),
-              scaledSize: new google.maps.Size(25, 25)
-            };
+    autocomplete.bindTo('bounds', map);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-            // Create a marker for each place.
-            markers.push(new google.maps.Marker({
-              map: map,
-              icon: icon,
-              title: place.name,
-              position: place.geometry.location
-            }));
+    var marker = new google.maps.Marker({
+        map: map,
+        position: defaultLatLong,
+        draggable: true,
+        clickable: true
+    });
 
-            if (place.geometry.viewport) {
-              // Only geocodes have viewport.
-              bounds.union(place.geometry.viewport);
-            } else {
-              bounds.extend(place.geometry.location);
-            }
+    google.maps.event.addListener(marker, 'dragend', function (marker) {
+        var latLng = marker.latLng;
+        currentLatitude = latLng.lat();
+        currentLongitude = latLng.lng();
 
-            // TeddyGo project code added for passiong data (point name, latitude and longitude) to Flask
-              var geodata = {
-                    "lat": place.geometry.location.lat(),
-                    'lng': place.geometry.location.lng(),
-                    'addr': document.getElementById("pac-input").value
-                };
+        var latlng = {
+            lat: currentLatitude,
+            lng: currentLongitude
+        };
 
-            $.ajax({
-                url: Flask.url_for('get_geodata_from_gm'),
-                data: JSON.stringify(geodata, null, '\t'),
-                contentType: 'application/json;charset=UTF-8',
-                type: 'POST',
-                success: function(response) {
+        // https://developers.google.com/maps/documentation/geocoding/intro
+        var geocoder = new google.maps.Geocoder;
+        geocoder.geocode({
+            'location': latlng
+        }, function (results, status) {
+            if (status === 'OK') {
+                if (results[0]) {
+                    input.value = results[0].formatted_address;
+
+                    // passing data to Flask - START
+                    var geodata = results;
+                    alert(JSON.stringify(geodata));
+
+                    $.ajax({
+                        url: Flask.url_for('get_geodata_from_gm'),
+                        data: JSON.stringify(geodata, null, '\t'),
+                        contentType: 'application/json;charset=UTF-8',
+                        type: 'POST',
+                        success: function(response) {
                     console.log(response);
-                },
-                error: function(error) {
+                    },
+                    error: function(error)
+                    {
                     console.log(error);
-                }
-            });
-            // TeddyGo project code END
+                    }
+                    });
+                    // passing data to Flask - END
 
-          });
-          map.fitBounds(bounds);
+                } else {
+                    window.alert('No results found');
+                }
+            } else {
+                window.alert('Geocoder failed due to: ' + status);
+            }
         });
-      }
+    });
+
+    autocomplete.addListener('place_changed', function () {
+        var place = autocomplete.getPlace();
+        if (!place.geometry) {
+            return;
+        }
+        if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+        } else {
+            map.setCenter(place.geometry.location);
+        }
+
+        marker.setPosition(place.geometry.location);
+
+        currentLatitude = place.geometry.location.lat();
+        currentLongitude = place.geometry.location.lng();
+
+        // passing data to Flask - START
+        var latlng = {
+            lat: currentLatitude,
+            lng: currentLongitude
+        };
+
+        // https://developers.google.com/maps/documentation/geocoding/intro
+        var geocoder = new google.maps.Geocoder;
+        geocoder.geocode({
+            'location': latlng
+        }, function (results, status) {
+            if (status === 'OK') {
+                if (results[0]) {
+                    input.value = results[0].formatted_address;
+
+                    // passing data to Flask - START
+                    var geodata = results;
+                    alert(JSON.stringify(geodata));
+
+                    $.ajax({
+                        url: Flask.url_for('get_geodata_from_gm'),
+                        data: JSON.stringify(geodata, null, '\t'),
+                        contentType: 'application/json;charset=UTF-8',
+                        type: 'POST',
+                        success: function(response) {
+                    console.log(response);
+                    },
+                    error: function(error)
+                    {
+                    console.log(error);
+                    }
+                    });
+                    // passing data to Flask - END
+
+                } else {
+                    window.alert('No results found');
+                }
+            } else {
+                window.alert('Geocoder failed due to: ' + status);
+            }
+        });
+        // passing data to Flask - END
+
+    });
+}
