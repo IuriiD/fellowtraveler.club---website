@@ -17,7 +17,6 @@
 
     {# Scripts for GoogleMaps with autocomplete field #}
 
-
     {# JS to display Teddy's travel so far #}
     {{ teddy_map.js }}
 {% endblock %}
@@ -46,7 +45,7 @@
                         {{ gettext('Photos') }}:
                             {% for photo in location_data.photos %}
                                 <br>
-                                <img src='static/{{ photo }}' class="img-fluid rounded" style="max-width: 750px;">
+                                <img src='static/{{ photo }}' class="img-fluid rounded" style="max-width: 700px;">
                             {% endfor %}
                     {% endif %}
                 </p>
@@ -61,7 +60,6 @@
     <div>
         <input id="pac-input" />
         <div id="map" height="400" width="700"></div>
-
     </div>
 
     <br>

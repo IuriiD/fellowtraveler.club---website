@@ -2,12 +2,12 @@
 {% from '_formhelpers.html' import render_field %}
 
 {% block title %}
-    Ouups... page not found
+    {{ gettext('Looks like your file is too big (5Mb/photo is maximum)') }}
 {% endblock %}
 
 {% block error_body %}
         <h1 class="display-2">
-            Ouups... Page not found
+            {{ gettext('Looks like your file is too big (5Mb/photo is maximum)') }}
         </h1>
         <br>Return go to the <a href="/">main page</a>?
 {% endblock %}

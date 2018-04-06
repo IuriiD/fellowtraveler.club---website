@@ -29,7 +29,7 @@ LANGUAGES = {
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 5242880 # max photo to upload is 5Mb
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 5 # max photo to upload is 5Mb
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 app.secret_key = FLASK_SECRET_KEY
@@ -91,7 +91,7 @@ def index():
 
             # Check if user entered some location (required parameter) (data is passed from jQuery to Flask and
             # saved in session
-            if 'latitude' not in session:
+            if 'geodata' not in session:
                 print('Here1')
                 flash(gettext('Please enter Teddy\'s location (current or on the photo)'),
                         'alert alert-warning alert-dismissible fade show')
@@ -141,11 +141,17 @@ def index():
                     return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
                 else:
                     # Prepare dictionary with new location info
+                    geodata = session['geodata']
+
                     new_teddy_location = {
                         'author': author,
-                        'longitude': float(session['longitude']),
-                        'latitude': float(session['latitude']),
-                        'formatted_address': session['formatted_address'],
+                        'longitude': float(geodata.get('longitude')),
+                        'latitude': float(geodata.get('latitude')),
+                        'formatted_address': geodata.get('formatted_address'),
+                        'locality':  geodata.get('locality'),
+                        'administrative_area_level_1':  geodata.get('administrative_area_level_1'),
+                        'country':  geodata.get('country'),
+                        'place_id':  geodata.get('place_id'),
                         'comment': comment,
                         'photos': photos_list
                     }
@@ -166,9 +172,7 @@ def index():
                     '''
 
                     # Clear data from session
-                    session.pop('latitude', None)
-                    session.pop('longitude', None)
-                    session.pop('formatted_address', None)
+                    session.pop('geodata', None)
 
                     # Get travellers history
                     whereteddywas = tg_functions.get_location_history(traveller)
@@ -195,9 +199,7 @@ def index():
             else:
                 print('Here3')
                 # Clear data from session
-                session.pop('latitude', None)
-                session.pop('longitude', None)
-                session.pop('formatted_address', None)
+                session.pop('geodata', None)
 
                 return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
@@ -230,7 +232,7 @@ def index():
 
     except Exception as error:
         print("error: {}".format(error))
-        return redirect(url_for('page_not_found'))
+        return redirect('/')
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt
@@ -238,14 +240,35 @@ def get_geodata_from_gm():
     print("get_geodata_from_gm!")
     if request.method == "POST":
         mygeodata = request.get_json()
-        latitude = mygeodata.get('lat')
-        longitude = mygeodata.get('lng')
-        address = mygeodata.get('formatted_address')
-        print('lat: {}, long: {}, addr: {}'.format(latitude,longitude,address))
+        # Retrieve 1) formatted address, 2) latitude, 3) longitude, 4) ['locality', 'political'] (~town), 5) ['administrative_area_level_1', 'political'] (~region/state), 6) ['country', 'political'] (country) and 7) place ID
+        if mygeodata[0]:
+            formatted_address = mygeodata[0].get('formatted_address')
+            latitude = mygeodata[0].get('geometry').get('location').get('lat', 0) # unlikely that it will be in 0lat 0 long (somewhere in Atlantic Ocean)
+            longitude = mygeodata[0].get('geometry').get('location').get('lng', 0)
+            address_components = mygeodata[0].get('address_components')
+            for address_component in address_components:
+                types = address_component.get('types')
+                short_name = address_component.get('short_name')
+                print("type: {}, short name: {}".format(types, short_name))
+                if 'locality' in types:
+                    locality = short_name
+                elif 'administrative_area_level_1' in types:
+                    administrative_area_level_1 = short_name
+                elif 'country' in types:
+                    country = short_name
+            place_id = mygeodata[0].get('place_id')
 
-        session['latitude'] = latitude
-        session['longitude'] = longitude
-        session['formatted_address'] = address
+        parsed_geodata = {
+            'latitude': latitude,
+            'longitude': longitude,
+            'formatted_address': formatted_address,
+            'locality': locality,
+            'administrative_area_level_1': administrative_area_level_1,
+            'country': country,
+            'place_id': place_id
+        }
+        print('Geodata: {}'.format(parsed_geodata))
+        session['geodata'] = parsed_geodata
     return 'get_geodata_from_gm()'
 
 @app.route("/language/<lang_code>")
@@ -263,6 +286,11 @@ def user_language_to_coockie(lang_code):
 @csrf.exempt
 def page_not_found(error):
     return render_template('404.html'), 404
+
+@app.errorhandler(413)
+@csrf.exempt
+def file_too_large(error):
+    return render_template('413.html'), 413
 
 @app.route('/webhook', methods=['POST'])
 @csrf.exempt

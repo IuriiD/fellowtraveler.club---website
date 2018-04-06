@@ -3,13 +3,13 @@ initialize();
 function initialize() {
 
     defaultLatLong = {
-        lat: 40.7127753,
-        lng: -74.0059728
+        lat: 45.9294795,
+        lng: 15.9670753
     };
 
     var map = new google.maps.Map(document.getElementById('map'), {
         center: defaultLatLong,
-        zoom: 13,
+        zoom: 4,
         mapTypeId: 'roadmap'
     });
 
@@ -48,7 +48,6 @@ function initialize() {
 
                     // passing data to Flask - START
                     var geodata = results;
-                    alert(JSON.stringify(geodata));
 
                     $.ajax({
                         url: Flask.url_for('get_geodata_from_gm'),
@@ -56,12 +55,11 @@ function initialize() {
                         contentType: 'application/json;charset=UTF-8',
                         type: 'POST',
                         success: function(response) {
-                    console.log(response);
-                    },
-                    error: function(error)
-                    {
-                    console.log(error);
-                    }
+                            console.log(response);
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
                     });
                     // passing data to Flask - END
 
@@ -107,7 +105,6 @@ function initialize() {
 
                     // passing data to Flask - START
                     var geodata = results;
-                    alert(JSON.stringify(geodata));
 
                     $.ajax({
                         url: Flask.url_for('get_geodata_from_gm'),
@@ -115,12 +112,11 @@ function initialize() {
                         contentType: 'application/json;charset=UTF-8',
                         type: 'POST',
                         success: function(response) {
-                    console.log(response);
-                    },
-                    error: function(error)
-                    {
-                    console.log(error);
-                    }
+                            console.log(response);
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
                     });
                     // passing data to Flask - END
 
