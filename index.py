@@ -5,7 +5,7 @@ import datetime
 from flask import Flask, render_template, url_for, request, redirect, flash, session, make_response, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, PasswordField, BooleanField
-from wtforms.validators import DataRequired, Length, URL
+from wtforms.validators import DataRequired, Length, URL, Email, Optional
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf.recaptcha import RecaptchaField
 from pymongo import MongoClient
@@ -29,7 +29,7 @@ LANGUAGES = {
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 5 # max photo to upload is 5Mb
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 20 # max photo to upload is 20Mb
 csrf = CSRFProtect(app)
 csrf.init_app(app)
 app.secret_key = FLASK_SECRET_KEY
@@ -41,10 +41,16 @@ twitter_api = twitter.Api(consumer_key=TWITTER_CONSUMER_KEY, consumer_secret=TWI
 class WhereisTeddyNow(FlaskForm):
     author = StringField(gettext('Your name'), validators=[Length(-1, 50, gettext('Your name is a bit too long (50 characters max)'))])
     comment = TextAreaField(gettext('Add a comment'), validators=[Length(-1, 280, gettext('Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters'))])
+    email4updates = StringField(gettext('Get updates by email'),
+                               validators=[Optional(), Email(gettext('Please enter a valid e-mail address'))])
     secret_code = PasswordField(gettext('Secret code from the toy (required)'), validators=[DataRequired(gettext('Please enter the code which you can find on the label attached to the toy')),
                               Length(6, 6, gettext('Secret code must have 6 digits'))])
     #recaptcha = RecaptchaField()
     submit = SubmitField(gettext('Submit'))
+
+class HeaderEmailSubscription(FlaskForm):
+    email4updates = StringField(gettext('Get updates by email:'), validators=[Optional(), Email(gettext('Please enter a valid e-mail address'))])
+    emailsubmit = SubmitField(gettext('Subscribe'))
 
 @babel.localeselector
 def get_locale():
@@ -65,6 +71,7 @@ def index():
     try:
         traveller = 'Teddy'
         whereisteddynowform = WhereisTeddyNow()
+        subscribe2updatesform = HeaderEmailSubscription()
 
         # POST-request
         if request.method == 'POST':
@@ -96,7 +103,7 @@ def index():
                 flash(gettext('Please enter Teddy\'s location (current or on the photo)'),
                         'alert alert-warning alert-dismissible fade show')
                 print('No data in session!')
-                return render_template('index.html', whereisteddynowform=whereisteddynowform,
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
                                        locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
             # Get user's input
@@ -122,11 +129,11 @@ def index():
                             photos_list.append(path)
                         else:
                             # At least one of images is invalid. Messages are flashed from photo_check_save()
-                            return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
+                            return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
                 if len(photos)>4:
                     flash(
-                        gettext('Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded',
-                        'alert alert-warning alert-dismissible fade show'))
+                        gettext('Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'),
+                        'alert alert-warning alert-dismissible fade show')
 
                 # Save data to DB
                 # Connect to DB 'TeddyGo'
@@ -138,7 +145,7 @@ def index():
                 teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
                     flash(gettext('Invalid secret code', 'alert alert-warning alert-dismissible fade show'))
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
                 else:
                     # Prepare dictionary with new location info
                     geodata = session['geodata']
@@ -193,7 +200,7 @@ def index():
                     # Check for preferred language
                     user_language = get_locale()
 
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform,
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
                                            locations_history=locations_history, teddy_map=teddy_map,
                                            language=user_language)
             else:
@@ -201,7 +208,7 @@ def index():
                 # Clear data from session
                 session.pop('geodata', None)
 
-                return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
         # GET request
         # Get travellers history (will be substituted with timeline embedded from Twitter )
@@ -228,11 +235,11 @@ def index():
 
         # Check for preferred language
         user_language = get_locale()
-        return render_template('index.html', whereisteddynowform=whereisteddynowform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
+        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
 
     except Exception as error:
         print("error: {}".format(error))
-        return redirect('/')
+        return render_template('error.html', error=error, subscribe2updatesform=subscribe2updatesform,)
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt
@@ -246,10 +253,11 @@ def get_geodata_from_gm():
             latitude = mygeodata[0].get('geometry').get('location').get('lat', 0) # unlikely that it will be in 0lat 0 long (somewhere in Atlantic Ocean)
             longitude = mygeodata[0].get('geometry').get('location').get('lng', 0)
             address_components = mygeodata[0].get('address_components')
+            locality, administrative_area_level_1, country, place_id = None, None, None, None
             for address_component in address_components:
                 types = address_component.get('types')
                 short_name = address_component.get('short_name')
-                print("type: {}, short name: {}".format(types, short_name))
+                #print("type: {}, short name: {}".format(types, short_name))
                 if 'locality' in types:
                     locality = short_name
                 elif 'administrative_area_level_1' in types:
@@ -267,11 +275,11 @@ def get_geodata_from_gm():
             'country': country,
             'place_id': place_id
         }
-        print('Geodata: {}'.format(parsed_geodata))
+        #print('Geodata: {}'.format(parsed_geodata))
         session['geodata'] = parsed_geodata
-    return 'get_geodata_from_gm()'
+    return True
 
-@app.route("/language/<lang_code>")
+@app.route("/language/<lang_code>/")
 @csrf.exempt
 def user_language_to_coockie(lang_code):
     expire_date = datetime.datetime.now()
@@ -282,15 +290,46 @@ def user_language_to_coockie(lang_code):
     print('Preferred language, {}, was saved to coockie'.format(lang_code.upper()))
     return response
 
+@app.route("/subscribe", methods=["POST"])
+@csrf.exempt
+def save_subscriber():
+    try:
+        subscribe2updatesform = HeaderEmailSubscription()
+        if request.method == "POST" and subscribe2updatesform.validate_on_submit():
+            print("Email entered: {}".format(subscribe2updatesform.email4updates.data))
+            user_locale = get_locale()
+
+            new_subscriber = {
+                "email": subscribe2updatesform.email4updates.data,
+                "locale": user_locale
+            }
+
+            client = MongoClient()
+            db = client.TeddyGo
+            subscribers = db.subscribers
+            new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
+
+            flash(gettext("E-mail successfully added"), 'alert alert-warning alert-dismissible fade show')
+            return redirect(url_for('index'))
+        else:
+            flash(gettext("Please enter a valid e-mail address"), 'alert alert-warning alert-dismissible fade show')
+            return redirect(url_for('index'))
+    except Exception as error:
+        flash(gettext("Error happened ('{}')".format(error)), 'alert alert-warning alert-dismissible fade show')
+        return redirect(url_for('index'))
+
+
 @app.errorhandler(404)
 @csrf.exempt
 def page_not_found(error):
-    return render_template('404.html'), 404
+    subscribe2updatesform = HeaderEmailSubscription()
+    return render_template('404.html', subscribe2updatesform=subscribe2updatesform), 404
 
 @app.errorhandler(413)
 @csrf.exempt
 def file_too_large(error):
-    return render_template('413.html'), 413
+    subscribe2updatesform = HeaderEmailSubscription()
+    return render_template('413.html', subscribe2updatesform=subscribe2updatesform), 413
 
 @app.route('/webhook', methods=['POST'])
 @csrf.exempt

@@ -21,6 +21,18 @@
     {{ teddy_map.js }}
 {% endblock %}
 
+
+{% block headersubscribe4updates %}
+    <form role="form" action="/subscribe" method="POST">
+        <dl>
+            {{ whereisteddynowform.csrf_token }}
+            {{ render_field(subscribe2updatesform.email4updates) }}
+            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
+        </dl>
+    </form>
+{% endblock %}
+
+
 {% block travelmap %}
     <!--
     <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1UgBsp0NYrSmBzBrUzAnucKhaywY" width="750" height="540"></iframe>
@@ -56,7 +68,7 @@
 {% endblock %}
 
 {% block updatelocation %}
-    <b>{{ gettext('Where Teddy is now or was on the photo? (required)') }}</b>
+    <a name="updatelocation"><b>{{ gettext('Where Teddy is now or was on the photo? (required)') }}</b></a>
     <div>
         <input id="pac-input" />
         <div id="map" height="400" width="700"></div>
@@ -74,12 +86,22 @@
                 </p>
             </div>
             {{ render_field(whereisteddynowform.comment) }}
+            {{ render_field(whereisteddynowform.email4updates) }}
             {{ render_field(whereisteddynowform.secret_code) }}
             {# { render_field(whereisteddynowform.recaptcha) } #}
             <br>
             {{ whereisteddynowform.submit(class_="btn btn-primary") }}
         </dl>
     </form>
+{% endblock %}
 
 
+{% block footersubscribe4updates %}
+    <form role="form" action="/subscribe" method="POST">
+        <dl>
+            {{ whereisteddynowform.csrf_token }}
+            {{ render_field(subscribe2updatesform.email4updates) }}
+            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
+        </dl>
+    </form>
 {% endblock %}

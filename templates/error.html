@@ -1,0 +1,35 @@
+{% extends "error_layout.html" %}
+{% from '_formhelpers.html' import render_field %}
+
+{% block title %}
+    Ouups... error happened
+{% endblock %}
+
+{% block headersubscribe4updates %}
+    <form role="form" action="/subscribe" method="POST">
+        <dl>
+            {{ whereisteddynowform.csrf_token }}
+            {{ render_field(subscribe2updatesform.email4updates) }}
+            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
+        </dl>
+    </form>
+{% endblock %}
+
+{% block error_body %}
+        <h1 class="display-2">
+            Ouups... the following exception was got:
+        <br>
+            {{ error }}
+        </h1>
+        <br>Return go to the <a href="/">main page</a>?
+{% endblock %}
+
+{% block footersubscribe4updates %}
+    <form role="form" action="/subscribe" method="POST">
+        <dl>
+            {{ whereisteddynowform.csrf_token }}
+            {{ render_field(subscribe2updatesform.email4updates) }}
+            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
+        </dl>
+    </form>
+{% endblock %}

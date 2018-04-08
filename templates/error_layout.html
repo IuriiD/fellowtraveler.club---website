@@ -36,22 +36,11 @@
                         <div>
                             {{ gettext('Name') }}: <b>Teddy</b>
                             <br>
-                            {{ gettext('Let\'s talk') }}:
-                            <br>
-                            <a href=""><b>FB Messenger</b></a> | <a href=""><b>Telegram</b></a> | <a href=""><b>Viber</b></a>
-                            <br>
-                            <a href=""><b>www.fellowtraveler.club/teddy</b></a>
-                            <br>
-                            {{ gettext('Follow me') }}:
-                            <br>
-                            <a href=""><b>Facebook</b></a> | <a href=""><b>Twitter</b></a> | <a href=""><b>Instagram</b></a>
-                            <br>
-                            <form action="/subscribe">
-                                {{ gettext('Get updates by email') }}:
-                                <br>
-                                <input type="email" about="E-mail">
-                                <input type="submit">
-                            </form>
+                            {% include 'speakwithmefollowme.html' %}
+                        </div>
+                        <div>
+                            {% block headersubscribe4updates %}
+                            {% endblock %}
                         </div>
 
                         <!-- Update location button -->
@@ -85,37 +74,14 @@
             <!-- Footer -->
             <br>
             <div>
-                <div class="row">
-                    <!-- Badge and update location button -->
-                    <div class="col">
-                        {{ gettext('Let\'s talk') }}:
-                    </div>
-                    <div class="col">
-                        <a href=""><b>FB Messenger</b></a> | <a href=""><b>Telegram</b></a> | <a href=""><b>Viber</b></a>
-                    </div>
-                </div>
-                <div class="row">
-                    <!-- Badge and update location button -->
-                    <div class="col">
-                        {{ gettext('Follow me') }}:
-                    </div>
-                    <div class="col">
-                        <a href=""><b>Facebook</b></a> | <a href=""><b>Twitter</b></a> | <a href=""><b>Instagram</b></a>
-                    </div>
-                </div>
-                <div class="row">
-                    <!-- Badge and update location button -->
-                    <div class="col">
-                        {{ gettext('Get updates by email') }}:
-                    </div>
-                    <div class="col">
-                        <form action="/subscribe">
-                            <input type="email" about="E-mail">
-                            <input type="submit">
-                        </form>
-                    </div>
-                </div>
+                {% include 'speakwithmefollowme.html' %}
             </div>
+            <div>
+                {% block footersubscribe4updates %}
+                {% endblock %}
+            </div>
+
+            <hr>
 
             <!-- Footer -->
             <div class="lead" style="font-size: 12pt">

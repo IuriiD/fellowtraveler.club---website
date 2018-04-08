@@ -5,9 +5,29 @@
     {{ gettext('Looks like your file is too big (5Mb/photo is maximum)') }}
 {% endblock %}
 
+{% block headersubscribe4updates %}
+    <form role="form" action="/subscribe" method="POST">
+        <dl>
+            {{ whereisteddynowform.csrf_token }}
+            {{ render_field(subscribe2updatesform.email4updates) }}
+            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
+        </dl>
+    </form>
+{% endblock %}
+
 {% block error_body %}
         <h1 class="display-2">
             {{ gettext('Looks like your file is too big (5Mb/photo is maximum)') }}
         </h1>
         <br>Return go to the <a href="/">main page</a>?
+{% endblock %}
+
+{% block footersubscribe4updates %}
+    <form role="form" action="/subscribe" method="POST">
+        <dl>
+            {{ whereisteddynowform.csrf_token }}
+            {{ render_field(subscribe2updatesform.email4updates) }}
+            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
+        </dl>
+    </form>
 {% endblock %}

@@ -54,6 +54,7 @@ def image_exists(url):
 
 # Check image validity using valid_url_extension() and valid_url_mimetype() and return new file name or flash an error
 def photo_check_save(photo_file):
+    print('photo_file: {}'.format(photo_file))
     photo_filename = secure_filename(photo_file.filename)
     if valid_url_extension(photo_filename) and valid_url_mimetype(photo_filename):
         file_name_wo_extension = os.path.splitext(photo_filename)[0]
