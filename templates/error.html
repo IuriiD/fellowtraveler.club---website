@@ -8,7 +8,7 @@
 {% block headersubscribe4updates %}
     <form role="form" action="/subscribe" method="POST">
         <dl>
-            {{ whereisteddynowform.csrf_token }}
+            {{ subscribe2updatesform.csrf_token }}
             {{ render_field(subscribe2updatesform.email4updates) }}
             {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
         </dl>
@@ -27,7 +27,7 @@
 {% block footersubscribe4updates %}
     <form role="form" action="/subscribe" method="POST">
         <dl>
-            {{ whereisteddynowform.csrf_token }}
+            {{ subscribe2updatesform.csrf_token }}
             {{ render_field(subscribe2updatesform.email4updates) }}
             {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
         </dl>

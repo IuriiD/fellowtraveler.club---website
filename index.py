@@ -8,6 +8,7 @@ from wtforms import StringField, SubmitField, TextAreaField, PasswordField, Bool
 from wtforms.validators import DataRequired, Length, URL, Email, Optional
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf.recaptcha import RecaptchaField
+from flask_mail import Mail, Message
 from pymongo import MongoClient
 from passlib.hash import sha256_crypt
 from flask_jsglue import JSGlue
@@ -15,11 +16,13 @@ from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
 from flask_babel import Babel, gettext
 import twitter
+import uuid
 
-from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET
+from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET, MAIL_PWD
 
 import tg_functions
 RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
+SITE_URL = 'http://127.0.0.1:5000'#'https://fellowtraveler.club'
 LANGUAGES = {
     'en': 'English',
     'ru': 'Русский',
@@ -37,6 +40,18 @@ GoogleMaps(app, key=GOOGLE_MAPS_API_KEY)
 jsglue = JSGlue(app)
 babel = Babel(app)
 twitter_api = twitter.Api(consumer_key=TWITTER_CONSUMER_KEY, consumer_secret=TWITTER_CONSUMER_SECRET, access_token_key=TWITTER_ACCESS_TOKEN_KEY, access_token_secret=TWITTER_ACCESS_TOKEN_SECRET)
+
+mail = Mail(app)
+app.config.update(
+    DEBUG=True,
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=587,
+    MAIL_USE_SSL=False,
+    MAIL_USE_TLS=True,
+    MAIL_USERNAME = 'mailvulgaris@gmail.com',
+    MAIL_PASSWORD = MAIL_PWD
+)
+mail = Mail(app)
 
 class WhereisTeddyNow(FlaskForm):
     author = StringField(gettext('Your name'), validators=[Length(-1, 50, gettext('Your name is a bit too long (50 characters max)'))])
@@ -101,7 +116,7 @@ def index():
             if 'geodata' not in session:
                 print('Here1')
                 flash(gettext('Please enter Teddy\'s location (current or on the photo)'),
-                        'alert alert-warning alert-dismissible fade show')
+                        'addlocation')
                 print('No data in session!')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
                                        locations_history=locations_history, teddy_map=teddy_map, language=user_language)
@@ -133,7 +148,7 @@ def index():
                 if len(photos)>4:
                     flash(
                         gettext('Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'),
-                        'alert alert-warning alert-dismissible fade show')
+                        'addlocation')
 
                 # Save data to DB
                 # Connect to DB 'TeddyGo'
@@ -144,7 +159,7 @@ def index():
                 collection_travellers = db.travellers
                 teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
-                    flash(gettext('Invalid secret code', 'alert alert-warning alert-dismissible fade show'))
+                    flash(gettext('Invalid secret code'), 'addlocation')
                     return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
                 else:
                     # Prepare dictionary with new location info
@@ -239,7 +254,7 @@ def index():
 
     except Exception as error:
         print("error: {}".format(error))
-        return render_template('error.html', error=error, subscribe2updatesform=subscribe2updatesform,)
+        return render_template('error.html', error=error, subscribe2updatesform=subscribe2updatesform)
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt
@@ -277,7 +292,7 @@ def get_geodata_from_gm():
         }
         #print('Geodata: {}'.format(parsed_geodata))
         session['geodata'] = parsed_geodata
-    return True
+    return 'Geodata saved to session'
 
 @app.route("/language/<lang_code>/")
 @csrf.exempt
@@ -297,27 +312,121 @@ def save_subscriber():
         subscribe2updatesform = HeaderEmailSubscription()
         if request.method == "POST" and subscribe2updatesform.validate_on_submit():
             print("Email entered: {}".format(subscribe2updatesform.email4updates.data))
-            user_locale = get_locale()
+            email_entered = subscribe2updatesform.email4updates.data
 
-            new_subscriber = {
-                "email": subscribe2updatesform.email4updates.data,
-                "locale": user_locale
-            }
-
+            # Check if user's email is not already in DB
             client = MongoClient()
             db = client.TeddyGo
             subscribers = db.subscribers
+            email_already_submitted = subscribers.find_one({"$and": [{"email": email_entered}, {'unsubscribed': {'$ne': True}}]})
+
+            if email_already_submitted:
+                if email_already_submitted['verified']:
+                    flash(gettext("Email {} is already subscribed and verified".format(email_entered)), 'header')
+                    return redirect(url_for('index'))
+                else:
+                    flash(gettext("Email {} is already subscribed but has not been verified yet".format(email_entered)), 'header')
+                    return redirect(url_for('index'))
+
+            user_locale = get_locale()
+
+            userid = str(uuid.uuid4())
+
+            new_subscriber = {
+                "email": email_entered,
+                "locale": user_locale,
+                "verified": False,
+                "verification_code": sha256_crypt.encrypt(userid),
+                "unsubscribed": None
+            }
+
+            verification_link = '{}/verify/{}/{}'.format(SITE_URL, email_entered, userid)
+            unsubscription_link = '{}/unsubscribe/{}/{}'.format(SITE_URL, email_entered, userid)
+
             new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
 
-            flash(gettext("E-mail successfully added"), 'alert alert-warning alert-dismissible fade show')
+            msg = Message("Fellowtraveler.club: email verification link",
+                          sender="mailvulgaris@gmail.com", recipients=[email_entered])
+            msg.html = "Hi!<br><br>Thanks for subscribing to Teddy's location updates!<br>They won't be too often (not more than once a week).<br><br>Please verify your email address by clicking on the following link:<br><b><a href='{}' target='_blank'>{}</a></b><br><br>If for any reason later you will decide to unsubscribe, please click on the following link:<br><a href='{}' target='_blank'>{}</a>".format(verification_link, verification_link, unsubscription_link, unsubscription_link)
+            mail.send(msg)
+
+            flash(gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
             return redirect(url_for('index'))
         else:
-            flash(gettext("Please enter a valid e-mail address"), 'alert alert-warning alert-dismissible fade show')
+            flash(gettext("Please enter a valid e-mail address"), 'header')
             return redirect(url_for('index'))
     except Exception as error:
-        flash(gettext("Error happened ('{}')".format(error)), 'alert alert-warning alert-dismissible fade show')
+        flash(gettext("Error happened ('{}')".format(error)), 'header')
         return redirect(url_for('index'))
 
+@app.route("/verify/<user_email>/<verification_code>")
+@csrf.exempt
+def verify_email(user_email, verification_code):
+    try:
+        # Check if user's email exists in DB and is not unsubscribed
+        client = MongoClient()
+        db = client.TeddyGo
+        subscribers = db.subscribers
+        email_already_submitted = subscribers.find_one(
+            {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]})
+        if not email_already_submitted:
+            flash(gettext("Email {} was not found".format(user_email)), 'header')
+            return redirect(url_for('index'))
+
+        # Find sha256_crypt-encrypted verification code in DB for a given user_email
+        docID = subscribers.find_one(
+            {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]}).get('_id')
+        verification_code_should_be = subscribers.find_one({"email": user_email})['verification_code']
+
+        # Compare it with the code submitted
+        if not sha256_crypt.verify(verification_code, verification_code_should_be):
+            # If invalid code - inform user
+            flash(gettext('Sorry but you submitted an invalid verification code. Email address not verified'), 'header')
+            return redirect(url_for('index'))
+        else:
+            # If code Ok, check if email is not already verified
+            if subscribers.find_one({"email": user_email})['verified'] == True:
+                flash(gettext('Email address {} already verified'.format(user_email)), 'header')
+                return redirect(url_for('index'))
+            else:
+                # update the document in DB and inform user
+                subscribers.update_one({'_id': docID}, {'$set': {'verified': True, 'unsubscribed': False}})
+                flash(gettext('Email verified! Thanks for subscribing to Teddy\'s location updates!'), 'header')
+                return redirect(url_for('index'))
+    except Exception as error:
+        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        return redirect(url_for('index'))
+
+@app.route("/unsubscribe/<user_email>/<verification_code>")
+@csrf.exempt
+def unsubscribe(user_email, verification_code):
+    try:
+        # Check if user's email exists in DB
+        client = MongoClient()
+        db = client.TeddyGo
+        subscribers = db.subscribers
+        if not subscribers.find_one({"email": user_email}) or subscribers.find_one(
+                {"email": user_email, "unsubscribed": True}):
+            flash(gettext("Email {} was not found".format(user_email)), 'header')
+            return redirect(url_for('index'))
+
+        # Find sha256_crypt-encrypted verification code in DB for a given user_email
+        verification_code_should_be = subscribers.find_one({"email": user_email})['verification_code']
+        docID = subscribers.find_one({"email": user_email}).get('_id')
+
+        # Compare it with the code submitted
+        if not sha256_crypt.verify(verification_code, verification_code_should_be):
+            # If invalid code - inform user
+            flash(gettext('Sorry but you submitted an invalid verification code. Unsubscription failed'), 'header')
+            return redirect(url_for('index'))
+        else:
+            # If code Ok, "soft"-delete the document
+            subscribers.update_one({'_id': docID}, {'$set': {'unsubscribed': True}})
+            flash(gettext('Email successfully unsubscribed'), 'header')
+            return redirect(url_for('index'))
+    except Exception as error:
+        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        return redirect(url_for('index'))
 
 @app.errorhandler(404)
 @csrf.exempt

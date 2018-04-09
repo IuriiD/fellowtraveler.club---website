@@ -65,7 +65,7 @@ def photo_check_save(photo_file):
     else:
         flash(
             'File {} has invalid image extension (not ".jpg", ".jpeg", ".png", ".gif" or ".bmp") or invalid image format'.format(photo_filename),
-            'alert alert-warning alert-dismissible fade show')
+            'addlocation')
         return 'error'
 
 # Return locations history for a given traveller (will be substituted with Twitter's timeline)

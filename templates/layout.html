@@ -36,7 +36,7 @@
                         <div>
                             {{ gettext('Name') }}: <b>Teddy</b>
                             <br>
-                            {% include 'speakwithmefollowme.html' %}
+                            {% include '_speakwithmefollowme.html' %}
                         </div>
                         <div>
                             {% block headersubscribe4updates %}
@@ -64,12 +64,26 @@
                 </div>
 
                 <!-- Disclaimer and precautions block -->
-                <div class="alert alert-info" role="alert">
-                    {{ gettext('No, it\'s not a trick and supposed to be safe but please see <a href="">safety info</a> and <a href="">disclaimer</a>') }}
+                <div>
+                    {% with errors = get_flashed_messages(category_filter=["header"]) %}
+                    {% if errors %}
+                        {%- for msg in errors %}
+                            <div class="alert alert-warning" role="alert">
+                                {{ msg|safe }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </div>
+                        {% endfor -%}
+                    {% endif %}
+                    {% endwith %}
+                </div>
+
+                <!--div class="alert alert-info" role="alert">
+                    {# { gettext('No, it\'s not a trick and supposed to be safe but please see <a href="">safety info</a> and <a href="">disclaimer</a>') }#}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                </div>
+                </div-->
             </div>
 
 
@@ -117,19 +131,18 @@
                 </div>
                 <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
                   <div class="card-body">
-                    <!-- Flashed messages -->
+                    <!-- Flashed messages for adding new location (under block header)-->
                     <div>
-                        {% with messages = get_flashed_messages(with_categories=True) %}
-                          {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="{{ category }}">
-                                    {{ message|safe }}
+                        {% with errors = get_flashed_messages(category_filter=["addlocation"]) %}
+                        {% if errors %}
+                            {%- for msg in errors %}
+                                <div class="alert alert-warning" role="alert">
+                                    {{ msg|safe }}
                                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
+                                    <span aria-hidden="true">&times;</span>
                                 </div>
-                            {% endfor %}
-                          {% endif %}
+                            {% endfor -%}
+                        {% endif %}
                         {% endwith %}
                     </div>
                     <!-- Flashed messages END -->
@@ -148,7 +161,7 @@
             <br>
             <hr>
             <div>
-                {% include 'speakwithmefollowme.html' %}
+                {% include '_speakwithmefollowme.html' %}
             </div>
             <div>
                 {% block footersubscribe4updates %}

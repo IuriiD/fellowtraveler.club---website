@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+            <title>Double Flash</title>
+
+            <!-- Bootstrap CSS -->
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+            <!-- jQuery -->
+            <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+            <!-- Popper.js -->
+            <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+            <!-- Bootstrap.js -->
+            <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</head>
+<body>
+<h1>Flash 1 goes below</h1>
+
+<div>
+                    {% with errors = get_flashed_messages(category_filter=["header"]) %}
+                    {% if errors %}
+                        {%- for msg in errors %}
+                            <div class="alert alert-warning" role="alert">
+                                {{ msg|safe }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </div>
+                        {% endfor -%}
+                    {% endif %}
+                    {% endwith %}
+</div>
+<br><br>
+
+<h1>Flash 2 goes below</h1>
+
+<div>
+    {% with errors = get_flashed_messages(category_filter=["header"]) %}
+    {% if errors %}
+    <div>
+      <ul class="alert alert-info" role="alert">
+        {%- for msg in errors %}
+        <li>
+            {{ msg|safe }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </li>
+        {% endfor -%}
+      </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+
+</body>
+</html>
