@@ -67,6 +67,57 @@ class HeaderEmailSubscription(FlaskForm):
     email4updates = StringField(gettext('Get updates by email:'), validators=[Optional(), Email(gettext('Please enter a valid e-mail address'))])
     emailsubmit = SubmitField(gettext('Subscribe'))
 
+def save_subscriber(email_entered):
+    '''
+        Gets email address, checks if it's not already in subscribers' DB, saves it, sends a verification email and informs user with flashes
+        Function not moved to function file not to move flask_mail setup block
+    '''
+    try:
+        # Check if user's email is not already in DB
+        client = MongoClient()
+        db = client.TeddyGo
+        subscribers = db.subscribers
+        email_already_submitted = subscribers.find_one({"$and": [{"email": email_entered}, {'unsubscribed': {'$ne': True}}]})
+
+        if email_already_submitted:
+            if email_already_submitted['verified']:
+                flash(gettext("Email {} is already subscribed and verified".format(email_entered)), 'header')
+                return {"status": "error", "message": "Email {} is already subscribed and verified".format(email_entered)}
+            else:
+                flash(gettext("Email {} is already subscribed but has not been verified yet".format(email_entered)), 'header')
+                return {"status": "error",
+                        "message": "Email {} is already subscribed but has not been verified yet".format(email_entered)}
+
+        user_locale = get_locale()
+
+        userid = str(uuid.uuid4())
+
+        new_subscriber = {
+            "email": email_entered,
+            "locale": user_locale,
+            "verified": False,
+            "verification_code": sha256_crypt.encrypt(userid),
+            "unsubscribed": None
+        }
+
+        verification_link = '{}/verify/{}/{}'.format(SITE_URL, email_entered, userid)
+        unsubscription_link = '{}/unsubscribe/{}/{}'.format(SITE_URL, email_entered, userid)
+
+        new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
+
+        msg = Message("Fellowtraveler.club: email verification link",
+                      sender="mailvulgaris@gmail.com", recipients=[email_entered])
+        msg.html = "Hi!<br><br>Thanks for subscribing to Teddy's location updates!<br>They won't be too often (not more than once a week).<br><br>Please verify your email address by clicking on the following link:<br><b><a href='{}' target='_blank'>{}</a></b><br><br>If for any reason later you will decide to unsubscribe, please click on the following link:<br><a href='{}' target='_blank'>{}</a>".format(verification_link, verification_link, unsubscription_link, unsubscription_link)
+        mail.send(msg)
+
+        flash(gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
+        return {"status": "success",
+                "message": "A verification link has been sent to your email address. Please click on it to verify your email"}
+    except Exception as error:
+        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        return {"status": "error",
+                "message": "Error happened ('{}')".format(error)}
+
 @babel.localeselector
 def get_locale():
     user_language = request.cookies.get('UserPreferredLanguage')
@@ -132,6 +183,8 @@ def index():
                 #location = whereisteddynowform.location.data
                 comment = whereisteddynowform.comment.data
                 secret_code = whereisteddynowform.secret_code.data
+                email_entered = whereisteddynowform.email4updates.data
+                save_subscriber(email_entered)
 
                 # Get photos (4 at max)
                 photos = request.files.getlist('photo')
@@ -307,57 +360,16 @@ def user_language_to_coockie(lang_code):
 
 @app.route("/subscribe", methods=["POST"])
 @csrf.exempt
-def save_subscriber():
-    try:
-        subscribe2updatesform = HeaderEmailSubscription()
-        if request.method == "POST" and subscribe2updatesform.validate_on_submit():
-            print("Email entered: {}".format(subscribe2updatesform.email4updates.data))
-            email_entered = subscribe2updatesform.email4updates.data
-
-            # Check if user's email is not already in DB
-            client = MongoClient()
-            db = client.TeddyGo
-            subscribers = db.subscribers
-            email_already_submitted = subscribers.find_one({"$and": [{"email": email_entered}, {'unsubscribed': {'$ne': True}}]})
-
-            if email_already_submitted:
-                if email_already_submitted['verified']:
-                    flash(gettext("Email {} is already subscribed and verified".format(email_entered)), 'header')
-                    return redirect(url_for('index'))
-                else:
-                    flash(gettext("Email {} is already subscribed but has not been verified yet".format(email_entered)), 'header')
-                    return redirect(url_for('index'))
-
-            user_locale = get_locale()
-
-            userid = str(uuid.uuid4())
-
-            new_subscriber = {
-                "email": email_entered,
-                "locale": user_locale,
-                "verified": False,
-                "verification_code": sha256_crypt.encrypt(userid),
-                "unsubscribed": None
-            }
-
-            verification_link = '{}/verify/{}/{}'.format(SITE_URL, email_entered, userid)
-            unsubscription_link = '{}/unsubscribe/{}/{}'.format(SITE_URL, email_entered, userid)
-
-            new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
-
-            msg = Message("Fellowtraveler.club: email verification link",
-                          sender="mailvulgaris@gmail.com", recipients=[email_entered])
-            msg.html = "Hi!<br><br>Thanks for subscribing to Teddy's location updates!<br>They won't be too often (not more than once a week).<br><br>Please verify your email address by clicking on the following link:<br><b><a href='{}' target='_blank'>{}</a></b><br><br>If for any reason later you will decide to unsubscribe, please click on the following link:<br><a href='{}' target='_blank'>{}</a>".format(verification_link, verification_link, unsubscription_link, unsubscription_link)
-            mail.send(msg)
-
-            flash(gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
-            return redirect(url_for('index'))
-        else:
-            flash(gettext("Please enter a valid e-mail address"), 'header')
-            return redirect(url_for('index'))
-    except Exception as error:
-        flash(gettext("Error happened ('{}')".format(error)), 'header')
+def direct_subscription():
+    subscribe2updatesform = HeaderEmailSubscription()
+    if request.method == "POST" and subscribe2updatesform.validate_on_submit():
+        print("Email entered: {}".format(subscribe2updatesform.email4updates.data))
+        email_entered = subscribe2updatesform.email4updates.data
+    else:
+        flash(gettext("Please enter a valid e-mail address"), 'header')
         return redirect(url_for('index'))
+    result = save_subscriber(email_entered)
+    return redirect(url_for('index'))
 
 @app.route("/verify/<user_email>/<verification_code>")
 @csrf.exempt
