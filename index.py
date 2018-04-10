@@ -22,7 +22,7 @@ from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY, T
 
 import tg_functions
 RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
-SITE_URL = 'http://127.0.0.1:5000'#'https://fellowtraveler.club'
+SITE_URL = 'https://fellowtraveler.club'
 LANGUAGES = {
     'en': 'English',
     'ru': 'Русский',
