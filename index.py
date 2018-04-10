@@ -282,6 +282,23 @@ def index():
         # Get travellers history (will be substituted with timeline embedded from Twitter )
         print('Index-Get')
 
+        # Flashing disclaimer message
+        disclaimer_shown = request.cookies.get('DisclaimerShown')
+        print("$$$$$$$ {}".format(disclaimer_shown))
+        if not disclaimer_shown:
+            flash(gettext(
+                'No, it\'s not a trick and supposed to be safe but please see <a href="">disclaimer</a>'),
+                  'header')
+            # set a cookie so that disclaimer will be shown only once
+            expire_date = datetime.datetime.now()
+            expire_date = expire_date + datetime.timedelta(days=90)
+            redirect_to_index = redirect('/')
+            response = app.make_response(redirect_to_index)
+            response.set_cookie('DisclaimerShown', 'yes', expires=expire_date)
+            print('setting cookie')
+            print(str(response))
+            return response
+
         # Get travellers history (will be substituted with timeline embedded from Twitter )
         whereteddywas = tg_functions.get_location_history(traveller)
         print('whereteddywas!')
