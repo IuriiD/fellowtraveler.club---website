@@ -376,7 +376,11 @@ def verify_email(user_email, verification_code):
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
         docID = subscribers.find_one(
             {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]}).get('_id')
-        verification_code_should_be = subscribers.find_one({"email": user_email})['verification_code']
+        print("##### docID: {}".format(docID))
+        print("##### Verif code: {}".format(subscribers.find_one({'_id': docID})['verification_code']))
+        print("##### Verif code should be: {}".format(verification_code))
+
+        verification_code_should_be = subscribers.find_one({'_id': docID})['verification_code']
 
         # Compare it with the code submitted
         if not sha256_crypt.verify(verification_code, verification_code_should_be):
@@ -385,7 +389,7 @@ def verify_email(user_email, verification_code):
             return redirect(url_for('index'))
         else:
             # If code Ok, check if email is not already verified
-            if subscribers.find_one({"email": user_email})['verified'] == True:
+            if subscribers.find_one({'_id': docID})['verified'] == True:
                 flash(gettext('Email address {} already verified'.format(user_email)), 'header')
                 return redirect(url_for('index'))
             else:
@@ -405,14 +409,17 @@ def unsubscribe(user_email, verification_code):
         client = MongoClient()
         db = client.TeddyGo
         subscribers = db.subscribers
-        if not subscribers.find_one({"email": user_email}) or subscribers.find_one(
-                {"email": user_email, "unsubscribed": True}):
+        email_already_submitted = subscribers.find_one(
+            {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]})
+        if not email_already_submitted:
             flash(gettext("Email {} was not found".format(user_email)), 'header')
             return redirect(url_for('index'))
 
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
-        verification_code_should_be = subscribers.find_one({"email": user_email})['verification_code']
-        docID = subscribers.find_one({"email": user_email}).get('_id')
+        docID = subscribers.find_one(
+            {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]}).get('_id')
+        verification_code_should_be = subscribers.find_one({'_id': docID})['verification_code']
+
 
         # Compare it with the code submitted
         if not sha256_crypt.verify(verification_code, verification_code_should_be):
