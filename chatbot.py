@@ -2,8 +2,7 @@
 # https://www.smartspate.com/how-to-create-a-telegram-bot-from-scratch-tutorial/
 import telebot
 import apiai, json
-TG_TOKEN = '534502321:AAHOUZhwuHhpt92CiKVggGozuOADgqDBLTY'
-DF_TOKEN = '301915af2ca74af7b4ed82437f90510f'
+from keys import TG_TOKEN, DF_TOKEN
 bot = telebot.TeleBot(TG_TOKEN)
 
 @bot.message_handler(commands = ['start'])
