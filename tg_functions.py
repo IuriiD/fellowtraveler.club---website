@@ -378,4 +378,14 @@ def summarize_journey(traveller):
     print('Journey summary: {}'.format(datatoupdate))
     return {'status': 'success', 'message': datatoupdate}
 
-#print(summarize_journey('Teddy'))
+def time_passed(traveller):
+    '''
+        Function calculates time elapsed from origin date/time for a given traveller
+    '''
+    client = MongoClient()
+    db = client.TeddyGo
+    traveller_resume = db.travellers.find_one({'name': traveller})
+    start_date_service = traveller_resume['start_date_service']
+    current_datetime = datetime.datetime.now()
+    difference = (current_datetime - start_date_service).days
+    return difference

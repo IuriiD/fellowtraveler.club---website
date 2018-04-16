@@ -7,6 +7,7 @@ from keys import FLASK_SECRET_KEY, TG_TOKEN, DF_TOKEN
 from pymongo import MongoClient
 import time
 import chatbot_markup
+import tg_functions
 
 print(' ')
 print('########### chatbot.py - new session ############')
