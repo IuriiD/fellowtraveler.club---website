@@ -18,18 +18,46 @@ bot = telebot.TeleBot(TG_TOKEN)
 contexts = []
 
 @bot.callback_query_handler(func=lambda call: True)
+# Handling clicks on different InlineKeyboardButtons
 def classifier(call):
     print('call.data: {}'.format(call.data))
     bot.answer_callback_query(call.id, text="")
-    if (call.data == 'yes_no_menu_yes' or call.data == 'yes_no_menu_no'):
-        if 'if_journey_info_needed' in contexts:
+
+    # Buttons 'Yes'/'No, thanks' in the intro block asking if user want's to know more about T. journey
+    if 'if_journey_info_needed' in contexts:
+        if call.data == 'Yes':
             journey_info(call.message.chat.id)
             contexts.remove('if_journey_info_needed')
-        else:
-            speech = dialogflow(call.data, call.message.chat.id)['speech']
-            bot.send_message(call.message.chat.id, speech)
-            time.sleep(2)
-            bot.send_message(call.message.chat.id, 'What would you like to do next?', reply_markup=chatbot_markup.intro_menu)
+        elif call.data == 'No':
+            time.sleep(3)
+            bot.send_message(call.message.chat.id, 'Ok. Than we can just talk ;)\nJust in case here\'s my menu',
+                             reply_markup=chatbot_markup.intro_menu)
+            contexts.remove('if_journey_info_needed')
+
+    # Button 'Next' in cycle showing places visited by Teddy
+    elif 'journey_next_info' in contexts:
+        if call.data == 'Next':
+            pass
+            # I started my journey in ... on ... // block - always as there will always be the 1st location
+                # Optional photo
+
+            # Since that time I have "checked" in .. places located in [country_of_origin | N countries (country1, country2, .., countryN) // optional as there might be only 1 (starting) location
+                # For eg.:
+                # Since that time I have "checked" in 1 more place in Ukraine. Here it is:
+                # Since that time I have "checked" in 2 more places in Ukraine. Here they are:
+                # Since that time I have "checked" in 5 more places in 2 countries (Ukraine, Poland). Here they are:
+                # Since that time I have "checked" in 12 more places in 6 countries (Ukraine, Poland, Italy, Bulgaria, Spain, UK). Here they are:
+                    # For each location: date, map, [photo/-s], [author], [comment]
+            #
+
+
+    # Without context - feed input to Dialogflow, return result and menu
+    else:
+        speech = dialogflow(call.data, call.message.chat.id)['speech']
+        print('speech: {}'.format(speech))
+        bot.send_message(call.message.chat.id, speech)
+        time.sleep(2)
+        bot.send_message(call.message.chat.id, 'What would you like to do next?', reply_markup=chatbot_markup.intro_menu)
 
 @bot.message_handler(commands = ['start'])
 def start_handler(message):
@@ -44,36 +72,46 @@ def start_handler(message):
         bot.register_next_step_handler(msg, if_journey_info_needed)
 
 def if_journey_info_needed(message):
-    intent = dialogflow(message, message.chat.id)['intent']
-    if 'if_journey_info_needed' in contexts and intent == 'smalltalk.confirmation.no':
-        pass
-    elif 'if_journey_info_needed' in contexts and intent == 'smalltalk.confirmation.yes':
-        journey_info(message.chat.id)
-    contexts.remove('if_journey_info_needed')
-    print('Communicating with DF')
-    print('message in journey_info: {}'.format(message))
-    print('intent: {}'.format(intent))
+    intent = dialogflow(message.text, message.chat.id)['intent']
+    speech = dialogflow(message.text, message.chat.id)['speech']
+    if 'if_journey_info_needed' in contexts:
+        if intent == 'smalltalk.confirmation.no':
+            time.sleep(3)
+            bot.send_message(message.chat.id, 'Ok. Than we can just talk ;)\nJust in case here\'s my menu',
+                             reply_markup=chatbot_markup.intro_menu)
+            contexts.remove('if_journey_info_needed')
+        elif intent == 'smalltalk.confirmation.yes':
+            journey_info(message.chat.id)
+            contexts.remove('if_journey_info_needed')
+        else:
+            bot.send_message(message.chat.id, speech)
+            time.sleep(2)
+            bot.send_message(message.chat.id, 'What would you like to do next?',
+                             reply_markup=chatbot_markup.intro_menu)
+    else:
+        bot.send_message(message.chat.id, speech)
+        time.sleep(2)
+        bot.send_message(message.chat.id, 'What would you like to do next?',
+                         reply_markup=chatbot_markup.intro_menu)
 
 def journey_info(chat_id):
-        time.sleep(2)
+        time.sleep(3)
         bot.send_message(chat_id, 'Ok, here is my story')
-        time.sleep(2)
-        bot.send_message(chat_id, 'I came from Cherkasy city, Ukraine, from a family with 3 nice small kids')
+        time.sleep(5)
+        bot.send_message(chat_id, 'I came from <a href="{}">Cherkasy</a> city, Ukraine, from a family with 3 nice small kids'.format('https://www.google.com/maps/place/Черкассы,+Черкасская+область,+18000/@50.5012899,25.9683426,6z'), parse_mode='html', disable_web_page_preview=True)
         bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-4.jpg')
-        time.sleep(4)
+        time.sleep(6)
         bot.send_message(chat_id,
                          'So far the map of my journey looks as follows:',
                          parse_mode='html')
         bot.send_chat_action(chat_id, action='upload_photo')
         bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg', caption='<a href="{}">Open map in browser</a>'.format('https://fellowtraveler.club/#journey_map'), parse_mode='html', reply_markup=chatbot_markup.next_or_help_menu)
+        contexts.append('journey_next_info')
 
-def dialogflow(message, chat_id, lang_code='en'):
-    query = message.text
-    sessionID = message.chat.id
-
+def dialogflow(query, chat_id, lang_code='en'):
     URL = 'https://api.dialogflow.com/v1/query?v=20170712'
     HEADERS = {'Authorization': 'Bearer ' + DF_TOKEN, 'content-type': 'application/json'}
-    payload = {'query': query, 'sessionId': sessionID, 'lang': lang_code}
+    payload = {'query': query, 'sessionId': chat_id, 'lang': lang_code}
     r = requests.post(URL, data=json.dumps(payload), headers=HEADERS).json()
     intent = r.get('result').get('metadata').get('intentName')
     speech = r.get('result').get('fulfillment').get('speech')
@@ -87,10 +125,7 @@ def dialogflow(message, chat_id, lang_code='en'):
 
 @bot.message_handler(commands = ['show_your_travel'])
 def show_travel(message):
-    bot.send_message(message.chat.id, 'Oh, I have been to many places ;)')
-    bot.send_chat_action(message.chat.id, action='typing')
-    bot.send_message(message.chat.id, 'Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)Oh, I have been to many places ;)')
-
+    journey_info(message.chat.id)
 
 @bot.message_handler(commands = ['add_location'])
 def add_location(message):
@@ -101,21 +136,7 @@ def add_location(message):
 
 @bot.message_handler(content_types = ['text'])
 def text_handler(message):
-    # Communicating with DF API v1 directly
-    query = message.text
-    sessionID = message.chat.id
-    lang_code = 'en'
-
-    URL = 'https://api.dialogflow.com/v1/query?v=20170712'
-    HEADERS = {'Authorization': 'Bearer ' + DF_TOKEN, 'content-type': 'application/json'}
-    payload = {'query': query, 'sessionId': sessionID, 'lang': lang_code}
-    r = requests.post(URL, data=json.dumps(payload), headers=HEADERS).json()
-    intent = r['result']['metadata']['intentName']
-    speech = r['result']['fulfillment']['speech']
-    if speech == '':
-        speech = 'Hmm.. what?'
-    speech += ' Intent: {}'.format(intent)
-    print(r)
+    speech = dialogflow(message.text, message.chat.id)['speech']
     bot.send_message(message.chat.id, speech)
 
 bot.polling(True, timeout=1)
