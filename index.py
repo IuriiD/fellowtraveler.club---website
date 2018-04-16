@@ -184,7 +184,8 @@ def index():
                 comment = whereisteddynowform.comment.data
                 secret_code = whereisteddynowform.secret_code.data
                 email_entered = whereisteddynowform.email4updates.data
-                save_subscriber(email_entered)
+                if email_entered != '':
+                    save_subscriber(email_entered)
 
                 # Get photos (4 at max)
                 photos = request.files.getlist('photo')
@@ -235,6 +236,9 @@ def index():
                     collection_teddy = db[traveller]
                     new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
                     print('new_teddy_location_id: {}'.format(new_teddy_location_id))
+
+                    # Update journey summary
+                    tg_functions.summarize_journey('Teddy')
 
                     # Post to Twitter
                     '''
