@@ -1,9 +1,13 @@
 from telebot import types
 
+OURTRAVELLER = 'Teddy'
+
+# All possible buttons: Yes, No, Next, FAQ, <Traveler>'s story, You got traveler
+
 intro_menu = types.InlineKeyboardMarkup()
-intro_menu_mystory = types.InlineKeyboardButton("Teddy\'s story", callback_data="Teddy\'s story")
+intro_menu_mystory = types.InlineKeyboardButton("{}\'s story".format(OURTRAVELLER), callback_data="Tell your story")
 intro_menu_help = types.InlineKeyboardButton("Help", callback_data="FAQ")
-intro_menu_gotteddy = types.InlineKeyboardButton("You got Teddy?", callback_data="You got Teddy")
+intro_menu_gotteddy = types.InlineKeyboardButton("You got {}?".format(OURTRAVELLER), callback_data="You got fellowtraveler")
 intro_menu.row(intro_menu_mystory, intro_menu_help, intro_menu_gotteddy)
 
 yes_no_menu = types.InlineKeyboardMarkup()
