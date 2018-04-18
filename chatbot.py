@@ -51,40 +51,128 @@ def text_handler(message):
     intent = dialogflow(message.text, message.chat.id)['intent']
 
     # Block 1. If user types 'Yes'/'No' after intro block asking if user want's to know more about T. journey
+    # On exit of block (if user doesn't 'exit') - context 'journey_next_info'
     if 'if_journey_info_needed' in contexts:
         if intent == 'smalltalk.confirmation.no':
             time.sleep(SHORT_TIMEOUT)
             bot.send_message(message.chat.id, 'Ok. Than we can just talk ;)\nJust in case here\'s my menu',
                              reply_markup=chatbot_markup.intro_menu)
-            contexts.remove('if_journey_info_needed')
+            if 'if_journey_info_needed' in contexts:
+                contexts.remove('if_journey_info_needed')
         elif intent == 'smalltalk.confirmation.yes':
             journey_intro(message.chat.id)
-            contexts.remove('if_journey_info_needed')
+            if 'if_journey_info_needed' in contexts:
+                contexts.remove('if_journey_info_needed')
+            contexts.append('journey_next_info')
+        else:
+            bot.send_message(message.chat.id, speech)
+            time.sleep(SHORT_TIMEOUT)
+            bot.send_message(message.chat.id, 'What would you like to do next?',
+                             reply_markup=chatbot_markup.intro_menu)
 
-    # Block 2. Buttons 'Next/Help' after block 1 showing overall map of traveler's journey
+    # Block 2. Buttons 'Next/Help' after block 1 showing overall map of traveler's journey;
+    # on entry - context 'journey_next_info',
+    # on exit of block (if user doesn't 'exit') - 2 contexts: 'journey_summary_presented' and
+    # {'location_shown': None, 'total_locations': total_locations}
     elif 'journey_next_info' in contexts:
         if intent == 'next_info':
-            journey_begins(message.chat.id, OURTRAVELLER)
-            contexts.remove('journey_next_info')
-            contexts.append('journey_summary_presented')
-        if intent == 'show_faq':
+            total_locations = journey_begins(message.chat.id, OURTRAVELLER)
+
+            time.sleep(SHORT_TIMEOUT)
+            # If there's only 1 location, show it and present basic menu ("Teddy's story/Help/You got Teddy?")
+            if total_locations == 1:
+                the_1st_place(message.chat.id, OURTRAVELLER, False)
+                bot.send_message(message.chat.id,
+                                 'And that\'s all my journey so far ;)\n\nWhat would you like to do next? We can just talk or use this menu:',
+                                 reply_markup=chatbot_markup.intro_menu)
+                if 'journey_next_info' in contexts:
+                    contexts.remove('journey_next_info')
+                contexts.append('all_places_shown')
+            # If there are >1 visited places, ask user if he wants to see them ("Yes/No/Help")
+            else:
+                bot.send_message(message.chat.id, 'Would you like to see all places that I have been to?',
+                                 reply_markup=chatbot_markup.yes_no_help_menu)
+                if 'journey_next_info' in contexts:
+                    contexts.remove('journey_next_info')
+                contexts.append('journey_summary_presented')
+                contexts.append({'location_shown': None, 'total_locations': total_locations})
+        elif intent == 'show_faq':
             get_help(message)
-            contexts.remove('journey_next_info')
+            if 'journey_next_info' in contexts:
+                contexts.remove('journey_next_info')
+        else:
+            bot.send_message(message.chat.id, speech)
+            time.sleep(SHORT_TIMEOUT)
+            bot.send_message(message.chat.id, 'What would you like to do next?',
+                             reply_markup=chatbot_markup.intro_menu)
 
     # Block 3. Buttons 'Yes/No,thanks/Help' after journey summary block
+    # on entry - 2 contexts 'journey_summary_presented' and {'location_shown': None, 'total_locations': total_locations},
+    #  on exit (if user doesn't 'exit') - context 'locations_iteration' and
+    # {'location_shown': 0, 'total_locations': total_locations}
     elif 'journey_summary_presented' in contexts:
-        if intent == 'smalltalk.confirmation.yes': # "Yes" button is available if >1 places were visited
-            the_1st_place(message.chat.id, OURTRAVELLER)
-            contexts.remove('journey_summary_presented')
+        if intent == 'smalltalk.confirmation.yes':  # "Yes" button is available if >1 places were visited
+            the_1st_place(message.chat.id, OURTRAVELLER, True)
+            if 'journey_summary_presented' in contexts:
+                contexts.remove('journey_summary_presented')
             contexts.append('locations_iteration')
+            for context in contexts:
+                if 'location_shown' in context:
+                    context['location_shown'] = 0
         elif intent == 'smalltalk.confirmation.no':
             time.sleep(SHORT_TIMEOUT)
             bot.send_message(message.chat.id, 'Ok. Than we can just talk ;)\nJust in case here\'s my menu',
                              reply_markup=chatbot_markup.intro_menu)
-            contexts.remove('journey_summary_presented')
+            if 'journey_summary_presented' in contexts:
+                contexts.remove('journey_summary_presented')
         elif intent == 'show_faq':
             get_help(message)
-            contexts.remove('journey_summary_presented')
+            if 'journey_summary_presented' in contexts:
+                contexts.remove('journey_summary_presented')
+        else:
+            bot.send_message(message.chat.id, speech)
+            time.sleep(SHORT_TIMEOUT)
+            bot.send_message(message.chat.id, 'What would you like to do next?',
+                             reply_markup=chatbot_markup.intro_menu)
+
+    # Block 4. Buttons 'Next/Help' after block 3 showing the 1st place from several visited; executed in cycle
+    # on entry - 2 contexts: 'locations_iteration' and {'location_shown': X, 'total_locations': Y}
+    # (where X = the serial number of place visited, for eg. 0 - the 1st place, 2 - the 3rd place),
+    # on exit (if user doesn't 'exit') - 2 contexts 'locations_iteration' and {'location_shown': X+1, 'total_locations': Y}
+    # or 1 context, 'all_places_shown' if all places were shown
+    elif 'locations_iteration' in contexts:
+        if intent == 'next_info':
+            location_shown = 0
+            total_locations = 1
+            for context in contexts:
+                if 'location_shown' in context:
+                    location_shown = context['location_shown']
+                    total_locations = context['total_locations']
+            if total_locations - (location_shown + 1) == 1:
+                every_place(message.chat.id, OURTRAVELLER, location_shown + 1, False)
+                bot.send_message(message.chat.id,
+                                 'And that\'s all my journey so far ;)\n\nWhat would you like to do next? We can just talk or use this menu:',
+                                 reply_markup=chatbot_markup.intro_menu)
+                for context in contexts:
+                    if 'location_shown' in context:
+                        contexts.remove(context)
+                if 'locations_iteration' in contexts:
+                    contexts.remove('locations_iteration')
+                contexts.append('all_places_shown')
+            elif total_locations - (location_shown + 1) > 1:
+                every_place(message.chat.id, OURTRAVELLER, location_shown + 1, True)
+                for context in contexts:
+                    if 'location_shown' in context:
+                        context['location_shown'] += 1
+        elif intent == 'show_faq':
+            get_help(message)
+            if 'journey_next_info' in contexts:
+                contexts.remove('journey_next_info')
+        else:
+            bot.send_message(message.chat.id, speech)
+            time.sleep(SHORT_TIMEOUT)
+            bot.send_message(message.chat.id, 'What would you like to do next?',
+                             reply_markup=chatbot_markup.intro_menu)
 
     # General endpoint - if user entered some text an no context exists
     else:
@@ -99,41 +187,109 @@ def classifier(call):
     print('call.data: {}'.format(call.data))
     bot.answer_callback_query(call.id, text="")
 
-    # Block 1. Buttons 'Yes'/'No, thanks' after intro block asking if user want's to know more about T. journey
+    # Block 1. If user types 'Yes'/'No' after intro block asking if user want's to know more about T. journey
+    # On exit of block (if user doesn't 'exit') - context 'journey_next_info'
     if 'if_journey_info_needed' in contexts:
         if call.data == 'No':
             time.sleep(SHORT_TIMEOUT)
             bot.send_message(call.message.chat.id, 'Ok. Than we can just talk ;)\nJust in case here\'s my menu',
                              reply_markup=chatbot_markup.intro_menu)
-            contexts.remove('if_journey_info_needed')
+            if 'if_journey_info_needed' in contexts:
+                contexts.remove('if_journey_info_needed')
         elif call.data == 'Yes':
             journey_intro(call.message.chat.id)
-            contexts.remove('if_journey_info_needed')
+            if 'if_journey_info_needed' in contexts:
+                contexts.remove('if_journey_info_needed')
+            contexts.append('journey_next_info')
 
-    # Block 2. Buttons 'Next/Help' after block 1 showing overall map of traveler's journey
+    # Block 2. Buttons 'Next/Help' after block 1 showing overall map of traveler's journey;
+    # on entry - context 'journey_next_info',
+    # on exit of block (if user doesn't 'exit') - 2 contexts: 'journey_summary_presented' and
+    # {'location_shown': None, 'total_locations': total_locations}
     elif 'journey_next_info' in contexts:
         if call.data == 'Next':
-            journey_begins(call.message.chat.id, OURTRAVELLER)
-            contexts.remove('journey_next_info')
-            contexts.append('journey_summary_presented')
+            total_locations = journey_begins(call.message.chat.id, OURTRAVELLER)
+
+            time.sleep(SHORT_TIMEOUT)
+            # If there's only 1 location, show it and present basic menu ("Teddy's story/Help/You got Teddy?")
+            if total_locations == 1:
+                the_1st_place(call.message.chat.id, OURTRAVELLER, False)
+                bot.send_message(call.message.chat.id,
+                                 'And that\'s all my journey so far ;)\n\nWhat would you like to do next? We can just talk or use this menu:',
+                                 reply_markup=chatbot_markup.intro_menu)
+                if 'journey_next_info' in contexts:
+                    contexts.remove('journey_next_info')
+                contexts.append('all_places_shown')
+            # If there are >1 visited places, ask user if he wants to see them ("Yes/No/Help")
+            else:
+                bot.send_message(call.message.chat.id, 'Would you like to see all places that I have been to?',
+                                 reply_markup=chatbot_markup.yes_no_help_menu)
+                if 'journey_next_info' in contexts:
+                    contexts.remove('journey_next_info')
+                contexts.append('journey_summary_presented')
+                contexts.append({'location_shown': None, 'total_locations': total_locations})
         elif call.data == 'FAQ':
             get_help(call.message)
-            contexts.remove('journey_next_info')
+            if 'journey_next_info' in contexts:
+                contexts.remove('journey_next_info')
 
     # Block 3. Buttons 'Yes/No,thanks/Help' after journey summary block
+    # on entry - 2 contexts 'journey_summary_presented' and {'location_shown': None, 'total_locations': total_locations},
+    #  on exit (if user doesn't 'exit') - context 'locations_iteration' and
+    # {'location_shown': 0, 'total_locations': total_locations}
     elif 'journey_summary_presented' in contexts:
         if call.data == 'Yes': # "Yes" button is available if >1 places were visited
-            the_1st_place(call.message.chat.id, OURTRAVELLER)
-            contexts.remove('journey_summary_presented')
+            the_1st_place(call.message.chat.id, OURTRAVELLER, True)
+            if 'journey_summary_presented' in contexts:
+                contexts.remove('journey_summary_presented')
             contexts.append('locations_iteration')
+            for context in contexts:
+                if 'location_shown' in context:
+                    context['location_shown'] = 0
         elif call.data == 'No':
             time.sleep(SHORT_TIMEOUT)
             bot.send_message(call.message.chat.id, 'Ok. Than we can just talk ;)\nJust in case here\'s my menu',
                              reply_markup=chatbot_markup.intro_menu)
-            contexts.remove('journey_summary_presented')
+            if 'journey_summary_presented' in contexts:
+                contexts.remove('journey_summary_presented')
         elif call.data == 'FAQ':
             get_help(call.message)
-            contexts.remove('journey_summary_presented')
+            if 'journey_summary_presented' in contexts:
+                contexts.remove('journey_summary_presented')
+
+    # Block 4. Buttons 'Next/Help' after block 3 showing the 1st place from several visited; executed in cycle
+    # on entry - 2 contexts: 'locations_iteration' and {'location_shown': X, 'total_locations': Y}
+    # (where X = the serial number of place visited, for eg. 0 - the 1st place, 2 - the 3rd place),
+    # on exit (if user doesn't 'exit') - 2 contexts 'locations_iteration' and {'location_shown': X+1, 'total_locations': Y}
+    # or 1 context, 'all_places_shown' if all places were shown
+    elif 'locations_iteration' in contexts:
+        if call.data == 'Next':
+            location_shown = 0
+            total_locations = 1
+            for context in contexts:
+                if 'location_shown' in context:
+                    location_shown = context['location_shown']
+                    total_locations = context['total_locations']
+            if total_locations - (location_shown + 1) == 1:
+                every_place(call.message.chat.id, OURTRAVELLER, location_shown + 1, False)
+                bot.send_message(call.message.chat.id,
+                                 'And that\'s all my journey so far ;)\n\nWhat would you like to do next? We can just talk or use this menu:',
+                                 reply_markup=chatbot_markup.intro_menu)
+                for context in contexts:
+                    if 'location_shown' in context:
+                        contexts.remove(context)
+                if 'locations_iteration' in contexts:
+                    contexts.remove('locations_iteration')
+                contexts.append('all_places_shown')
+            elif total_locations - (location_shown + 1) > 1:
+                every_place(call.message.chat.id, OURTRAVELLER, location_shown + 1, True)
+                for context in contexts:
+                    if 'location_shown' in context:
+                        context['location_shown'] += 1
+        elif call.data == 'FAQ':
+            get_help(call.message)
+            if 'journey_next_info' in contexts:
+                contexts.remove('journey_next_info')
 
     # Without context - feed callback_data from button to Dialogflow, return result and menu
     else:
@@ -166,7 +322,7 @@ def journey_intro(chat_id):
                      parse_mode='html')
     bot.send_chat_action(chat_id, action='upload_photo')
     msg = bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg', caption='<a href="{}">Open map in browser</a>'.format('https://fellowtraveler.club/#journey_map'), parse_mode='html', reply_markup=chatbot_markup.next_or_help_menu)
-    contexts.append('journey_next_info')
+
     #bot.register_next_step_handler(msg, journey_begins)
 
 def journey_begins(chat_id, traveller):
@@ -191,25 +347,22 @@ def journey_begins(chat_id, traveller):
         countries_form = 'country'
     else:
         countries_form = 'countries'
-    speech = 'So far I\'ve checked in <strong>{}</strong> places located in <strong>{}</strong> {} ({}) and have been traveling for <strong>{}</strong> days.\n\nI covered about ... km it total and currently I\'m nearly .. km from home'.format(total_locations, total_countries, countries_form, countries, journey_duration)
-    bot.send_message(chat_id, speech, parse_mode='html')
-
-    time.sleep(SHORT_TIMEOUT)
-    # If there's only 1 location, show it and present basic menu ("Teddy's story/Help/You got Teddy?")
-    if total_locations == 1:
-        the_1st_place(chat_id, traveller)
-        bot.send_message(chat_id, 'And that\'s all my journey so far ;)\n\nWhat would you like to do next? We can just talk or use this menu:',
-                         reply_markup=chatbot_markup.intro_menu)
-    # If there are >1 visited places, ask user if he wants to see them ("Yes/No/Help")
+    if journey_duration == 1:
+        day_or_days = 'day'
     else:
-        bot.send_message(chat_id, 'Would you like to see all places that I have been to?', reply_markup=chatbot_markup.yes_no_help_menu)
+        day_or_days = 'days'
+    speech = 'So far I\'ve checked in <strong>{}</strong> places located in <strong>{}</strong> {} ({}) and have been traveling for <strong>{}</strong> {}.\n\nI covered about ... km it total and currently I\'m nearly .. km from home'.format(total_locations, total_countries, countries_form, countries, journey_duration, day_or_days)
+    bot.send_message(chat_id, speech, parse_mode='html')
+    return total_locations
 
-def the_1st_place(chat_id, traveller):
+def the_1st_place(chat_id, traveller, if_to_continue):
     '''
         Block 3 and also inside block 2
         Shows the place our traveller came from. Is used either directly after journey summary (if only 1 or 2 places
         were visited so far) or as the first place in cycle showing all places visited
     '''
+    print()
+    print('the_1st_place - if_to_continue: {}'.format(if_to_continue))
     client = MongoClient()
     db = client.TeddyGo
 
@@ -220,9 +373,13 @@ def the_1st_place(chat_id, traveller):
     long = the_1st_location['longitude']
     start_date = '{}'.format(the_1st_location['_id'].generation_time.date())
     time_passed = tg_functions.time_passed(traveller)
-    message1 = '<strong>Place #1</strong>\nI started my journey on {} ({} days ago) from \n<i>{}</i>'.format(start_date, time_passed, formatted_address)
+    if time_passed == 1:
+        day_or_days = 'day'
+    else:
+        day_or_days = 'days'
+    message1 = '<strong>Place #1</strong>\nI started my journey on {} ({} {} ago) from \n<i>{}</i>'.format(start_date, time_passed, day_or_days, formatted_address)
     bot.send_message(chat_id, message1, parse_mode='html')
-    bot.send_location(chat_id, latitude=lat, longitude=long, reply_markup=chatbot_markup.next_or_help_next)
+    bot.send_location(chat_id, latitude=lat, longitude=long)
     photos = the_1st_location['photos']
     if len(photos)>0:
         for photo in photos:
@@ -231,17 +388,64 @@ def the_1st_place(chat_id, traveller):
             bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg')
     author = the_1st_location['author']
     comment = the_1st_location['comment']
+    message2 = 'That was the 1st place'
     if comment != '':
         if author == 'Anonymous':
             author = '(who decided to remain anonymous)'
         else:
             author = '<b>{}</b>'.format(author)
-        message2 = 'My new friend <b>{}</b> wrote:\n<i>{}</i>'.format(author, comment)
+        message2 = 'My new friend {} wrote:\n<i>{}</i>'.format(author, comment)
     else:
         if author != 'Anonymous':
             message2 = 'I got acquainted with a new friend - {} :)'.format(author)
-    bot.send_message(chat_id, message2, parse_mode='html')
+    if if_to_continue:
+        bot.send_message(chat_id, message2, parse_mode='html', reply_markup=chatbot_markup.next_or_help_menu)
+        print('Here')
+    else:
+        bot.send_message(chat_id, message2, parse_mode='html')
+        print('There')
 
+def every_place(chat_id, traveller, location_to_show, if_to_continue):
+    '''
+        Block 4
+        Shows the 2nd and further visited places
+    '''
+    client = MongoClient()
+    db = client.TeddyGo
+
+    # Message: I started my journey in ... on ...
+    location = db[traveller].find()[location_to_show]
+
+    formatted_address = location['formatted_address']
+    lat = location['latitude']
+    long = location['longitude']
+    location_date = '{}'.format(location['_id'].generation_time.date())
+    time_passed = tg_functions.time_passed(traveller)
+    message1 = '<strong>Place #{}</strong>\nOn {} ({} days ago) I was in \n<i>{}</i>'.format(location_to_show+1, location_date, time_passed, formatted_address)
+    bot.send_message(chat_id, message1, parse_mode='html')
+    bot.send_location(chat_id, latitude=lat, longitude=long)
+    photos = location['photos']
+    if len(photos)>0:
+        for photo in photos:
+            print(photo)
+            bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg')
+            bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg')
+    author = location['author']
+    comment = location['comment']
+    message2 = 'That was the place #{}'.format(location_to_show+1)
+    if comment != '':
+        if author == 'Anonymous':
+            author = '(who decided to remain anonymous)'
+        else:
+            author = '<b>{}</b>'.format(author)
+        message2 = 'My new friend {} wrote:\n<i>{}</i>'.format(author, comment)
+    else:
+        if author != 'Anonymous':
+            message2 = 'I got acquainted with a new friend - {} :)'.format(author)
+    if if_to_continue:
+        bot.send_message(chat_id, message2, parse_mode='html', reply_markup=chatbot_markup.next_or_help_menu)
+    else:
+        bot.send_message(chat_id, message2, parse_mode='html')
 
 def dialogflow(query, chat_id, lang_code='en'):
     '''
