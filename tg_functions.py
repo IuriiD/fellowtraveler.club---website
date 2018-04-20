@@ -375,7 +375,7 @@ def summarize_journey(traveller):
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
 
-    print('Journey summary: {}'.format(datatoupdate))
+    #print('Journey summary: {}'.format(datatoupdate))
     return {'status': 'success', 'message': datatoupdate}
 
 def time_passed(traveller):

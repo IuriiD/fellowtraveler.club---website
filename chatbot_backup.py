@@ -212,6 +212,11 @@ def text_handler(message):
             contexts.clear()
             bot.send_message(message.chat.id, 'Ok. What would you like to do next?',
                          reply_markup=chatbot_markup.intro_menu)
+        elif intent == 'contact_support':
+            contexts.clear()
+            contexts.append('contact_support')
+            bot.send_message(message.chat.id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below. You can also write directly to my email <a href="mailto:iurii.dziuban@gmail.com">iurii.dziuban@gmail.com</a>.',
+                             parse_mode='html', reply_markup=chatbot_markup.intro_menu)
         # If user enters whatever else, not == intent 'smalltalk.confirmation.cancel'
         else:
             secret_code_entered = message.text
@@ -219,10 +224,18 @@ def text_handler(message):
                 contexts.clear()
                 contexts.append('code_correct')
                 bot.send_message(message.chat.id, 'Code correct, thanks! Sorry for formalities')
-                bot.send_message(message.chat.id, 'What to do next:', reply_markup=chatbot_markup.you_got_teddy_menu)
+                bot.send_message(message.chat.id,
+                                 'As I might have said, my goal is to see the world.'
+                                 '\n\n And as your fellow traveler I will kindly ask you for 2 things:'
+                                 '\n- Please show me some nice places of your city/country or please take me with you if you are traveling somewhere. '
+                                 'Please document where I have been using the button "<b>Add location</b>".'
+                                 '\n - After some time please pass me to somebody else ;)'
+                                 '\n\n For more detailed instructions - please click "<b>Instructions</b>"'
+                                 '\n\nIf you\'ve got some problems, you can also write to my author (button "<b>Contact support</b>")',
+                                 parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
             else:
                 bot.send_message(message.chat.id, 'Incorrect secret code. Please try again',
-                                 reply_markup=chatbot_markup.cancel_help_menu)
+                                 reply_markup=chatbot_markup.cancel_help_contacts_menu)
 
     # General endpoint - if user entered some text an no context exists
     else:
@@ -243,7 +256,7 @@ def text_handler(message):
         # User typed "You got Teddy" or similar
         elif intent == 'you_got_fellowtraveler':
             bot.send_message(message.chat.id,
-                             'Oh, that\'s a tiny adventure and some responsibility;)\nTo proceed please enter the <i>secret code</i> from the toy',
+                             'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please enter the <i>secret code</i> from the toy',
                              parse_mode='html')
             # Image with an example of secret code
             bot.send_photo(message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_menu)
@@ -263,6 +276,13 @@ def text_handler(message):
 def classifier(call):
     print('call.data: {}'.format(call.data))
     bot.answer_callback_query(call.id, text="")
+
+    # All possible buttons (10)
+    # Yes | No, thanks | Cancel | Help | You got Teddy? | Teddy's story | Next | Support | Instructions | Add location
+    # Buttons | Instructions | Add location | are available only after entering secret code
+    # Buttons | You got Teddy? | Teddy's story | Help | act irrespective of context, other
+    # buttons ( Yes | No, thanks | Cancel | Next) - depend on context, if no context or irrelevant context - they
+    # should return something like for a FallbackIntent
 
     # Block 1. Reply to clicking on buttons 'Yes'/'No' displayed after the intro block
     # asking if user want's to know more about T. journey
@@ -400,12 +420,25 @@ def classifier(call):
         elif call.data == 'FAQ':
             contexts.clear()
             get_help(call.message)
+        elif call.data == 'Contact support':
+            contexts.clear()
+            contexts.append('contact_support')
+            bot.send_message(call.message.chat.id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below. You can also write directly to my email <a href="mailto:iurii.dziuban@gmail.com">iurii.dziuban@gmail.com</a>.',
+                             parse_mode='html', reply_markup=chatbot_markup.intro_menu)
         # If user enters whatever else, not == intent 'smalltalk.confirmation.cancel'
         else:
             secret_code_entered = call.message.text
             if secret_code_validation(secret_code_entered, call.message.chat.id):
                 bot.send_message(call.message.chat.id, 'Code correct, thanks! Sorry for formalities')
-                bot.send_message(call.message.chat.id, 'What to do next:', reply_markup=chatbot_markup.you_got_teddy_menu)
+                bot.send_message(call.message.chat.id,
+                                 'As I might have said, my goal is to see the world.'
+                                 '\n And as your fellow traveler I will kindly ask you for 2 things:'
+                                 '\n- Please show me some nice places of your city/country or please take me with you if you are traveling somewhere. '
+                                 'Please document where I have been using the button "<b>Add location</b>".'
+                                 '\n - After some time please pass me to somebody else ;)'
+                                 '\n\n For more detailed instructions - please click "<b>Instructions</b>"'
+                                 '\n\nIf you\'ve got some problems, you can also write to my author (button "<b>Contact support</b>")',
+                                 parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
 
     # Without context - feed callback_data from button to Dialogflow, return result and menu
     else:
@@ -429,9 +462,9 @@ def classifier(call):
         # Button 'You got Teddy?'
         elif call.data == 'You got fellowtraveler':
             bot.send_message(call.message.chat.id,
-                             'Oh, that\'s a tiny adventure and some responsibility;)\nTo proceed please enter the <i>secret code</i> from the toy',
+                             'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please <i>enter the secret code</i> from the toy',
                              parse_mode='html')
-            bot.send_photo(call.message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_menu)
+            bot.send_photo(call.message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_contacts_menu)
             contexts.clear()
             contexts.append('enters_code')
 
