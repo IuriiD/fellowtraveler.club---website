@@ -47,23 +47,36 @@ def start_handler(message):
         time.sleep(SHORT_TIMEOUT)
         travelers_story_intro(message.chat.id)
         contexts.append('if_journey_info_needed')
+        # Console logging
+        print()
+        print('User entered "/start"')
 
 
 @bot.message_handler(commands=['tell_your_story'])
 def tell_your_story(message):
     travelers_story_intro(message.chat.id)
     contexts.append('if_journey_info_needed')
+    # Console logging
+    print()
+    print('User entered "/tell_your_story"')
 
 
 @bot.message_handler(commands=['help'])
 def help(message):
     get_help(message.chat.id)
+    # Console logging
+    print()
+    print('User entered "/help"')
 
 
 @bot.message_handler(commands=['you_got_fellowtraveler'])
 def add_location(message):
-    bot.send_message(message.chat.id, 'Oh, you are special ;)\nTo proceed please enter the <i>secret code</i> from the toy', parse_mode='html')
-    bot.send_photo(message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_contacts_menu)
+    if 'code_correct' not in contexts:
+        bot.send_message(message.chat.id, 'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please enter the <i>secret code</i> from the toy', parse_mode='html')
+        bot.send_photo(message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_contacts_menu)
+    # Console logging
+    print()
+    print('User entered "/you_got_fellowtraveler"')
 
 
 ######################################## / Handlers END ######################################
@@ -283,7 +296,7 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
         elif intent == 'contact_support':
             contexts.clear()
             contexts.append('contact_support')
-            bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below. You can also write directly to my email <a href="mailto:iurii.dziuban@gmail.com">iurii.dziuban@gmail.com</a>.',
+            bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below.\nYou can also write directly to my email <b>iurii.dziuban@gmail.com</b>.',
                              parse_mode='html', reply_markup=chatbot_markup.intro_menu)
         # If user enters whatever else, not == intent 'smalltalk.confirmation.cancel'
         else:
@@ -310,6 +323,24 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
                 if not always_triggered(chat_id, intent, speech):
                     # All other text inputs/button clicks
                     default_fallback(chat_id, intent, speech)
+
+    # Block 2-2. User entered correct password and now can get 'priviledged' instructions, add location or contact support
+    # Context 'code_correct' is being cleared after adding a new location, clicking 'Contact support' or if user enters
+    # commands outside of of block that is displayed after entering secret code
+    elif 'code_correct' in contexts:
+        if intent == 'contact_support':
+            contexts.clear()
+            contexts.append('contact_support')
+            bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below.\nYou can also write directly to my email <b>iurii.dziuban@gmail.com</b>.',
+                             parse_mode='html', reply_markup=chatbot_markup.intro_menu)
+        elif intent == 'show_instructions':
+            bot.send_message(chat_id, 'Here are our detailed instructions for those who got {}'.format(OURTRAVELLER),
+                             parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
+        elif intent == 'add_location':
+            bot.send_message(chat_id, 'First please tell where {} is now or in what place he was photographed\nPlease type approximate address or share your location'.format(OURTRAVELLER),
+                             parse_mode='html', reply_markup=chatbot_markup.share_location)
+            contexts.append('location_input')
+
 
     # General endpoint - if user typed/clicked something and contexts[] is empty
     else:
@@ -341,14 +372,19 @@ def always_triggered(chat_id, intent, speech):
 
     # User typed "You got Teddy" or similar
     elif intent == 'you_got_fellowtraveler':
-        bot.send_message(chat_id,
-                         'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please enter the <i>secret code</i> from the toy',
-                         parse_mode='html')
-        # Image with an example of secret code
-        bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg',
-                       reply_markup=chatbot_markup.cancel_help_contacts_menu)
-        contexts.clear()
-        contexts.append('enters_code')
+        if 'code_correct' not in contexts:
+            bot.send_message(chat_id,
+                             'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please enter the <i>secret code</i> from the toy',
+                             parse_mode='html')
+            # Image with an example of secret code
+            bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg',
+                           reply_markup=chatbot_markup.cancel_help_contacts_menu)
+            contexts.clear()
+            contexts.append('enters_code')
+        else:
+            bot.send_message(chat_id,
+                             'Ok. What would you like to do next?',
+                             parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
         return True
 
     else:

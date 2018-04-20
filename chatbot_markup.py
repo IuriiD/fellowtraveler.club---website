@@ -30,7 +30,7 @@ next_or_help_menu.row(next_or_help_menu_next, next_or_help_menu_help)
 cancel_help_contacts_menu = types.InlineKeyboardMarkup()
 cancel_help_contacts_menu_cancel =  types.InlineKeyboardButton("Cancel", callback_data="Cancel")
 cancel_help_contacts_menu_help = types.InlineKeyboardButton("Help", callback_data="FAQ")
-cancel_help_contacts_menu_contacts = types.InlineKeyboardButton("Support", callback_data="Support")
+cancel_help_contacts_menu_contacts = types.InlineKeyboardButton("Support", callback_data="Contact support")
 cancel_help_contacts_menu.row(cancel_help_contacts_menu_cancel, cancel_help_contacts_menu_help, cancel_help_contacts_menu_contacts)
 
 you_got_teddy_menu = types.InlineKeyboardMarkup()
@@ -38,3 +38,7 @@ you_got_teddy_menu_instructions = types.InlineKeyboardButton("Instructions", cal
 you_got_teddy_menu_add_place = types.InlineKeyboardButton("Add location", callback_data="Add location")
 you_got_teddy_menu_contacts = types.InlineKeyboardButton("Contact support", callback_data="Contact support")
 you_got_teddy_menu.row(you_got_teddy_menu_instructions, you_got_teddy_menu_add_place, you_got_teddy_menu_contacts)
+
+share_location = types.ReplyKeyboardMarkup(row_width=1)
+share_location_button = types.KeyboardButton('Share your location', request_location=True)
+share_location.add(share_location_button)
