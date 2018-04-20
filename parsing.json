@@ -205,6 +205,7 @@
   'caption_entities': None
 }
 
+// Telegram - message example
 {
   'entities': None,
   'caption_entities': None,
@@ -270,6 +271,7 @@
   'photo': None
 }
 
+// Telegram - call example
 {
   'from_user': {
     'first_name': 'Iurii',
@@ -441,8 +443,68 @@
   "fallbackIntent": false,
   "events": []
 }
-###########################################
-####### Response from Telegram ############
 
-################################################
-######## Response from Dialogflow ##############
+
+{
+  'successful_payment': None,
+  'connected_website': None,
+  'location': None,
+  'delete_chat_photo': None,
+  'new_chat_member': None,
+  'forward_from_chat': None,
+  'text': 'Do you want to know more about my journey?',
+  'contact': None,
+  'content_type': 'text',
+  'author_signature': None,
+  'video_note': None,
+  'group_chat_created': None,
+  'invoice': None,
+  'forward_date': None,
+  'edit_date': None,
+  'document': None,
+  'supergroup_chat_created': None,
+  'photo': None,
+  'caption_entities': None,
+  'migrate_to_chat_id': None,
+  'audio': None,
+  'media_group_id': None,
+  'from_user': {
+    'first_name': 'FellowtravelerTeddy',
+    'username': 'FellowtravelerTeddyBot',
+    'id': 534502321,
+    'language_code': None,
+    'is_bot': True,
+    'last_name': None
+  },
+  'video': None,
+  'venue': None,
+  'entities': None,
+  'new_chat_members': None,
+  'new_chat_photo': None,
+  'chat': {
+    'photo': None,
+    'description': None,
+    'sticker_set_name': None,
+    'first_name': 'Iurii',
+    'can_set_sticker_set': None, 'title': None,
+    'invite_link': None,
+    'type': 'private',
+    'username': None,
+    'id': 178180819,
+    'all_members_are_administrators': None,
+    'last_name': 'D.',
+    'pinned_message': None
+  },
+  'sticker': None,
+  'caption': None,
+  'message_id': 1733,
+  'left_chat_member': None,
+  'migrate_from_chat_id': None,
+  'voice': None,
+  'reply_to_message': None,
+  'channel_chat_created': None,
+  'date': 1524125507,
+  'forward_from': None,
+  'pinned_message': None,
+  'new_chat_title': None
+}
