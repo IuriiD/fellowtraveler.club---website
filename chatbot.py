@@ -180,6 +180,9 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
         is_btn_click - whether it's callback_data from button (True) or manual text input (False, default)
         geodata - dictionary with latitude/longitude or None (default)
     '''
+    global CONTEXTS
+    global NEWLOCATION
+
     if geodata:
         speech = 'Location data: latitude: {}, longitude: {}'.format(geodata['lat'], geodata['lng'])
         intent = 'location_received'
@@ -390,7 +393,7 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
             bot.send_message(chat_id, 'Here are our detailed instructions for those who got {}'.format(OURTRAVELLER),
                              parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
         elif intent == 'add_location':
-            bot.send_message(chat_id, 'First please tell where {} is now (you may use the button \"Share your location\" below) \n\nor \n\nwhere he was photographed (to enter address which differs from your current location please attach >> Location and drag the map to desired place)'.format(OURTRAVELLER),
+            bot.send_message(chat_id, 'First please tell <i>where</i> {} <i>is now</i> (you may use the button \"<b>Share your location</b>\" below) \n\nor \n\n<i>where he was</i> photographed (to enter address which differs from your current location please <b>attach >> Location</b> and drag the map to desired place)'.format(OURTRAVELLER),
                              parse_mode='html', reply_markup=chatbot_markup.share_location)
             if 'location_input' not in CONTEXTS:
                 CONTEXTS.append('location_input')
@@ -720,6 +723,7 @@ def gmaps_geocoder(lat, lng):
     Getting geodata (namely 'formatted_address', 'locality', 'administrative_area_level_1', 'country' and 'place_id')
     for coordinates received after location sharing in Telegram
     '''
+    global NEWLOCATION
     URL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng={},{}&key={}'.format(lat, lng, GOOGLE_MAPS_API_KEY)
     try:
         r = requests.get(URL).json().get('results')
