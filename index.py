@@ -221,6 +221,8 @@ def index():
 
                     new_teddy_location = {
                         'author': author,
+                        'channel': 'website',
+                        'user_id_on_channel': None, # for website entry
                         'longitude': float(geodata.get('longitude')),
                         'latitude': float(geodata.get('latitude')),
                         'formatted_address': geodata.get('formatted_address'),

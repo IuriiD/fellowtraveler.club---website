@@ -39,6 +39,11 @@ you_got_teddy_menu_add_place = types.InlineKeyboardButton("Add location", callba
 you_got_teddy_menu_contacts = types.InlineKeyboardButton("Contact support", callback_data="Contact support")
 you_got_teddy_menu.row(you_got_teddy_menu_instructions, you_got_teddy_menu_add_place, you_got_teddy_menu_contacts)
 
-share_location = types.ReplyKeyboardMarkup(row_width=1)
+share_location = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 share_location_button = types.KeyboardButton('Share your location', request_location=True)
 share_location.add(share_location_button)
+
+next_or_instructions_menu = types.InlineKeyboardMarkup()
+next_or_instructions_menu_next = types.InlineKeyboardButton("Next", callback_data="Next")
+next_or_instructions_menu_instructions = types.InlineKeyboardButton("Instructions", callback_data="Get instructions")
+next_or_instructions_menu.row(next_or_instructions_menu_next, next_or_instructions_menu_instructions)

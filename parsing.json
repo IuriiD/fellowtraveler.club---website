@@ -508,3 +508,144 @@
   'pinned_message': None,
   'new_chat_title': None
 }
+
+// Reverse geocoding - GMAPS
+{
+  'results': [
+    {
+      'address_components': [
+      {
+        'types': ['street_number'],
+        'long_name': '88-90',
+        'short_name': '88-90'
+      },
+      {
+        'types': ['route'],
+        'long_name': 'Kavkazska Street',
+        'short_name': 'Kavkazska St'
+      },
+      {
+        'types': ['political', 'sublocality', 'sublocality_level_1'],
+        'long_name': "Sosnivs'kyi district",
+        'short_name': "Sosnivs'kyi district"
+      },
+      {
+        'types': ['locality', 'political'],
+        'long_name': 'Cherkasy',
+        'short_name': 'Cherkasy'
+      },
+      {
+        'types': ['administrative_area_level_3', 'political'],
+        'long_name': "Cherkas'ka city council",
+        'short_name': "Cherkas'ka city council"
+      },
+      {
+        'types': ['administrative_area_level_1', 'political'],
+        'long_name': "Cherkas'ka oblast",
+        'short_name': "Cherkas'ka oblast"
+      },
+      {
+        'types': ['country', 'political'],
+        'long_name': 'Ukraine',
+        'short_name': 'UA'
+      },
+      {
+        'types': ['postal_code'],
+        'long_name': '18000',
+        'short_name': '18000'
+      }
+    ],
+      'place_id': 'EnDQstGD0LvQuNGG0Y8g0JrQsNCy0LrQsNC30YzQutCwLCA4OC05MCwg0KfQtdGA0LrQsNGB0LgsINCn0LXRgNC60LDRgdGM0LrQsCDQvtCx0LvQsNGB0YLRjCwg0KPQutGA0LDRl9C90LAsIDE4MDAw',
+      'types': ['street_address'],
+      'geometry': {
+        'viewport': {
+          'southwest': {
+            'lng': 32.0449272697085,
+            'lat': 49.4555933697085
+          },
+          'northeast': {
+            'lng': 32.0476252302915,
+            'lat': 49.4582913302915
+          }
+        },
+        'location_type': 'RANGE_INTERPOLATED',
+        'bounds': {
+          'southwest': {
+            'lng': 32.0454589,
+            'lat': 49.4564923
+          },
+          'northeast': {
+            'lng': 32.0470936,
+            'lat': 49.4573924
+          }
+        },
+        'location': {
+          'lng': 32.0463604,
+          'lat': 49.45646199999999
+        }
+      },
+      'formatted_address': "Kavkazska St, 88-90, Cherkasy, Cherkas'ka oblast, Ukraine, 18000"
+    },
+    {
+      'address_components': [
+        {
+          'types': ['neighborhood', 'political'],
+          'long_name': 'Blahovisnyi',
+          'short_name': 'Blahovisnyi'
+        },
+        {
+          'types': ['political', 'sublocality', 'sublocality_level_1'],
+          'long_name': "Sosnivs'kyi district",
+          'short_name': "Sosnivs'kyi district"
+        },
+        {
+          'types': ['locality', 'political'],
+          'long_name': 'Cherkasy',
+          'short_name': 'Cherkasy'
+        },
+        {
+          'types': ['administrative_area_level_3', 'political'],
+          'long_name': "Cherkas'ka city council",
+          'short_name': "Cherkas'ka city council"
+        },
+        {
+          'types': ['administrative_area_level_1', 'political'],
+          'long_name': "Cherkas'ka oblast",
+          'short_name': "Cherkas'ka oblast"
+        },
+        {
+          'types': ['country', 'political'],
+          'long_name': 'Ukraine',
+          'short_name': 'UA'
+        },
+        {
+          'types': ['postal_code'],
+          'long_name': '18000',
+          'short_name': '18000'
+        }
+      ],
+      'place_id': 'ChIJcdTH8ZNM0UARpHp7A3psk6A',
+      'types': ['neighborhood', 'political'],
+      'geometry': {
+        'viewport': {
+          'southwest': {
+            'lng': 32.0198894,
+            'lat': 49.4425497
+          },
+          'northeast': {
+            'lng': 32.0596075,
+            'lat': 49.4697137
+          }
+        },
+        'location_type': 'APPROXIMATE',
+        'bounds': {
+          'southwest': {
+            'lng': 32.0198894,
+            'lat': 49.4425497
+          },
+          'northeast': {
+            'lng': 32.0596075,
+            'lat': 49.4697137
+          }
+        },
+        'location': {'lng': 32.0335859, 'lat': 49.4591785}}, 'formatted_address': "Blahovisnyi, Cherkasy, Cherkas'ka oblast, Ukraine, 18000"}, {'address_components': [{'types': ['political', 'sublocality', 'sublocality_level_1'], 'long_name': "Sosnivs'kyi district", 'short_name': "Sosnivs'kyi district"}, {'types': ['locality', 'political'], 'long_name': 'Cherkasy', 'short_name': 'Cherkasy'}, {'types': ['administrative_area_level_3', 'political'], 'long_name': "Cherkas'ka city council", 'short_name': "Cherkas'ka city council"}, {'types': ['administrative_area_level_1', 'political'], 'long_name': "Cherkas'ka oblast", 'short_name': "Cherkas'ka oblast"}, {'types': ['country', 'political'], 'long_name': 'Ukraine', 'short_name': 'UA'}, {'types': ['postal_code'], 'long_name': '18000', 'short_name': '18000'}], 'place_id': 'ChIJTYNXCWNM0UARSpoPspfNKec', 'types': ['political', 'sublocality', 'sublocality_level_1'], 'geometry': {'viewport': {'southwest': {'lng': 31.9578749, 'lat': 49.385454}, 'northeast': {'lng': 32.105656, 'lat': 49.49797}}, 'location_type': 'APPROXIMATE', 'bounds': {'southwest': {'lng': 31.9578749, 'lat': 49.385454}, 'northeast': {'lng': 32.105656, 'lat': 49.49797}}, 'location': {'lng': 32.0281549, 'lat': 49.4353919}}, 'formatted_address': "Sosnivs'kyi district, Cherkasy, Cherkas'ka oblast, Ukraine, 18000"}, {'address_components': [{'types': ['locality', 'political'], 'long_name': 'Cherkasy', 'short_name': 'Cherkasy'}, {'types': ['administrative_area_level_3', 'political'], 'long_name': "Cherkas'ka city council", 'short_name': "Cherkas'ka city council"}, {'types': ['administrative_area_level_1', 'political'], 'long_name': "Cherkas'ka oblast", 'short_name': "Cherkas'ka oblast"}, {'types': ['country', 'political'], 'long_name': 'Ukraine', 'short_name': 'UA'}, {'types': ['postal_code'], 'long_name': '18000', 'short_name': '18000'}], 'place_id': 'ChIJf5dkYIZL0UAR2LXLqSPn3Pg', 'types': ['locality', 'political'], 'geometry': {'viewport': {'southwest': {'lng': 31.9578749, 'lat': 49.364583}, 'northeast': {'lng': 32.140585, 'lat': 49.4976831}}, 'location_type': 'APPROXIMATE', 'bounds': {'southwest': {'lng': 31.9578749, 'lat': 49.364583}, 'northeast': {'lng': 32.140585, 'lat': 49.4976831}}, 'location': {'lng': 32.059767, 'lat': 49.444433}}, 'formatted_address': "Cherkasy, Cherkas'ka oblast, Ukraine, 18000"}, {'address_components': [{'types': ['postal_code'], 'long_name': '18000', 'short_name': '18000'}, {'types': ['locality', 'political'], 'long_name': 'Cherkasy', 'short_name': 'Cherkasy'}, {'types': ['administrative_area_level_3', 'political'], 'long_name': "Cherkas'ka city council", 'short_name': "Cherkas'ka city council"}, {'types': ['administrative_area_level_1', 'political'], 'long_name': "Cherkas'ka oblast", 'short_name': "Cherkas'ka oblast"}, {'types': ['country', 'political'], 'long_name': 'Ukraine', 'short_name': 'UA'}], 'place_id': 'ChIJEQPJW4ZL0UARmbw1vqtNlOI', 'types': ['postal_code'], 'geometry': {'viewport': {'southwest': {'lng': 31.9578749, 'lat': 49.364583}, 'northeast': {'lng': 32.140585, 'lat': 49.49797}}, 'location_type': 'APPROXIMATE', 'bounds': {'southwest': {'lng': 31.9578749, 'lat': 49.364583}, 'northeast': {'lng': 32.140585, 'lat': 49.49797}}, 'location': {'lng': 32.059767, 'lat': 49.444433}}, 'formatted_address': "Cherkasy, Cherkas'ka oblast, Ukraine, 18000"}, {'address_components': [{'types': ['administrative_area_level_3', 'political'], 'long_name': "Cherkas'ka city council", 'short_name': "Cherkas'ka city council"}, {'types': ['administrative_area_level_1', 'political'], 'long_name': "Cherkas'ka oblast", 'short_name': "Cherkas'ka oblast"}, {'types': ['country', 'political'], 'long_name': 'Ukraine', 'short_name': 'UA'}], 'place_id': 'ChIJexHORGxM0UARQGMq6V4fpjg', 'types': ['administrative_area_level_3', 'political'], 'geometry': {'viewport': {'southwest': {'lng': 31.8902991, 'lat': 49.364583}, 'northeast': {'lng': 32.140585, 'lat': 49.49797}}, 'location_type': 'APPROXIMATE', 'bounds': {'southwest': {'lng': 31.8902991, 'lat': 49.364583}, 'northeast': {'lng': 32.140585, 'lat': 49.49797}}, 'location': {'lng': 32.059767, 'lat': 49.444433}}, 'formatted_address': "Cherkas'ka city council, Cherkas'ka oblast, Ukraine"}, {'address_components': [{'types': ['administrative_area_level_1', 'political'], 'long_name': "Cherkas'ka oblast", 'short_name': "Cherkas'ka oblast"}, {'types': ['country', 'political'], 'long_name': 'Ukraine', 'short_name': 'UA'}], 'place_id': 'ChIJg26lOnZL0UARiu-AtokbRyg', 'types': ['administrative_area_level_1', 'political'], 'geometry': {'viewport': {'southwest': {'lng': 29.6063949, 'lat': 48.4519151}, 'northeast': {'lng': 32.8929361, 'lat': 50.228656}}, 'location_type': 'APPROXIMATE', 'bounds': {'southwest': {'lng': 29.6063949, 'lat': 48.4519151}, 'northeast': {'lng': 32.8929361, 'lat': 50.228656}}, 'location': {'lng': 32.059767, 'lat': 49.444433}}, 'formatted_address': "Cherkas'ka oblast, Ukraine"}, {'address_components': [{'types': ['country', 'political'], 'long_name': 'Ukraine', 'short_name': 'UA'}], 'place_id': 'ChIJjw5wVMHZ0UAREED2iIQGAQA', 'types': ['country', 'political'], 'geometry': {'viewport': {'southwest': {'lng': 22.137159, 'lat': 44.2924}, 'northeast': {'lng': 40.2285809, 'lat': 52.37958099999999}}, 'location_type': 'APPROXIMATE', 'bounds': {'southwest': {'lng': 22.137159, 'lat': 44.2924}, 'northeast': {'lng': 40.2285809, 'lat': 52.37958099999999}}, 'location': {'lng': 31.1655799, 'lat': 48.379433}}, 'formatted_address': 'Ukraine'}], 'status': 'OK'}

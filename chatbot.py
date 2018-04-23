@@ -3,7 +3,7 @@
 # from flask import Flask
 import telebot
 import requests, json
-from keys import FLASK_SECRET_KEY, TG_TOKEN, DF_TOKEN
+from keys import FLASK_SECRET_KEY, TG_TOKEN, DF_TOKEN, GOOGLE_MAPS_API_KEY
 from pymongo import MongoClient
 import time
 import chatbot_markup
@@ -34,7 +34,21 @@ LONG_TIMEOUT = 0  # 6
     tell_your_story - Display this traveler's story
     you_got_fellowtraveler - Do you have it? Get info what to do next    
 '''
-contexts = []  # holds last state
+CONTEXTS = []   # holds last state
+NEWLOCATION = {    # stores data for traveler's location before storing it to DB
+    'author': None,
+    'channel': 'Telegram',
+    'user_id_on_channel': None,  # for website entry
+    'longitude': None,
+    'latitude': None,
+    'formatted_address': None,
+    'locality': None,
+    'administrative_area_level_1': None,
+    'country': None,
+    'place_id': None,
+    'comment': None,
+    'photos': None
+}
 
 
 ######################################## / Handlers START ######################################
@@ -42,11 +56,12 @@ contexts = []  # holds last state
 @bot.message_handler(commands=['start'])
 # Block 0
 def start_handler(message):
-    if 'if_journey_info_needed' not in contexts:
+    if 'if_journey_info_needed' not in CONTEXTS:
         bot.send_message(message.chat.id, 'Hello, {}!'.format(message.from_user.first_name))
         time.sleep(SHORT_TIMEOUT)
         travelers_story_intro(message.chat.id)
-        contexts.append('if_journey_info_needed')
+        if 'if_journey_info_needed' not in CONTEXTS:
+            CONTEXTS.append('if_journey_info_needed')
         # Console logging
         print()
         print('User entered "/start"')
@@ -55,7 +70,8 @@ def start_handler(message):
 @bot.message_handler(commands=['tell_your_story'])
 def tell_your_story(message):
     travelers_story_intro(message.chat.id)
-    contexts.append('if_journey_info_needed')
+    if 'if_journey_info_needed' not in CONTEXTS:
+        CONTEXTS.append('if_journey_info_needed')
     # Console logging
     print()
     print('User entered "/tell_your_story"')
@@ -71,7 +87,7 @@ def help(message):
 
 @bot.message_handler(commands=['you_got_fellowtraveler'])
 def add_location(message):
-    if 'code_correct' not in contexts:
+    if 'code_correct' not in CONTEXTS:
         bot.send_message(message.chat.id, 'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please enter the <i>secret code</i> from the toy', parse_mode='html')
         bot.send_photo(message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_contacts_menu)
     # Console logging
@@ -90,20 +106,21 @@ def text_handler(message):
     # Get input data
     users_input = message.text
     chat_id = message.chat.id
-    users_first_name = message.from_user.first_name
+    from_user = message.from_user
 
     # And pass it to the main handler function [main_hadler()]
-    main_handler(users_input, chat_id, users_first_name, False)
+    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 # Handling clicks on different InlineKeyboardButtons
 def button_click_handler(call):
     # All possible buttons (10)
-    # Yes | No, thanks | Cancel | Help | You got Teddy? | Teddy's story | Next | Support | Instructions | Add location
+    # Yes | No, thanks | Cancel | Help | You got Teddy? | Teddy's story | Next | Contact support | Instructions | Add location
     # Buttons | Instructions | Add location | are available only after entering secret code
-    # Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context,
-    # other buttons ( Yes | No, thanks | Cancel | Next) - depend on context, if no context or irrelevant context - they
+    # Buttons | You got Teddy? | Teddy's story | Help | Contact Support | are activated irrespective of context,
+    # Buttons | Instructions | Add location | are activated always in context 'code_correct',
+    # other buttons ( Yes | No, thanks | Cancel | Next) - depend on context, if contexts==[] or irrelevant context - they
     # should return a response for a Fallback_Intent
 
     bot.answer_callback_query(call.id, text="")
@@ -111,11 +128,24 @@ def button_click_handler(call):
     # Get input data
     users_input = call.data
     chat_id = call.message.chat.id
-    users_first_name = call.from_user.first_name
+    from_user = call.from_user
 
     # And pass it to the main handler function [main_hadler()]
-    main_handler(users_input, chat_id, users_first_name, True)
+    main_handler(users_input, chat_id, from_user, is_btn_click=True, geodata=None)
 
+
+@bot.message_handler(content_types=['location'])
+def location_handler(message):
+    # Get input data
+    users_input = message.text
+    chat_id = message.chat.id
+    from_user = message.from_user
+    lat = message.location.latitude
+    lng = message.location.longitude
+    print('lat: {}, lng: {}'.format(lat, lng))
+
+    # And pass it to the main handler function [main_hadler()]
+    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata={'lat': lat, 'lng': lng})
 
 ################################### 'Custom' handlers END ##################################
 
@@ -140,14 +170,23 @@ def dialogflow(query, chat_id, lang_code='en'):
     }
     return output
 
-def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
+def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None):
     '''
         Main handler. Function gets input from user (typed text OR callback_data from button clicks), 'feeds' it
         to Dialogflow for NLP, receives intent and speech, and then depending on intent and context responds to user
+        users_input - typed text or callback_data from button
+        chat_id - chat ID (call.message.chat.id or message.chat.id)
+        from_user - block of data about user (1st name, id etc)
+        is_btn_click - whether it's callback_data from button (True) or manual text input (False, default)
+        geodata - dictionary with latitude/longitude or None (default)
     '''
-    dialoflows_response = dialogflow(users_input, chat_id)
-    speech = dialoflows_response['speech']
-    intent = dialoflows_response['intent']
+    if geodata:
+        speech = 'Location data: latitude: {}, longitude: {}'.format(geodata['lat'], geodata['lng'])
+        intent = 'location_received'
+    else:
+        dialoflows_response = dialogflow(users_input, chat_id)
+        speech = dialoflows_response['speech']
+        intent = dialoflows_response['intent']
 
     # Console logging
     print('')
@@ -157,23 +196,25 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
         input_type = 'entered manually'
     print('User\'s input: {} ({})'.format(users_input, input_type))
     print('Intent: {}, speech: {}'.format(intent, speech))
-    print('Contexts: {}'.format(contexts))
+    print('Contexts: {}'.format(CONTEXTS))
 
     # Block 1. Traveler's story
     # Block 1-1. Reply to typing/clocking_buttons 'Yes'/'No' displayed after the intro block asking
     # if user want's to know more about T. journey
     # On exit of block if user enters 'Yes' - context 'journey_next_info', if 'No' or he/she clicks buttons of
     # previous blocks - contexts[] is cleared
-    if 'if_journey_info_needed' in contexts:
+    if 'if_journey_info_needed' in CONTEXTS:
         if intent == 'smalltalk.confirmation.no':
             time.sleep(SHORT_TIMEOUT)
-            contexts.clear()
+            if 'if_journey_info_needed' in CONTEXTS:
+                CONTEXTS.remove('if_journey_info_needed')
             bot.send_message(chat_id, 'Ok. Than we can just talk ;)\nJust in case here\'s my menu',
                              reply_markup=chatbot_markup.intro_menu)
         elif intent == 'smalltalk.confirmation.yes':
             journey_intro(chat_id)
-            contexts.clear()
-            contexts.append('journey_next_info')
+            if 'if_journey_info_needed' in CONTEXTS:
+                CONTEXTS.remove('if_journey_info_needed')
+            CONTEXTS.append('journey_next_info')
         # If user is clicking buttons under previous blocks (for eg., buttons 'FAQ', <Traveler>'s story, You got traveler)
         # call classifier() with cleaned contexts
         else:
@@ -190,7 +231,7 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
     # b) if several places were visited - 2 contexts are added:
     # 'journey_summary_presented' and {'location_shown': None, 'total_locations': total_locations}
     # 2) 'Help' or clicks buttons of previous blocks - contexts[] is cleared
-    elif 'journey_next_info' in contexts:
+    elif 'journey_next_info' in CONTEXTS:
         if intent == 'next_info':
             total_locations = journey_begins(chat_id, OURTRAVELLER)
             time.sleep(SHORT_TIMEOUT)
@@ -200,16 +241,19 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
                 bot.send_message(chat_id,
                                  'And that\'s all my journey so far ;)\n\nWhat would you like to do next? We can just talk or use this menu:',
                                  reply_markup=chatbot_markup.intro_menu)
-                contexts.clear()
+                if 'journey_next_info' in CONTEXTS:
+                    CONTEXTS.remove('journey_next_info')
             # If there are >1 visited places, ask user if he wants to see them ("Yes/No/Help")
             else:
                 bot.send_message(chat_id, 'Would you like to see all places that I have been to?',
                                  reply_markup=chatbot_markup.yes_no_help_menu)
-                contexts.clear()
-                contexts.append('journey_summary_presented')
-                contexts.append({'location_shown': None, 'total_locations': total_locations})
+                if 'journey_next_info' in CONTEXTS:
+                    CONTEXTS.remove('journey_next_info')
+                CONTEXTS.append('journey_summary_presented')
+                CONTEXTS.append({'location_shown': None, 'total_locations': total_locations})
         elif intent == 'show_faq':
-            contexts.clear()
+            if 'journey_next_info' in CONTEXTS:
+                CONTEXTS.remove('journey_next_info')
             get_help(chat_id)
         # If user is clicking buttons under previous blocks - call classifier() with cleaned contexts
         else:
@@ -223,22 +267,25 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
     # on exit:
     # 1) if user types/clicks 'Yes' - 2 contexts 'locations_iteration' and {'location_shown': 0, 'total_locations': total_locations}
     # 2) if user types/clicks 'No/Help' or clicks buttons of previous blocks - contexts[] is cleared
-    elif 'journey_summary_presented' in contexts:
+    elif 'journey_summary_presented' in CONTEXTS:
         if intent == 'smalltalk.confirmation.yes':  # "Yes" button is available if >1 places were visited
             the_1st_place(chat_id, OURTRAVELLER, True)
-            if 'journey_summary_presented' in contexts:
-                contexts.remove('journey_summary_presented')
-            contexts.append('locations_iteration')
-            for context in contexts:
+            if 'journey_summary_presented' in CONTEXTS:
+                CONTEXTS.remove('journey_summary_presented')
+            if 'locations_iteration' not in CONTEXTS:
+                CONTEXTS.append('locations_iteration')
+            for context in CONTEXTS:
                 if 'location_shown' in context:
                     context['location_shown'] = 0
         elif intent == 'smalltalk.confirmation.no':
             time.sleep(SHORT_TIMEOUT)
-            contexts.clear()
+            if 'journey_summary_presented' in CONTEXTS:
+                CONTEXTS.remove('journey_summary_presented')
             bot.send_message(chat_id, 'Ok. Than we can just talk ;)\nJust in case here\'s my menu',
                              reply_markup=chatbot_markup.intro_menu)
         elif intent == 'show_faq':
-            contexts.clear()
+            if 'journey_summary_presented' in CONTEXTS:
+                CONTEXTS.remove('journey_summary_presented')
             get_help(chat_id)
         # If user is clicking buttons under previous blocks - call classifier() with cleaned contexts
         else:
@@ -256,27 +303,29 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
     # a) if the last place visited is shown - contexts[] is cleared
     # b) if places to show remain - 2 contexts: 'locations_iteration' and {'location_shown': X+1, 'total_locations': Y}
     # 2) types/ckicks button 'Help' or buttons of previous blocks - contexts[] is cleared
-    elif 'locations_iteration' in contexts:
+    elif 'locations_iteration' in CONTEXTS:
         if intent == 'next_info':
             location_shown = 0
             total_locations = 1
-            for context in contexts:
+            for context in CONTEXTS:
                 if 'location_shown' in context:
                     location_shown = context['location_shown']
                     total_locations = context['total_locations']
             if total_locations - (location_shown + 1) == 1:
-                contexts.clear()
+                if 'locations_iteration' in CONTEXTS:
+                    CONTEXTS.remove('locations_iteration')
                 every_place(chat_id, OURTRAVELLER, location_shown + 1, False)
                 bot.send_message(chat_id,
                                  'And that\'s all my journey so far ;)\n\nWhat would you like to do next? We can just talk or use this menu:',
                                  reply_markup=chatbot_markup.intro_menu)
             elif total_locations - (location_shown + 1) > 1:
                 every_place(chat_id, OURTRAVELLER, location_shown + 1, True)
-                for context in contexts:
+                for context in CONTEXTS:
                     if 'location_shown' in context:
                         context['location_shown'] += 1
         elif intent == 'show_faq':
-            contexts.clear()
+            if 'locations_iteration' in CONTEXTS:
+                CONTEXTS.remove('locations_iteration')
             get_help(chat_id)
         # If user is clicking buttons under previous blocks - call classifier() with cleaned contexts
         else:
@@ -287,15 +336,17 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
 
     # Block 2. If you got a fellow traveler
     # Block 2-1. User clicked button/typed 'You got Teddy?' and was prompted to enter the secret code
-    elif 'enters_code' in contexts:
+    elif 'enters_code' in CONTEXTS:
         # If user enters 'Cancel' or smth similar after entering invalid secret_code - update contexts
         if intent == 'smalltalk.confirmation.cancel':
-            contexts.clear()
+            if 'enters_code' in CONTEXTS:
+                CONTEXTS.remove('enters_code')
             bot.send_message(chat_id, 'Ok. What would you like to do next?',
                          reply_markup=chatbot_markup.intro_menu)
         elif intent == 'contact_support':
-            contexts.clear()
-            contexts.append('contact_support')
+            if 'enters_code' in CONTEXTS:
+                CONTEXTS.remove('enters_code')
+            CONTEXTS.append('contact_support')
             bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below.\nYou can also write directly to my email <b>iurii.dziuban@gmail.com</b>.',
                              parse_mode='html', reply_markup=chatbot_markup.intro_menu)
         # If user enters whatever else, not == intent 'smalltalk.confirmation.cancel'
@@ -303,8 +354,9 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
             if not is_btn_click:
                 secret_code_entered = users_input
                 if secret_code_validation(secret_code_entered, chat_id):
-                    contexts.clear()
-                    contexts.append('code_correct')
+                    if 'enters_code' in CONTEXTS:
+                        CONTEXTS.remove('enters_code')
+                    CONTEXTS.append('code_correct')
                     bot.send_message(chat_id, 'Code correct, thanks! Sorry for formalities')
                     bot.send_message(chat_id,
                                      'As I might have said, my goal is to see the world.'
@@ -327,20 +379,59 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
     # Block 2-2. User entered correct password and now can get 'priviledged' instructions, add location or contact support
     # Context 'code_correct' is being cleared after adding a new location, clicking 'Contact support' or if user enters
     # commands outside of of block that is displayed after entering secret code
-    elif 'code_correct' in contexts:
+    elif 'code_correct' in CONTEXTS:
         if intent == 'contact_support':
-            contexts.clear()
-            contexts.append('contact_support')
+            if 'code_correct' in CONTEXTS:
+                CONTEXTS.remove('code_correct')
+            CONTEXTS.append('contact_support')
             bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below.\nYou can also write directly to my email <b>iurii.dziuban@gmail.com</b>.',
                              parse_mode='html', reply_markup=chatbot_markup.intro_menu)
         elif intent == 'show_instructions':
             bot.send_message(chat_id, 'Here are our detailed instructions for those who got {}'.format(OURTRAVELLER),
                              parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
         elif intent == 'add_location':
-            bot.send_message(chat_id, 'First please tell where {} is now or in what place he was photographed\nPlease type approximate address or share your location'.format(OURTRAVELLER),
+            bot.send_message(chat_id, 'First please tell where {} is now (you may use the button \"Share your location\" below) \n\nor \n\nwhere he was photographed (to enter address which differs from your current location please attach >> Location and drag the map to desired place)'.format(OURTRAVELLER),
                              parse_mode='html', reply_markup=chatbot_markup.share_location)
-            contexts.append('location_input')
-
+            if 'location_input' not in CONTEXTS:
+                CONTEXTS.append('location_input')
+        else:
+            # Block 2-3. User enters location ('location_input' in contexts)
+            # It can be either his/her current location shared using Telegram's location sharing function or a plain text input
+            # from text_handler() which should be processed using Google Maps Geocoding API
+            if 'location_input' in CONTEXTS:
+                # And user shared his/her location
+                if intent == 'location_received':  # sharing or current location
+                    # Reverse geocode lat/lng to geodata
+                    # Also as this is the 1st data for new locations, fill the fields 'author', 'channel' and 'user_id_on_channel'
+                    NEWLOCATION = {
+                        'author': from_user.first_name,
+                        'user_id_on_channel': from_user.id,
+                        'channel': 'Telegram',
+                        'longitude': geodata['lng'],
+                        'latitude': geodata['lat']
+                    }
+                    gmaps_geocoder(geodata['lat'], geodata['lng'])
+                    CONTEXTS.remove('location_input')
+                    CONTEXTS.append('media_input')
+                    bot.send_message(chat_id,
+                                     'Thanks! Now please upload some photos with {} from this place (optionally but desired)'.format(
+                                         OURTRAVELLER), parse_mode='html',
+                                     reply_markup=chatbot_markup.next_or_instructions_menu)
+                    print(NEWLOCATION)
+                # User didn't share his/her location
+                else:
+                    bot.send_message(chat_id,
+                                     'That doesn\'t look like a valid location. Please try once again',
+                                     parse_mode='html', reply_markup=chatbot_markup.share_location)
+                    if not always_triggered(chat_id, intent,
+                                            speech):                # temp block to be deleted after text input of address will be made
+                        # All other text inputs/button clicks
+                        default_fallback(chat_id, intent, speech)   # end temp block
+            else:
+                # Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context
+                if not always_triggered(chat_id, intent, speech):
+                    # All other text inputs/button clicks
+                    default_fallback(chat_id, intent, speech)
 
     # General endpoint - if user typed/clicked something and contexts[] is empty
     else:
@@ -352,7 +443,8 @@ def main_handler(users_input, chat_id, users_first_name, is_btn_click=False):
 
 def always_triggered(chat_id, intent, speech):
     '''
-        Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context
+        Buttons | You got Teddy? | Teddy's story | Help | are activated always, irrespective of context
+        Buttons | Instructions | Add location | are activated always in context 'code_correct'
     '''
     # User typed 'Help' or similar
     if intent == 'show_faq':
@@ -367,25 +459,48 @@ def always_triggered(chat_id, intent, speech):
         time.sleep(SHORT_TIMEOUT)
         bot.send_message(chat_id, 'Do you want to know more about my journey?',
                          reply_markup=chatbot_markup.yes_no_gotteddy_menu)
-        contexts.append('if_journey_info_needed')
+        if 'if_journey_info_needed' not in CONTEXTS:
+            CONTEXTS.append('if_journey_info_needed')
         return True
 
     # User typed "You got Teddy" or similar
     elif intent == 'you_got_fellowtraveler':
-        if 'code_correct' not in contexts:
+        if 'code_correct' not in CONTEXTS:
             bot.send_message(chat_id,
                              'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please enter the <i>secret code</i> from the toy',
                              parse_mode='html')
             # Image with an example of secret code
             bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg',
                            reply_markup=chatbot_markup.cancel_help_contacts_menu)
-            contexts.clear()
-            contexts.append('enters_code')
+            CONTEXTS.clear()
+            CONTEXTS.append('enters_code')
         else:
             bot.send_message(chat_id,
                              'Ok. What would you like to do next?',
                              parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
         return True
+
+    # User clicks/types "Contact support"
+    elif intent == 'contact_support':
+        if 'contact_support' not in CONTEXTS:
+            CONTEXTS.append('contact_support')
+            bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below.\nYou can also write directly to my email <b>iurii.dziuban@gmail.com</b>.',
+                         parse_mode='html', reply_markup=chatbot_markup.intro_menu)
+        return True
+
+    # Buttons | Instructions | Add location | are activated always in context 'code_correct'
+    if 'code_correct' in CONTEXTS:
+        if intent == 'show_instructions':
+            bot.send_message(chat_id, 'Here are our detailed instructions for those who got {}'.format(OURTRAVELLER),
+                             parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
+            return True
+
+        elif intent == 'add_location':
+            bot.send_message(chat_id, 'First please tell where {} is now or in what place he was photographed\nPlease type approximate address or share your location'.format(OURTRAVELLER),
+                             parse_mode='html', reply_markup=chatbot_markup.share_location)
+            if 'location_input' not in CONTEXTS:
+                CONTEXTS.append('location_input')
+            return True
 
     else:
         return False
@@ -395,7 +510,12 @@ def default_fallback(chat_id, intent, speech):
     '''
         Response for all inputs (manual entry or button clicks) which are irrelevant to current context
     '''
-    contexts.clear()
+    if 'code_correct' in CONTEXTS:
+        CONTEXTS.clear()
+        CONTEXTS.append('code_correct')
+    else:
+        CONTEXTS.clear()
+
     bot.send_message(chat_id, speech)
     time.sleep(SHORT_TIMEOUT)
     bot.send_message(chat_id, 'What would you like to do next?', reply_markup=chatbot_markup.intro_menu)
@@ -573,7 +693,7 @@ def get_help(chat_id):
     '''
         Displays FAQ/help
     '''
-    contexts.clear()
+    CONTEXTS.clear()
     bot.send_message(chat_id, 'Here\'s our FAQ')
     bot.send_message(chat_id, 'What would you like to do next?',
                      reply_markup=chatbot_markup.intro_menu)
@@ -593,6 +713,43 @@ def secret_code_validation(secret_code_entered, chat_id):
         return False
     else:
         return True
+
+def gmaps_geocoder(lat, lng):
+    '''
+    Google Maps - reverse geocoding (https://developers.google.com/maps/documentation/geocoding/start#reverse)
+    Getting geodata (namely 'formatted_address', 'locality', 'administrative_area_level_1', 'country' and 'place_id')
+    for coordinates received after location sharing in Telegram
+    '''
+    URL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng={},{}&key={}'.format(lat, lng, GOOGLE_MAPS_API_KEY)
+    try:
+        r = requests.get(URL).json().get('results')
+
+        if r[0]:
+            formatted_address = r[0].get('formatted_address')
+            address_components = r[0].get('address_components')
+            locality, administrative_area_level_1, country, place_id = None, None, None, None
+            for address_component in address_components:
+                types = address_component.get('types')
+                short_name = address_component.get('short_name')
+                # print("type: {}, short name: {}".format(types, short_name))
+                if 'locality' in types:
+                    locality = short_name
+                elif 'administrative_area_level_1' in types:
+                    administrative_area_level_1 = short_name
+                elif 'country' in types:
+                    country = short_name
+            place_id = r[0].get('place_id')
+
+        NEWLOCATION['formatted_address'] = formatted_address
+        NEWLOCATION['locality'] = locality
+        NEWLOCATION['administrative_area_level_1'] = administrative_area_level_1
+        NEWLOCATION['country'] = country
+        NEWLOCATION['place_id'] = place_id
+
+        return True
+    except Exception as e:
+        print('gmaps_geocoder() exception: {}'.format(e))
+        return False
 
 
 ####################################### Functions END ####################################
