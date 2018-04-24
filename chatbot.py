@@ -9,6 +9,9 @@ import time
 import chatbot_markup
 import tg_functions  # functions used for 'classical' website on flask (tg for TeddyGo [initial project's name]
 from passlib.hash import sha256_crypt
+from werkzeug.utils import secure_filename
+import os
+import datetime
 
 print(' ')
 print('########### chatbot.py - new session ############')
@@ -17,10 +20,6 @@ print('########### chatbot.py - new session ############')
 # app.secret_key = FLASK_SECRET_KEY
 bot = telebot.TeleBot(TG_TOKEN)
 
-OURTRAVELLER = 'Teddy'
-SHORT_TIMEOUT = 0  # 2 # seconds, between messages for imitation of 'live' typing
-MEDIUM_TIMEOUT = 0  # 4
-LONG_TIMEOUT = 0  # 6
 
 '''
     All commands can be entered either using InlineKeyboardButtons or by typing exact or close by meaning words.
@@ -34,6 +33,13 @@ LONG_TIMEOUT = 0  # 6
     tell_your_story - Display this traveler's story
     you_got_fellowtraveler - Do you have it? Get info what to do next    
 '''
+
+OURTRAVELLER = 'Teddy'
+PHOTO_DIR = 'static/uploads/'
+SHORT_TIMEOUT = 0  # 2 # seconds, between messages for imitation of 'live' typing
+MEDIUM_TIMEOUT = 0  # 4
+LONG_TIMEOUT = 0  # 6
+
 CONTEXTS = []   # holds last state
 NEWLOCATION = {    # stores data for traveler's location before storing it to DB
     'author': None,
@@ -47,7 +53,7 @@ NEWLOCATION = {    # stores data for traveler's location before storing it to DB
     'country': None,
     'place_id': None,
     'comment': None,
-    'photos': None
+    'photos': []
 }
 
 
@@ -57,15 +63,20 @@ NEWLOCATION = {    # stores data for traveler's location before storing it to DB
 # Block 0
 def start_handler(message):
     if 'if_journey_info_needed' not in CONTEXTS:
+        CONTEXTS.clear()
         bot.send_message(message.chat.id, 'Hello, {}!'.format(message.from_user.first_name))
         time.sleep(SHORT_TIMEOUT)
         travelers_story_intro(message.chat.id)
         if 'if_journey_info_needed' not in CONTEXTS:
             CONTEXTS.append('if_journey_info_needed')
-        # Console logging
-        print()
-        print('User entered "/start"')
-
+    else:
+        travelers_story_intro(message.chat.id)
+        if 'if_journey_info_needed' not in CONTEXTS:
+            CONTEXTS.append('if_journey_info_needed')
+    # Console logging
+    print()
+    print('User entered "/start"')
+    print('Contexts: {}'.format(CONTEXTS))
 
 @bot.message_handler(commands=['tell_your_story'])
 def tell_your_story(message):
@@ -75,7 +86,7 @@ def tell_your_story(message):
     # Console logging
     print()
     print('User entered "/tell_your_story"')
-
+    print('Contexts: {}'.format(CONTEXTS))
 
 @bot.message_handler(commands=['help'])
 def help(message):
@@ -83,16 +94,18 @@ def help(message):
     # Console logging
     print()
     print('User entered "/help"')
+    print('Contexts: {}'.format(CONTEXTS))
 
 
 @bot.message_handler(commands=['you_got_fellowtraveler'])
-def add_location(message):
+def you_got_fellowtraveler(message):
     if 'code_correct' not in CONTEXTS:
         bot.send_message(message.chat.id, 'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please enter the <i>secret code</i> from the toy', parse_mode='html')
         bot.send_photo(message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_contacts_menu)
     # Console logging
     print()
     print('User entered "/you_got_fellowtraveler"')
+    print('Contexts: {}'.format(CONTEXTS))
 
 
 ######################################## / Handlers END ######################################
@@ -109,7 +122,7 @@ def text_handler(message):
     from_user = message.from_user
 
     # And pass it to the main handler function [main_hadler()]
-    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None)
+    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -131,21 +144,64 @@ def button_click_handler(call):
     from_user = call.from_user
 
     # And pass it to the main handler function [main_hadler()]
-    main_handler(users_input, chat_id, from_user, is_btn_click=True, geodata=None)
+    main_handler(users_input, chat_id, from_user, is_btn_click=True, geodata=None, media=False)
 
 
 @bot.message_handler(content_types=['location'])
 def location_handler(message):
     # Get input data
-    users_input = message.text
+    users_input = 'User posted location'
     chat_id = message.chat.id
     from_user = message.from_user
     lat = message.location.latitude
     lng = message.location.longitude
-    print('lat: {}, lng: {}'.format(lat, lng))
 
     # And pass it to the main handler function [main_hadler()]
-    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata={'lat': lat, 'lng': lng})
+    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata={'lat': lat, 'lng': lng}, media=False)
+
+@bot.message_handler(content_types=['photo'])
+def photo_handler(message):
+    global NEWLOCATION
+
+    # Get input data
+    chat_id = message.chat.id
+    from_user = message.from_user
+
+    # Get, check, save photos, add paths to NEWLOCATION
+    if 'media_input' in CONTEXTS:
+        file = bot.get_file(message.photo[-1].file_id)
+        image_url = 'https://api.telegram.org/file/bot{0}/{1}'.format(TG_TOKEN, file.file_path)
+        image_name = image_url.split("/")[-1]
+        try:
+            photo_filename = secure_filename(image_name)
+            if tg_functions.valid_url_extension(photo_filename) and tg_functions.valid_url_mimetype(photo_filename):
+                file_name_wo_extension = os.path.splitext(photo_filename)[0]
+                if len(file_name_wo_extension) > 30:
+                    file_name_wo_extension = file_name_wo_extension[:30]
+                file_extension = os.path.splitext(photo_filename)[1]
+                current_datetime = datetime.datetime.now().strftime("%d%m%y%H%M%S")
+                path = PHOTO_DIR + file_name_wo_extension + '-' + current_datetime + file_extension
+                # !!!
+                path4db = 'uploads/' + file_name_wo_extension + '-' + current_datetime + file_extension
+
+                r = requests.get(image_url, timeout=0.5)
+                if r.status_code == 200:
+                    with open(path, 'wb') as f:
+                        f.write(r.content)
+                NEWLOCATION['photos'].append(path4db)
+                users_input = 'User posted a photo'
+
+                # And pass it to the main handler function [main_hadler()]
+                main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=True)
+        except Exception as e:
+            print('photo_handler() exception: {}'.format(e))
+            users_input = 'File has invalid image extension or invalid image format'
+
+            # And pass it to the main handler function [main_hadler()]
+            main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False)
+    else:
+        users_input = 'Nice photo ;)'
+        main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False)
 
 ################################### 'Custom' handlers END ##################################
 
@@ -170,7 +226,7 @@ def dialogflow(query, chat_id, lang_code='en'):
     }
     return output
 
-def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None):
+def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False):
     '''
         Main handler. Function gets input from user (typed text OR callback_data from button clicks), 'feeds' it
         to Dialogflow for NLP, receives intent and speech, and then depending on intent and context responds to user
@@ -184,8 +240,11 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
     global NEWLOCATION
 
     if geodata:
-        speech = 'Location data: latitude: {}, longitude: {}'.format(geodata['lat'], geodata['lng'])
+        speech = 'Nice place ;)'
         intent = 'location_received'
+    elif media:
+        speech = 'Nice image ;)'
+        intent = 'media_received'
     else:
         dialoflows_response = dialogflow(users_input, chat_id)
         speech = dialoflows_response['speech']
@@ -195,6 +254,10 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
     print('')
     if is_btn_click:
         input_type = 'button click'
+    elif media:
+        input_type = 'media upload'
+    elif geodata:
+        input_type = 'location input'
     else:
         input_type = 'entered manually'
     print('User\'s input: {} ({})'.format(users_input, input_type))
@@ -384,12 +447,14 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
     # commands outside of of block that is displayed after entering secret code
     elif 'code_correct' in CONTEXTS:
         if intent == 'contact_support':
-            if 'code_correct' in CONTEXTS:
-                CONTEXTS.remove('code_correct')
+            CONTEXTS.clear()
+            CONTEXTS.append('code_correct')
             CONTEXTS.append('contact_support')
             bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below.\nYou can also write directly to my email <b>iurii.dziuban@gmail.com</b>.',
                              parse_mode='html', reply_markup=chatbot_markup.intro_menu)
         elif intent == 'show_instructions':
+            CONTEXTS.clear()
+            CONTEXTS.append('code_correct')
             bot.send_message(chat_id, 'Here are our detailed instructions for those who got {}'.format(OURTRAVELLER),
                              parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
         elif intent == 'add_location':
@@ -406,30 +471,75 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
                 if intent == 'location_received':  # sharing or current location
                     # Reverse geocode lat/lng to geodata
                     # Also as this is the 1st data for new locations, fill the fields 'author', 'channel' and 'user_id_on_channel'
-                    NEWLOCATION = {
-                        'author': from_user.first_name,
-                        'user_id_on_channel': from_user.id,
-                        'channel': 'Telegram',
-                        'longitude': geodata['lng'],
-                        'latitude': geodata['lat']
-                    }
+                    NEWLOCATION['author'] = from_user.first_name
+                    NEWLOCATION['user_id_on_channel'] = from_user.id
+                    NEWLOCATION['channel'] = 'Telegram'
+                    NEWLOCATION['longitude'] = geodata['lng']
+                    NEWLOCATION['latitude'] = geodata['lat']
+
                     gmaps_geocoder(geodata['lat'], geodata['lng'])
                     CONTEXTS.remove('location_input')
+                    # Ready for the next step - adding photos
                     CONTEXTS.append('media_input')
                     bot.send_message(chat_id,
-                                     'Thanks! Now please upload some photos with {} from this place (optionally but desired)'.format(
+                                     'Thanks! Now could you please upload some photos with {0} from this place?\nSelfies with {0} are also welcome ;)'.format(
                                          OURTRAVELLER), parse_mode='html',
-                                     reply_markup=chatbot_markup.next_or_instructions_menu)
-                    print(NEWLOCATION)
-                # User didn't share his/her location
+                                     reply_markup=chatbot_markup.next_reset_instructions_menu)
+
+                # User cancels location entry - leave 'code_correct' context, remove 'location_input'
+                elif intent == 'smalltalk.confirmation.cancel':
+                    CONTEXTS.remove('location_input')
+                    bot.send_message(chat_id,
+                                     'Ok. What would you like to do next?',
+                                     parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
+
+                # User wants detailed instructions - contexts unchanged
+                elif intent == 'show_instructions':
+                    bot.send_message(chat_id,
+                                     'Here are our detailed instructions for those who got {}'.format(OURTRAVELLER),
+                                     parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
+
+                # User should be entering location but he/she types smth or clicks other buttons besides 'Cancel' or
+                # 'Instructions'
                 else:
                     bot.send_message(chat_id,
                                      'That doesn\'t look like a valid location. Please try once again',
-                                     parse_mode='html', reply_markup=chatbot_markup.share_location)
-                    if not always_triggered(chat_id, intent,
-                                            speech):                # temp block to be deleted after text input of address will be made
+                                     parse_mode='html', reply_markup=chatbot_markup.cancel_or_instructions_menu)
+                    if not always_triggered(chat_id, intent, speech):
                         # All other text inputs/button clicks
-                        default_fallback(chat_id, intent, speech)   # end temp block
+                        default_fallback(chat_id, intent, speech)
+
+            # Block 2-4. User should be uploading a/some photo/-s.
+            elif 'media_input' in CONTEXTS:
+                # User did upload some photos - thank him/her and ask for a comment
+                if intent == 'media_received':
+                    CONTEXTS.clear()
+                    CONTEXTS.append('code_correct')
+                    CONTEXTS.append('any_comments')
+                    bot.send_message(chat_id,
+                                     'Thank you!\n'
+                                     'Any comments (how did you get {0}, what did you feel, any messages for future {0}\'s fellow travelers)?'.format(OURTRAVELLER),
+                                     parse_mode='html', reply_markup=chatbot_markup.next_reset_instructions_menu)
+
+                # User refused to upload photos, clicked 'Next' - ask him/her for a comment
+                elif intent == 'next_info':
+                    CONTEXTS.clear()
+                    CONTEXTS.append('code_correct')
+                    CONTEXTS.append('any_comments')
+                    bot.send_message(chat_id,
+                                     'Ok\n'
+                                     'Any comments (how did you get {0}, what did you feel, any messages for future {0}\'s fellow travelers)?'.format(
+                                         OURTRAVELLER),
+                                     parse_mode='html', reply_markup=chatbot_markup.next_reset_instructions_menu)
+
+                else:
+                    # User should be uploading photos but he/she didn't and also didn't click 'Cancel' but
+                    # enters/clicks something else
+                    # Buttons | You got Teddy? | Teddy's story | Help | etc are activated irrespective of context
+                    if not always_triggered(chat_id, intent, speech):
+                        # All other text inputs/button clicks
+                        default_fallback(chat_id, intent, speech)
+
             else:
                 # Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context
                 if not always_triggered(chat_id, intent, speech):
@@ -449,6 +559,8 @@ def always_triggered(chat_id, intent, speech):
         Buttons | You got Teddy? | Teddy's story | Help | are activated always, irrespective of context
         Buttons | Instructions | Add location | are activated always in context 'code_correct'
     '''
+    global CONTEXTS
+
     # User typed 'Help' or similar
     if intent == 'show_faq':
         get_help(chat_id)
@@ -513,11 +625,18 @@ def default_fallback(chat_id, intent, speech):
     '''
         Response for all inputs (manual entry or button clicks) which are irrelevant to current context
     '''
+    global CONTEXTS
+
+    code_correct_flag, location_input_flag = False, False
     if 'code_correct' in CONTEXTS:
-        CONTEXTS.clear()
+        code_correct_flag = True
+    if 'location_input' in CONTEXTS:
+        location_input_flag = True
+    CONTEXTS.clear()
+    if code_correct_flag:
         CONTEXTS.append('code_correct')
-    else:
-        CONTEXTS.clear()
+    if location_input_flag:
+        CONTEXTS.append('location_input')
 
     bot.send_message(chat_id, speech)
     time.sleep(SHORT_TIMEOUT)
@@ -696,6 +815,8 @@ def get_help(chat_id):
     '''
         Displays FAQ/help
     '''
+    global CONTEXTS
+
     CONTEXTS.clear()
     bot.send_message(chat_id, 'Here\'s our FAQ')
     bot.send_message(chat_id, 'What would you like to do next?',
@@ -724,6 +845,7 @@ def gmaps_geocoder(lat, lng):
     for coordinates received after location sharing in Telegram
     '''
     global NEWLOCATION
+
     URL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng={},{}&key={}'.format(lat, lng, GOOGLE_MAPS_API_KEY)
     try:
         r = requests.get(URL).json().get('results')

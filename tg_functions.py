@@ -38,7 +38,7 @@ def valid_url_extension(url, extension_list=VALID_IMAGE_EXTENSIONS):
 def valid_url_mimetype(url, mimetype_list=VALID_IMAGE_MIMETYPES):
     # http://stackoverflow.com/a/10543969/396300
     mimetype, encoding = mimetypes.guess_type(url)
-    print('mimetype: {}'.format(mimetype))
+    #print('mimetype: {}'.format(mimetype))
     if mimetype:
         return any([mimetype.startswith(m) for m in mimetype_list])
     else:
@@ -58,6 +58,8 @@ def photo_check_save(photo_file):
     photo_filename = secure_filename(photo_file.filename)
     if valid_url_extension(photo_filename) and valid_url_mimetype(photo_filename):
         file_name_wo_extension = os.path.splitext(photo_filename)[0]
+        if len(file_name_wo_extension) > 30:
+            file_name_wo_extension = file_name_wo_extension[:30]
         file_extension = os.path.splitext(photo_filename)[1]
         current_datetime = datetime.datetime.now().strftime("%d%m%y%H%M%S")
         path = 'uploads/' + file_name_wo_extension + '-' + current_datetime + file_extension

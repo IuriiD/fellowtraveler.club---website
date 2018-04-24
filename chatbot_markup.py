@@ -43,7 +43,13 @@ share_location = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboa
 share_location_button = types.KeyboardButton('Share your location', request_location=True)
 share_location.add(share_location_button)
 
-next_or_instructions_menu = types.InlineKeyboardMarkup()
-next_or_instructions_menu_next = types.InlineKeyboardButton("Next", callback_data="Next")
-next_or_instructions_menu_instructions = types.InlineKeyboardButton("Instructions", callback_data="Get instructions")
-next_or_instructions_menu.row(next_or_instructions_menu_next, next_or_instructions_menu_instructions)
+next_reset_instructions_menu = types.InlineKeyboardMarkup()
+next_reset_instructions_menu_next = types.InlineKeyboardButton("Next", callback_data="Next")
+next_reset_instructions_menu_reset = types.InlineKeyboardButton("Reset", callback_data="Reset")
+next_reset_instructions_menu_instructions = types.InlineKeyboardButton("Instructions", callback_data="Get instructions")
+next_reset_instructions_menu.row(next_reset_instructions_menu_next, next_reset_instructions_menu_reset, next_reset_instructions_menu_instructions)
+
+cancel_or_instructions_menu = types.InlineKeyboardMarkup()
+cancel_or_instructions_menu_cancel = types.InlineKeyboardButton("Cancel", callback_data="Cancel")
+cancel_or_instructions_menu_instructions = types.InlineKeyboardButton("Instructions", callback_data="Get instructions")
+cancel_or_instructions_menu.row(cancel_or_instructions_menu_cancel, cancel_or_instructions_menu_instructions)
