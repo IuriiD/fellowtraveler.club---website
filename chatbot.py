@@ -61,6 +61,12 @@ NEWLOCATION = {    # stores data for traveler's location before storing it to DB
 @bot.message_handler(commands=['start'])
 # Block 0
 def start_handler(message):
+    global CONTEXTS
+    # A fix intended not to respond to every image uploaded (if several)
+    if 'last_input_media' in CONTEXTS:
+        CONTEXTS.remove('last_input_media')
+        CONTEXTS.remove('media_input')
+
     if 'if_journey_info_needed' not in CONTEXTS:
         CONTEXTS.clear()
         bot.send_message(message.chat.id, 'Hello, {}!'.format(message.from_user.first_name))
@@ -79,6 +85,12 @@ def start_handler(message):
 
 @bot.message_handler(commands=['tell_your_story'])
 def tell_your_story(message):
+    global CONTEXTS
+    # A fix intended not to respond to every image uploaded (if several)
+    if 'last_input_media' in CONTEXTS:
+        CONTEXTS.remove('last_input_media')
+        CONTEXTS.remove('media_input')
+
     travelers_story_intro(message.chat.id)
     if 'if_journey_info_needed' not in CONTEXTS:
         CONTEXTS.append('if_journey_info_needed')
@@ -89,6 +101,12 @@ def tell_your_story(message):
 
 @bot.message_handler(commands=['help'])
 def help(message):
+    global CONTEXTS
+    # A fix intended not to respond to every image uploaded (if several)
+    if 'last_input_media' in CONTEXTS:
+        CONTEXTS.remove('last_input_media')
+        CONTEXTS.remove('media_input')
+
     get_help(message.chat.id)
     # Console logging
     print()
@@ -98,6 +116,12 @@ def help(message):
 
 @bot.message_handler(commands=['you_got_fellowtraveler'])
 def you_got_fellowtraveler(message):
+    global CONTEXTS
+    # A fix intended not to respond to every image uploaded (if several)
+    if 'last_input_media' in CONTEXTS:
+        CONTEXTS.remove('last_input_media')
+        CONTEXTS.remove('media_input')
+
     if 'code_correct' not in CONTEXTS:
         bot.send_message(message.chat.id, 'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please <b>enter the secret code</b> from the toy', parse_mode='html')
         bot.send_photo(message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_contacts_menu)
@@ -571,45 +595,65 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
 
             # Block 2-5. User was prompted to leave a comment and entered some text
             elif 'any_comments' in CONTEXTS \
-                    and 'last_media_input' not in CONTEXTS \
-                    and not is_btn_click:
-                # Update contexts - leave only 'code_correct' and 'any_comments'
-                CONTEXTS.clear()
-                CONTEXTS.append('code_correct')
-                CONTEXTS.append('any_comments')
-                # Show user what he/she has entered as a comment
-                bot.send_message(chat_id,
-                                 'Ok. So we\'ll treat the following as your comment:\n<i>{}</i>'.format(users_input),
-                                 parse_mode='html')
-                # Save user's comment to NEWLOCATION
-                NEWLOCATION['comment'] = users_input
+                    and 'last_media_input' not in CONTEXTS:
+                if not is_btn_click:
+                    # Update contexts - leave only 'code_correct' and 'any_comments'
+                    CONTEXTS.clear()
+                    CONTEXTS.append('code_correct')
+                    CONTEXTS.append('any_comments')
 
-                # Update contexts - remove 'any_comments', add 'ready_for_submit'
-                CONTEXTS.remove('any_comments')
-                CONTEXTS.append('ready_for_submit')
+                    # Show user what he/she has entered as a comment
+                    bot.send_message(chat_id,
+                                     'Ok. So we\'ll treat the following as your comment:\n<i>{}</i>'.format(users_input),
+                                     parse_mode='html')
+                    # Save user's comment to NEWLOCATION
+                    NEWLOCATION['comment'] = users_input
 
-                # Resume up user's input (location, photos, comment) and ask to confirm or reset
-                time.sleep(SHORT_TIMEOUT)
-                bot.send_message(chat_id,
-                                 'In total your input will look like this:', parse_mode='html')
-                location_date = datetime.now().strftime('%Y-%m-%d')
-                message1 = 'On {} {} was in \n<i>{}</i>'.format(location_date, OURTRAVELLER, NEWLOCATION['formatted_address'])
-                bot.send_message(chat_id, message1, parse_mode='html')
-                bot.send_location(chat_id, NEWLOCATION['latitude'], NEWLOCATION['longitude'])
-                photos = NEWLOCATION['photos']
-                if len(photos) > 0:
-                    for photo in photos:
-                        bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg')
-                author = '<b>{}</b>'.format(from_user.first_name)
-                comment = NEWLOCATION['comment']
-                if comment != '':
-                    message2 = 'My new friend {} wrote:\n<i>{}</i>'.format(author, comment)
+                    # Update contexts - remove 'any_comments', add 'ready_for_submit'
+                    CONTEXTS.remove('any_comments')
+                    CONTEXTS.append('ready_for_submit')
+
+                    # Resume up user's input (location, photos, comment) and ask to confirm or reset
+                    time.sleep(SHORT_TIMEOUT)
+                    bot.send_message(chat_id,
+                                     'In total your input will look like this:', parse_mode='html')
+                    if new_location_summary(chat_id, from_user):
+                        bot.send_message(chat_id,
+                                         'Is that Ok? If yes, please click \"<b>Submit</b>\".\nOtherwise click \"<b>Reset</b>\" to start afresh',
+                                         parse_mode='html', reply_markup=chatbot_markup.submit_reset_menu)
+                    else:
+                        bot.send_message(chat_id,
+                                         'Hmm.. Some error occured. Could you please try again?',
+                                         parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
                 else:
-                    message2 = 'I got acquainted with a new friend - {} :)'.format(author)
-                bot.send_message(chat_id, message2, parse_mode='html')
-                bot.send_message(chat_id,
-                                 'Is that Ok? If yes, please click \"<b>Submit</b>\".\nOtherwise click \"<b>Reset</b>\" to start afresh',
-                                 parse_mode='html', reply_markup=chatbot_markup.submit_reset_menu)
+                    # User doesn't want to give a comment
+                    if intent == 'next_info':
+                        NEWLOCATION['comment'] = ''
+                        CONTEXTS.remove('any_comments')
+                        CONTEXTS.append('ready_for_submit')
+                        # Resume up user's input (location, photos, comment) and ask to confirm or reset
+                        time.sleep(SHORT_TIMEOUT)
+                        bot.send_message(chat_id,
+                                         'In total your input will look like this:', parse_mode='html')
+                        if new_location_summary(chat_id, from_user):
+                            bot.send_message(chat_id,
+                                         'Is that Ok? If yes, please click \"<b>Submit</b>\".\nOtherwise click \"<b>Reset</b>\" to start afresh',
+                                         parse_mode='html', reply_markup=chatbot_markup.submit_reset_menu)
+                        else:
+                            bot.send_message(chat_id,
+                                         'Hmm.. Some error occured. Could you please try again?',
+                                         parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
+                    elif intent == 'reset':
+                        CONTEXTS.clear()
+                        CONTEXTS.append('code_correct')
+                        bot.send_message(chat_id,
+                                         'Ok, let\'s try once again',
+                                         parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
+                    else:
+                        # Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context
+                        if not always_triggered(chat_id, intent, speech):
+                            # All other text inputs/button clicks
+                            default_fallback(chat_id, intent, speech)
 
             # Block 2-6. Submitting new location - user clicked 'Submit'
             elif 'ready_for_submit' in CONTEXTS:
@@ -634,8 +678,16 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
                                                   'Could you please try once again?',
                                          parse_mode='html', reply_markup=chatbot_markup.intro_menu)
                 elif intent == 'reset':
-                    pass
-
+                    CONTEXTS.clear()
+                    CONTEXTS.append('code_correct')
+                    bot.send_message(chat_id,
+                                     'Ok, let\'s try once again',
+                                     parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
+                else:
+                    # Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context
+                    if not always_triggered(chat_id, intent, speech):
+                        # All other text inputs/button clicks
+                        default_fallback(chat_id, intent, speech)
 
             else:
                 # Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context
@@ -1026,6 +1078,30 @@ def time_from_location(traveller, from_date):
     difference = (current_datetime - from_date).days
     return difference
 
+def new_location_summary(chat_id, from_user):
+    '''
+        Functions sums up data on new location (held in NEWLOCATION variable) before saving the new location to DB
+    '''
+    try:
+        location_date = datetime.now().strftime('%Y-%m-%d')
+        message1 = 'On {} {} was in \n<i>{}</i>'.format(location_date, OURTRAVELLER, NEWLOCATION['formatted_address'])
+        bot.send_message(chat_id, message1, parse_mode='html')
+        bot.send_location(chat_id, NEWLOCATION['latitude'], NEWLOCATION['longitude'])
+        photos = NEWLOCATION['photos']
+        if len(photos) > 0:
+            for photo in photos:
+                bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg')
+        author = '<b>{}</b>'.format(from_user.first_name)
+        comment = NEWLOCATION['comment']
+        if comment != '':
+            message2 = 'My new friend {} wrote:\n<i>{}</i>'.format(author, comment)
+        else:
+            message2 = 'I got acquainted with a new friend - {} :)'.format(author)
+        bot.send_message(chat_id, message2, parse_mode='html')
+        return True
+    except Exception as e:
+        print('new_location_summary() exception: {}'.format(e))
+        return False
 
 ####################################### Functions END ####################################
 
