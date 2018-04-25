@@ -11,7 +11,7 @@ import tg_functions  # functions used for 'classical' website on flask (tg for T
 from passlib.hash import sha256_crypt
 from werkzeug.utils import secure_filename
 import os
-import datetime
+from datetime import datetime, timezone
 
 print(' ')
 print('########### chatbot.py - new session ############')
@@ -44,7 +44,7 @@ CONTEXTS = []   # holds last state
 NEWLOCATION = {    # stores data for traveler's location before storing it to DB
     'author': None,
     'channel': 'Telegram',
-    'user_id_on_channel': None,  # for website entry
+    'user_id_on_channel': None,
     'longitude': None,
     'latitude': None,
     'formatted_address': None,
@@ -55,7 +55,6 @@ NEWLOCATION = {    # stores data for traveler's location before storing it to DB
     'comment': None,
     'photos': []
 }
-
 
 ###################################### '/' Handlers START ######################################
 
@@ -100,7 +99,7 @@ def help(message):
 @bot.message_handler(commands=['you_got_fellowtraveler'])
 def you_got_fellowtraveler(message):
     if 'code_correct' not in CONTEXTS:
-        bot.send_message(message.chat.id, 'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please enter the <i>secret code</i> from the toy', parse_mode='html')
+        bot.send_message(message.chat.id, 'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please <b>enter the secret code</b> from the toy', parse_mode='html')
         bot.send_photo(message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_contacts_menu)
     # Console logging
     print()
@@ -209,7 +208,7 @@ def photo_handler(message):
                 if len(file_name_wo_extension) > 30:
                     file_name_wo_extension = file_name_wo_extension[:30]
                 file_extension = os.path.splitext(photo_filename)[1]
-                current_datetime = datetime.datetime.now().strftime("%d%m%y%H%M%S")
+                current_datetime = datetime.now().strftime("%d%m%y%H%M%S")
                 path = PHOTO_DIR + file_name_wo_extension + '-' + current_datetime + file_extension
                 # !!!
                 path4db = 'uploads/' + file_name_wo_extension + '-' + current_datetime + file_extension
@@ -440,7 +439,7 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
         else:
             if not is_btn_click:
                 secret_code_entered = users_input
-                if secret_code_validation(secret_code_entered, chat_id):
+                if secret_code_validation(secret_code_entered):
                     if 'enters_code' in CONTEXTS:
                         CONTEXTS.remove('enters_code')
                     CONTEXTS.append('code_correct')
@@ -585,11 +584,15 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
                 # Save user's comment to NEWLOCATION
                 NEWLOCATION['comment'] = users_input
 
+                # Update contexts - remove 'any_comments', add 'ready_for_submit'
+                CONTEXTS.remove('any_comments')
+                CONTEXTS.append('ready_for_submit')
+
                 # Resume up user's input (location, photos, comment) and ask to confirm or reset
                 time.sleep(SHORT_TIMEOUT)
                 bot.send_message(chat_id,
                                  'In total your input will look like this:', parse_mode='html')
-                location_date = datetime.datetime.now().strftime('%Y-%m-%d')
+                location_date = datetime.now().strftime('%Y-%m-%d')
                 message1 = 'On {} {} was in \n<i>{}</i>'.format(location_date, OURTRAVELLER, NEWLOCATION['formatted_address'])
                 bot.send_message(chat_id, message1, parse_mode='html')
                 bot.send_location(chat_id, NEWLOCATION['latitude'], NEWLOCATION['longitude'])
@@ -607,6 +610,33 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
                 bot.send_message(chat_id,
                                  'Is that Ok? If yes, please click \"<b>Submit</b>\".\nOtherwise click \"<b>Reset</b>\" to start afresh',
                                  parse_mode='html', reply_markup=chatbot_markup.submit_reset_menu)
+
+            # Block 2-6. Submitting new location - user clicked 'Submit'
+            elif 'ready_for_submit' in CONTEXTS:
+                if intent == 'submit':
+                    if submit_new_location(OURTRAVELLER):
+                        # Clear all contexts
+                        CONTEXTS.clear()
+
+                        # Call function to generate new secret code
+                        # new_secret_code = code_regenerate(traveller)
+
+                        bot.send_message(chat_id,
+                                         'New location added!\n\n'
+                                         'Secret code for adding the next location: <code>XXX</code>\n\n'
+                                         'Please save it somewhere or don\'t delete this message.\n'
+                                         'If you are going to pass {} to somebody please write this code similar to how you received it'.format(OURTRAVELLER),
+                                         parse_mode='html', reply_markup=chatbot_markup.intro_menu)
+                    else:
+                        # Clear all contexts
+                        CONTEXTS.clear()
+                        bot.send_message(chat_id, 'Hmm.. failed to save new location.\n'
+                                                  'Could you please try once again?',
+                                         parse_mode='html', reply_markup=chatbot_markup.intro_menu)
+                elif intent == 'reset':
+                    pass
+
+
             else:
                 # Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context
                 if not always_triggered(chat_id, intent, speech):
@@ -662,7 +692,7 @@ def always_triggered(chat_id, intent, speech):
     elif intent == 'you_got_fellowtraveler':
         if 'code_correct' not in CONTEXTS:
             bot.send_message(chat_id,
-                             'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please enter the <i>secret code</i> from the toy',
+                             'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please <b>enter the secret code</b> from the toy',
                              parse_mode='html')
             # Image with an example of secret code
             bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg',
@@ -814,14 +844,13 @@ def the_1st_place(chat_id, traveller, if_to_continue):
     long = the_1st_location['longitude']
     start_date = '{}'.format(the_1st_location['_id'].generation_time.date())
     time_passed = tg_functions.time_passed(traveller)
-    if time_passed == 1:
-        day_or_days = 'day'
+    if time_passed == 0:
+        day_or_days = 'today'
+    elif time_passed == 1:
+        day_or_days = '1 day'
     else:
-        day_or_days = 'days'
-    message1 = '<strong>Place #1</strong>\nI started my journey on {} ({} {} ago) from \n<i>{}</i>'.format(start_date,
-                                                                                                           time_passed,
-                                                                                                           day_or_days,
-                                                                                                           formatted_address)
+        day_or_days = '{} days'.format(time_passed)
+    message1 = '<strong>Place #1</strong>\nI started my journey on {} ({}) from \n<i>{}</i>'.format(start_date, day_or_days, formatted_address)
     bot.send_message(chat_id, message1, parse_mode='html')
     bot.send_location(chat_id, latitude=lat, longitude=long)
     photos = the_1st_location['photos']
@@ -865,9 +894,16 @@ def every_place(chat_id, traveller, location_to_show, if_to_continue):
     lat = location['latitude']
     long = location['longitude']
     location_date = '{}'.format(location['_id'].generation_time.date())
-    time_passed = tg_functions.time_passed(traveller)
-    message1 = '<strong>Place #{}</strong>\nOn {} ({} days ago) I was in \n<i>{}</i>'.format(location_to_show + 1,
-                                                                                             location_date, time_passed,
+    location_date_service = location['_id'].generation_time
+    time_passed = time_from_location(traveller, location_date_service)
+    if time_passed == 0:
+        day_or_days = 'today'
+    elif time_passed == 1:
+        day_or_days = '1 day ago'
+    else:
+        day_or_days = '{} days ago'.format(time_passed)
+    message1 = '<strong>Place #{}</strong>\nOn {} ({}) I was in \n<i>{}</i>'.format(location_to_show + 1,
+                                                                                             location_date, day_or_days,
                                                                                              formatted_address)
     bot.send_message(chat_id, message1, parse_mode='html')
     bot.send_location(chat_id, latitude=lat, longitude=long)
@@ -907,7 +943,7 @@ def get_help(chat_id):
                      reply_markup=chatbot_markup.intro_menu)
 
 
-def secret_code_validation(secret_code_entered, chat_id):
+def secret_code_validation(secret_code_entered):
     '''
         Validates the secret code entered by user against the one in DB
         If code valid - updates contexts (remove 'enters_code', append 'code_correct')
@@ -961,6 +997,35 @@ def gmaps_geocoder(lat, lng):
         print('gmaps_geocoder() exception: {}'.format(e))
         return False
 
+def submit_new_location(traveller):
+    '''
+        Saves new location (NEWLOCATION) to DB
+    '''
+    global NEWLOCATION
+    try:
+        # Logging
+        print('')
+        print('Saving location to DB...')
+        print('NEWLOCATION: {}'.format(NEWLOCATION))
+
+        client = MongoClient()
+        db = client.TeddyGo
+        collection_teddy = db[traveller]
+        NEWLOCATION.pop('_id', None)
+        collection_teddy.insert_one(NEWLOCATION)
+        return True
+    except Exception as e:
+        print('submit_new_location() exception: {}'.format(e))
+        return False
+
+def time_from_location(traveller, from_date):
+    '''
+        Function calculates time elapsed from the date when traveler was in specific location (from_date) to now
+    '''
+    current_datetime = datetime.now(timezone.utc)
+    difference = (current_datetime - from_date).days
+    return difference
+
 
 ####################################### Functions END ####################################
 
@@ -969,7 +1034,7 @@ try:
     bot.polling(none_stop=True, timeout=1)
 except Exception as e:
     print('Exception: {}'.format(e))
-    time.sleep(MEDIUM_TIMEOUT)
+    time.sleep(15)
 
 # Run Flask server
 # if __name__ == '__main__':
