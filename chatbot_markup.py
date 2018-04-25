@@ -53,3 +53,8 @@ cancel_or_instructions_menu = types.InlineKeyboardMarkup()
 cancel_or_instructions_menu_cancel = types.InlineKeyboardButton("Cancel", callback_data="Cancel")
 cancel_or_instructions_menu_instructions = types.InlineKeyboardButton("Instructions", callback_data="Get instructions")
 cancel_or_instructions_menu.row(cancel_or_instructions_menu_cancel, cancel_or_instructions_menu_instructions)
+
+submit_reset_menu = types.InlineKeyboardMarkup()
+submit_reset_menu_submit = types.InlineKeyboardButton("Submit", callback_data="Submit")
+submit_reset_menu_reset = types.InlineKeyboardButton("Reset", callback_data="Reset")
+submit_reset_menu.row(submit_reset_menu_submit, submit_reset_menu_reset)

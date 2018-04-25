@@ -57,7 +57,7 @@ NEWLOCATION = {    # stores data for traveler's location before storing it to DB
 }
 
 
-######################################## / Handlers START ######################################
+###################################### '/' Handlers START ######################################
 
 @bot.message_handler(commands=['start'])
 # Block 0
@@ -108,7 +108,7 @@ def you_got_fellowtraveler(message):
     print('Contexts: {}'.format(CONTEXTS))
 
 
-######################################## / Handlers END ######################################
+###################################### '/' Handlers END ######################################
 
 ################################### 'Custom' handlers START ##################################
 
@@ -116,6 +116,12 @@ def you_got_fellowtraveler(message):
 @bot.message_handler(content_types=['text'])
 # Handling all text input (NLP using Dialogflow and then depending on recognised intent and contexts variable
 def text_handler(message):
+    global CONTEXTS
+    # A fix intended not to respond to every image uploaded (if several)
+    if 'last_input_media' in CONTEXTS:
+        CONTEXTS.remove('last_input_media')
+        CONTEXTS.remove('media_input')
+
     # Get input data
     users_input = message.text
     chat_id = message.chat.id
@@ -136,6 +142,12 @@ def button_click_handler(call):
     # other buttons ( Yes | No, thanks | Cancel | Next) - depend on context, if contexts==[] or irrelevant context - they
     # should return a response for a Fallback_Intent
 
+    global CONTEXTS
+    # A fix intended not to respond to every image uploaded (if several)
+    if 'last_input_media' in CONTEXTS:
+        CONTEXTS.remove('last_input_media')
+        CONTEXTS.remove('media_input')
+
     bot.answer_callback_query(call.id, text="")
 
     # Get input data
@@ -149,6 +161,13 @@ def button_click_handler(call):
 
 @bot.message_handler(content_types=['location'])
 def location_handler(message):
+    global CONTEXTS
+    global NEWLOCATION
+    # A fix intended not to respond to every image uploaded (if several)
+    if 'last_input_media' in CONTEXTS:
+        CONTEXTS.remove('last_input_media')
+        CONTEXTS.remove('media_input')
+
     # Get input data
     users_input = 'User posted location'
     chat_id = message.chat.id
@@ -161,13 +180,24 @@ def location_handler(message):
 
 @bot.message_handler(content_types=['photo'])
 def photo_handler(message):
+    '''
+        The problem is that user may upload several photos, each one is proccessed separately and thus
+        we get duplicate responses for every image (plus if updating contexts [delete 'media_input', append
+        'if_comments'] after the 1st image then the 2nd and so on images trigger Fallback)
+        Possible solution is to respond only to the 1st image and to save in contexts that the last input was image
+        (plus not remove 'media_input' context)
+        Then on the next input:
+        if image - process it but don't respond,
+        else - respond as usual, remove from contexts 'media_input' and the flag indicating that the last input was image
+    '''
     global NEWLOCATION
+    global CONTEXTS
 
     # Get input data
     chat_id = message.chat.id
     from_user = message.from_user
 
-    # Get, check, save photos, add paths to NEWLOCATION
+    # Get, check, save photos, add paths to NEWLOCATION['photos]
     if 'media_input' in CONTEXTS:
         file = bot.get_file(message.photo[-1].file_id)
         image_url = 'https://api.telegram.org/file/bot{0}/{1}'.format(TG_TOKEN, file.file_path)
@@ -191,17 +221,22 @@ def photo_handler(message):
                 NEWLOCATION['photos'].append(path4db)
                 users_input = 'User posted a photo'
 
-                # And pass it to the main handler function [main_hadler()]
-                main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=True)
+                # Contexts - indicate that last input was an image
+                if 'last_input_media' not in CONTEXTS:
+                    CONTEXTS.append('last_input_media')
+                    users_input = 'User uploaded an image'
+                    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=True)
         except Exception as e:
             print('photo_handler() exception: {}'.format(e))
             users_input = 'File has invalid image extension or invalid image format'
-
-            # And pass it to the main handler function [main_hadler()]
             main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False)
     else:
-        users_input = 'Nice photo ;)'
-        main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False)
+        if 'last_input_media' not in CONTEXTS:
+            CONTEXTS.append('last_input_media')
+            users_input = 'Nice image ;)'
+            print('Really true!')
+            print('CONTEXTS: {}'.format(CONTEXTS))
+            main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=True)
 
 ################################### 'Custom' handlers END ##################################
 
@@ -249,20 +284,6 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
         dialoflows_response = dialogflow(users_input, chat_id)
         speech = dialoflows_response['speech']
         intent = dialoflows_response['intent']
-
-    # Console logging
-    print('')
-    if is_btn_click:
-        input_type = 'button click'
-    elif media:
-        input_type = 'media upload'
-    elif geodata:
-        input_type = 'location input'
-    else:
-        input_type = 'entered manually'
-    print('User\'s input: {} ({})'.format(users_input, input_type))
-    print('Intent: {}, speech: {}'.format(intent, speech))
-    print('Contexts: {}'.format(CONTEXTS))
 
     # Block 1. Traveler's story
     # Block 1-1. Reply to typing/clocking_buttons 'Yes'/'No' displayed after the intro block asking
@@ -476,6 +497,14 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
                     NEWLOCATION['channel'] = 'Telegram'
                     NEWLOCATION['longitude'] = geodata['lng']
                     NEWLOCATION['latitude'] = geodata['lat']
+                    # Erase the remaining fields of NEWLOCATION in case user restarts
+                    NEWLOCATION['formatted_address'] = None
+                    NEWLOCATION['locality'] = None
+                    NEWLOCATION['administrative_area_level_1'] = None
+                    NEWLOCATION['country'] = None
+                    NEWLOCATION['place_id'] = None
+                    NEWLOCATION['comment'] = None
+                    NEWLOCATION['photos'] = []
 
                     gmaps_geocoder(geodata['lat'], geodata['lng'])
                     CONTEXTS.remove('location_input')
@@ -513,13 +542,14 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
             elif 'media_input' in CONTEXTS:
                 # User did upload some photos - thank him/her and ask for a comment
                 if intent == 'media_received':
-                    CONTEXTS.clear()
-                    CONTEXTS.append('code_correct')
-                    CONTEXTS.append('any_comments')
-                    bot.send_message(chat_id,
-                                     'Thank you!\n'
-                                     'Any comments (how did you get {0}, what did you feel, any messages for future {0}\'s fellow travelers)?'.format(OURTRAVELLER),
-                                     parse_mode='html', reply_markup=chatbot_markup.next_reset_instructions_menu)
+                    # If user uploaded several images - respond only to the 1st one
+                    if 'last_media_input' not in CONTEXTS:
+                        if 'any_comments' not in CONTEXTS:
+                            CONTEXTS.append('any_comments')
+                        bot.send_message(chat_id,
+                                         'Thank you!\n'
+                                         'Any comments (how did you get {0}, what did you feel, any messages for future {0}\'s fellow travelers)?'.format(OURTRAVELLER),
+                                         parse_mode='html', reply_markup=chatbot_markup.next_reset_instructions_menu)
 
                 # User refused to upload photos, clicked 'Next' - ask him/her for a comment
                 elif intent == 'next_info':
@@ -540,6 +570,43 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
                         # All other text inputs/button clicks
                         default_fallback(chat_id, intent, speech)
 
+            # Block 2-5. User was prompted to leave a comment and entered some text
+            elif 'any_comments' in CONTEXTS \
+                    and 'last_media_input' not in CONTEXTS \
+                    and not is_btn_click:
+                # Update contexts - leave only 'code_correct' and 'any_comments'
+                CONTEXTS.clear()
+                CONTEXTS.append('code_correct')
+                CONTEXTS.append('any_comments')
+                # Show user what he/she has entered as a comment
+                bot.send_message(chat_id,
+                                 'Ok. So we\'ll treat the following as your comment:\n<i>{}</i>'.format(users_input),
+                                 parse_mode='html')
+                # Save user's comment to NEWLOCATION
+                NEWLOCATION['comment'] = users_input
+
+                # Resume up user's input (location, photos, comment) and ask to confirm or reset
+                time.sleep(SHORT_TIMEOUT)
+                bot.send_message(chat_id,
+                                 'In total your input will look like this:', parse_mode='html')
+                location_date = datetime.datetime.now().strftime('%Y-%m-%d')
+                message1 = 'On {} {} was in \n<i>{}</i>'.format(location_date, OURTRAVELLER, NEWLOCATION['formatted_address'])
+                bot.send_message(chat_id, message1, parse_mode='html')
+                bot.send_location(chat_id, NEWLOCATION['latitude'], NEWLOCATION['longitude'])
+                photos = NEWLOCATION['photos']
+                if len(photos) > 0:
+                    for photo in photos:
+                        bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg')
+                author = '<b>{}</b>'.format(from_user.first_name)
+                comment = NEWLOCATION['comment']
+                if comment != '':
+                    message2 = 'My new friend {} wrote:\n<i>{}</i>'.format(author, comment)
+                else:
+                    message2 = 'I got acquainted with a new friend - {} :)'.format(author)
+                bot.send_message(chat_id, message2, parse_mode='html')
+                bot.send_message(chat_id,
+                                 'Is that Ok? If yes, please click \"<b>Submit</b>\".\nOtherwise click \"<b>Reset</b>\" to start afresh',
+                                 parse_mode='html', reply_markup=chatbot_markup.submit_reset_menu)
             else:
                 # Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context
                 if not always_triggered(chat_id, intent, speech):
@@ -553,6 +620,19 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
             # All other text inputs/button clicks
             default_fallback(chat_id, intent, speech)
 
+    # Console logging
+    print('')
+    if is_btn_click:
+        input_type = 'button click'
+    elif media:
+        input_type = 'media upload'
+    elif geodata:
+        input_type = 'location input'
+    else:
+        input_type = 'entered manually'
+    print('User\'s input: {} ({})'.format(users_input, input_type))
+    print('Intent: {}, speech: {}'.format(intent, speech))
+    print('Contexts: {}'.format(CONTEXTS))
 
 def always_triggered(chat_id, intent, speech):
     '''
@@ -627,16 +707,20 @@ def default_fallback(chat_id, intent, speech):
     '''
     global CONTEXTS
 
-    code_correct_flag, location_input_flag = False, False
+    code_correct_flag, location_input_flag, last_input_media_flag = False, False, False
     if 'code_correct' in CONTEXTS:
         code_correct_flag = True
     if 'location_input' in CONTEXTS:
         location_input_flag = True
+    if 'last_input_media' in CONTEXTS:
+        last_input_media_flag = True
     CONTEXTS.clear()
     if code_correct_flag:
         CONTEXTS.append('code_correct')
     if location_input_flag:
         CONTEXTS.append('location_input')
+    if last_input_media_flag:
+        CONTEXTS.append('last_input_media')
 
     bot.send_message(chat_id, speech)
     time.sleep(SHORT_TIMEOUT)
