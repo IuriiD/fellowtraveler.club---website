@@ -30,7 +30,7 @@ next_or_help_menu.row(next_or_help_menu_next, next_or_help_menu_help)
 cancel_help_contacts_menu = types.InlineKeyboardMarkup()
 cancel_help_contacts_menu_cancel =  types.InlineKeyboardButton("Cancel", callback_data="Cancel")
 cancel_help_contacts_menu_help = types.InlineKeyboardButton("Help", callback_data="FAQ")
-cancel_help_contacts_menu_contacts = types.InlineKeyboardButton("Support", callback_data="Contact support")
+cancel_help_contacts_menu_contacts = types.InlineKeyboardButton("Contact support", callback_data="Contact support")
 cancel_help_contacts_menu.row(cancel_help_contacts_menu_cancel, cancel_help_contacts_menu_help, cancel_help_contacts_menu_contacts)
 
 you_got_teddy_menu = types.InlineKeyboardMarkup()

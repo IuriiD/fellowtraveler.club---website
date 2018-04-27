@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask
-from flask_mail import Mail, Message
+from flask import Flask, request, abort
 import telebot
 import requests, json
-from keys import FLASK_SECRET_KEY, TG_TOKEN, DF_TOKEN, GOOGLE_MAPS_API_KEY, MAIL_PWD
+from keys import FLASK_SECRET_KEY, TG_TOKEN, DF_TOKEN, GOOGLE_MAPS_API_KEY
 from pymongo import MongoClient
 import time
 import chatbot_markup
@@ -13,27 +12,14 @@ from passlib.hash import sha256_crypt
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime, timezone
-import random
 
 print(' ')
 print('########### chatbot.py - new session ############')
 
 app = Flask(__name__)
-app.config.from_object(__name__)
-app.secret_key = FLASK_SECRET_KEY
+# app.secret_key = FLASK_SECRET_KEY
 bot = telebot.TeleBot(TG_TOKEN)
 
-mail = Mail(app)
-app.config.update(
-    DEBUG=True,
-    MAIL_SERVER='smtp.gmail.com',
-    MAIL_PORT=587,
-    MAIL_USE_SSL=False,
-    MAIL_USE_TLS=True,
-    MAIL_USERNAME = 'mailvulgaris@gmail.com',
-    MAIL_PASSWORD = MAIL_PWD
-)
-mail = Mail(app)
 
 '''
     All commands can be entered either using InlineKeyboardButtons or by typing exact or close by meaning words.
@@ -47,6 +33,21 @@ mail = Mail(app)
     tell_your_story - Display this traveler's story
     you_got_fellowtraveler - Do you have it? Get info what to do next    
 '''
+
+################################# TG Bot Webhook INI START #####################################
+# https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/webhook_examples/webhook_flask_echo_bot.py
+
+WEBHOOK_HOST = '3dd11d0b.ngrok.io'
+WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
+WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
+
+WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
+
+WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
+WEBHOOK_URL_PATH = "/%s/" % (TG_TOKEN)
+################################# TG Bot Webhook INI END #######################################
+
 ####################################### TG Bot INI START #######################################
 
 OURTRAVELLER = 'Teddy'
@@ -54,7 +55,6 @@ PHOTO_DIR = 'static/uploads/'
 SHORT_TIMEOUT = 0  # 2 # seconds, between messages for imitation of 'live' typing
 MEDIUM_TIMEOUT = 0  # 4
 LONG_TIMEOUT = 0  # 6
-SUPPORT_EMAIL = 'iurii.dziuban@gmail.com'
 
 CONTEXTS = []   # holds last state
 NEWLOCATION = {    # stores data for traveler's location before storing it to DB
@@ -73,6 +73,28 @@ NEWLOCATION = {    # stores data for traveler's location before storing it to DB
 }
 
 ####################################### TG Bot INI END #########################################
+
+######################################### Flask START ##########################################
+
+# Empty webserver index, return nothing, just http 200
+@app.route('/', methods=['GET', 'HEAD'])
+def index():
+    return 'Hello!'
+########################################## Flask END ###########################################
+
+############################### Process webhook calls START ####################################
+
+@app.route(WEBHOOK_URL_PATH, methods=['POST'])
+def webhook():
+    print("HERE123!")
+    if request.headers.get('content-type') == 'application/json':
+        json_string = request.get_data().decode('utf-8')
+        update = telebot.types.Update.de_json(json_string)
+        bot.process_new_updates([update])
+        return ''
+    else:
+        abort(403)
+############################### Process webhook calls END ######################################
 
 ###################################### '/' Handlers START ######################################
 
@@ -174,7 +196,7 @@ def text_handler(message):
     from_user = message.from_user
 
     # And pass it to the main handler function [main_hadler()]
-    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False, other_input=False)
+    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -203,7 +225,7 @@ def button_click_handler(call):
     from_user = call.from_user
 
     # And pass it to the main handler function [main_hadler()]
-    main_handler(users_input, chat_id, from_user, is_btn_click=True, geodata=None, media=False, other_input=False)
+    main_handler(users_input, chat_id, from_user, is_btn_click=True, geodata=None, media=False)
 
 
 @bot.message_handler(content_types=['location'])
@@ -224,7 +246,7 @@ def location_handler(message):
     lng = message.location.longitude
 
     # And pass it to the main handler function [main_hadler()]
-    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata={'lat': lat, 'lng': lng}, media=False, other_input=False)
+    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata={'lat': lat, 'lng': lng}, media=False)
 
 @bot.message_handler(content_types=['photo'])
 def photo_handler(message):
@@ -273,37 +295,18 @@ def photo_handler(message):
                 if 'last_input_media' not in CONTEXTS:
                     CONTEXTS.append('last_input_media')
                     users_input = 'User uploaded an image'
-                    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=True, other_input=False)
+                    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=True)
         except Exception as e:
             print('photo_handler() exception: {}'.format(e))
             users_input = 'File has invalid image extension or invalid image format'
-            main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False, other_input=False)
+            main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False)
     else:
         if 'last_input_media' not in CONTEXTS:
             CONTEXTS.append('last_input_media')
             users_input = 'Nice image ;)'
             print('Really true!')
             print('CONTEXTS: {}'.format(CONTEXTS))
-            main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=True, other_input=False)
-
-@bot.message_handler(content_types=['audio', 'document', 'sticker', 'video', 'video_note', 'voice', 'contact', 'new_chat_members', 'left_chat_member', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo', 'group_chat_created', 'supergroup_chat_created', 'channel_chat_created', 'migrate_to_chat_id', 'migrate_from_chat_id', 'pinned_message'])
-def other_content_types_handler(message):
-    global CONTEXTS
-    global NEWLOCATION
-    # A fix intended not to respond to every image uploaded (if several)
-    if 'last_input_media' in CONTEXTS:
-        CONTEXTS.remove('last_input_media')
-    if 'media_input' in CONTEXTS:
-        CONTEXTS.remove('media_input')
-
-    # Get input data
-    users_input = 'User entered something different from text, button_click, photo or location'
-    chat_id = message.chat.id
-    from_user = message.from_user
-
-    # And pass it to the main handler function [main_hadler()]
-    main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False, other_input=True)
-
+            main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=True)
 
 ################################### 'Custom' handlers END ##################################
 
@@ -328,7 +331,7 @@ def dialogflow(query, chat_id, lang_code='en'):
     }
     return output
 
-def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False, other_input=False):
+def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False):
     '''
         Main handler. Function gets input from user (typed text OR callback_data from button clicks), 'feeds' it
         to Dialogflow for NLP, receives intent and speech, and then depending on intent and context responds to user
@@ -347,44 +350,17 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
     elif media:
         speech = 'Nice image ;)'
         intent = 'media_received'
-    elif other_input:
-        intent = 'other_content_types'
-        short_reaction_variants = [';)', 'Ok', 'Okay', 'Hm..']
-        reaction = random.choice(short_reaction_variants)
-        speech = '{}\nWhat would you like to do next?'.format(reaction)
     else:
         dialoflows_response = dialogflow(users_input, chat_id)
         speech = dialoflows_response['speech']
         intent = dialoflows_response['intent']
-
-    # Block 0. User clicked/typed "Contact support" and the next text input should be sent to support email
-    if 'contact_support' in CONTEXTS:
-        # Text input is supposed, any other will be rejected
-        if not is_btn_click \
-                and not media \
-                and not geodata \
-                and not other_input:
-            # Remove 'contact_support' from contexts
-            CONTEXTS.remove('contact_support')
-            # Redirect user's message to SUPPORT_EMAIL
-            if send_email(from_user, users_input):
-                # Report about successfull operation to user
-                bot.send_message(chat_id, 'Your message was successfully sent to my author\n(<b>iurii.dziuban@gmail.com</b>).\nWhat would you like to do next?',
-                             parse_mode='html', reply_markup=chatbot_markup.intro_menu)
-            else:
-                # Report about unsuccessfull operation to user
-                bot.send_message(chat_id, 'Some problems occured when trying to send you message to my author (<b>iurii.dziuban@gmail.com</b>). Could you please write to his email yourself? Sorry for that..',
-                             parse_mode='html', reply_markup=chatbot_markup.intro_menu_mystory)
-        else:
-            bot.send_message(chat_id, 'Sorry but I can send only text. Please type something ;)',
-                         parse_mode='html')
 
     # Block 1. Traveler's story
     # Block 1-1. Reply to typing/clocking_buttons 'Yes'/'No' displayed after the intro block asking
     # if user want's to know more about T. journey
     # On exit of block if user enters 'Yes' - context 'journey_next_info', if 'No' or he/she clicks buttons of
     # previous blocks - contexts[] is cleared
-    elif 'if_journey_info_needed' in CONTEXTS:
+    if 'if_journey_info_needed' in CONTEXTS:
         if intent == 'smalltalk.confirmation.no':
             time.sleep(SHORT_TIMEOUT)
             if 'if_journey_info_needed' in CONTEXTS:
@@ -528,8 +504,8 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
             if 'enters_code' in CONTEXTS:
                 CONTEXTS.remove('enters_code')
             CONTEXTS.append('contact_support')
-            bot.send_message(chat_id, 'Any problems, questions, suggestions, remarks, proposals etc? Please enter them below or write to my author\'s email <b>iurii.dziuban@gmail.com</b>\n\n You may also consider visiting <a href="https://iuriid.github.io">iuriid.github.io</a>.',
-                         parse_mode='html')
+            bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below.\nYou can also write directly to my email <b>iurii.dziuban@gmail.com</b>.',
+                             parse_mode='html', reply_markup=chatbot_markup.intro_menu)
         # If user enters whatever else, not == intent 'smalltalk.confirmation.cancel'
         else:
             if not is_btn_click:
@@ -565,8 +541,8 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
             CONTEXTS.clear()
             CONTEXTS.append('code_correct')
             CONTEXTS.append('contact_support')
-            bot.send_message(chat_id, 'Any problems, questions, suggestions, remarks, proposals etc? Please enter them below or write to my author\'s email <b>iurii.dziuban@gmail.com</b>\n\n You may also consider visiting <a href="https://iuriid.github.io">iuriid.github.io</a>.',
-                         parse_mode='html')
+            bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below.\nYou can also write directly to my email <b>iurii.dziuban@gmail.com</b>.',
+                             parse_mode='html', reply_markup=chatbot_markup.intro_menu)
         elif intent == 'show_instructions':
             CONTEXTS.clear()
             CONTEXTS.append('code_correct')
@@ -781,8 +757,6 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
         input_type = 'media upload'
     elif geodata:
         input_type = 'location input'
-    elif other_input:
-        input_type = 'other content types'
     else:
         input_type = 'entered manually'
     print('User\'s input: {} ({})'.format(users_input, input_type))
@@ -834,11 +808,9 @@ def always_triggered(chat_id, intent, speech):
     elif intent == 'contact_support':
         if 'contact_support' not in CONTEXTS:
             CONTEXTS.append('contact_support')
-            bot.send_message(chat_id, 'Any problems, questions, suggestions, remarks, proposals etc? Please enter them below or write to my author\'s email <b>iurii.dziuban@gmail.com</b>\n\n You may also consider visiting <a href="https://iuriid.github.io">iuriid.github.io</a>.',
-                         parse_mode='html')
+            bot.send_message(chat_id, 'If you\'ve got some problems, have any questions, suggestions, remarks, proposals etc - please enter them below.\nYou can also write directly to my email <b>iurii.dziuban@gmail.com</b>.',
+                         parse_mode='html', reply_markup=chatbot_markup.intro_menu)
         return True
-
-    #if 'contact_support' in CONTEXTS:
 
     # Buttons | Instructions | Add location | are activated always in context 'code_correct'
     if 'code_correct' in CONTEXTS:
@@ -974,9 +946,9 @@ def the_1st_place(chat_id, traveller, if_to_continue):
     if time_passed == 0:
         day_or_days = 'today'
     elif time_passed == 1:
-        day_or_days = '1 day ago'
+        day_or_days = '1 day'
     else:
-        day_or_days = '{} days ago'.format(time_passed)
+        day_or_days = '{} days'.format(time_passed)
     message1 = '<strong>Place #1</strong>\nI started my journey on {} ({}) from \n<i>{}</i>'.format(start_date, day_or_days, formatted_address)
     bot.send_message(chat_id, message1, parse_mode='html')
     bot.send_location(chat_id, latitude=lat, longitude=long)
@@ -1022,7 +994,7 @@ def every_place(chat_id, traveller, location_to_show, if_to_continue):
     long = location['longitude']
     location_date = '{}'.format(location['_id'].generation_time.date())
     location_date_service = location['_id'].generation_time
-    time_passed = time_from_location(location_date_service)
+    time_passed = time_from_location(traveller, location_date_service)
     if time_passed == 0:
         day_or_days = 'today'
     elif time_passed == 1:
@@ -1113,11 +1085,11 @@ def gmaps_geocoder(lat, lng):
                     country = short_name
             place_id = r[0].get('place_id')
 
-            NEWLOCATION['formatted_address'] = formatted_address
-            NEWLOCATION['locality'] = locality
-            NEWLOCATION['administrative_area_level_1'] = administrative_area_level_1
-            NEWLOCATION['country'] = country
-            NEWLOCATION['place_id'] = place_id
+        NEWLOCATION['formatted_address'] = formatted_address
+        NEWLOCATION['locality'] = locality
+        NEWLOCATION['administrative_area_level_1'] = administrative_area_level_1
+        NEWLOCATION['country'] = country
+        NEWLOCATION['place_id'] = place_id
 
         return True
     except Exception as e:
@@ -1145,7 +1117,7 @@ def submit_new_location(traveller):
         print('submit_new_location() exception: {}'.format(e))
         return False
 
-def time_from_location(from_date):
+def time_from_location(traveller, from_date):
     '''
         Function calculates time elapsed from the date when traveler was in specific location (from_date) to now
     '''
@@ -1159,7 +1131,7 @@ def new_location_summary(chat_id, from_user):
     '''
     try:
         location_date = datetime.now().strftime('%Y-%m-%d')
-        message1 = 'On {} I was in \n<i>{}</i>'.format(location_date, NEWLOCATION['formatted_address'])
+        message1 = 'On {} {} was in \n<i>{}</i>'.format(location_date, OURTRAVELLER, NEWLOCATION['formatted_address'])
         bot.send_message(chat_id, message1, parse_mode='html')
         bot.send_location(chat_id, NEWLOCATION['latitude'], NEWLOCATION['longitude'])
         photos = NEWLOCATION['photos']
@@ -1178,28 +1150,18 @@ def new_location_summary(chat_id, from_user):
         print('new_location_summary() exception: {}'.format(e))
         return False
 
-def send_email(from_user, users_input):
-    with app.app_context():
-        try:
-            msg = Message("Fellowtraveler.club - message from Telegram user #{}".format(from_user.id),
-                          sender="mailvulgaris@gmail.com", recipients=[SUPPORT_EMAIL])
-            msg.html = "Telegram user ID<b>{}</b> wrote:<br><i>{}</i>".format(from_user.id, users_input)
-            mail.send(msg)
-            return True
-        except Exception as e:
-            print('send_email() exception: {}'.format(e))
-            return False
-
-
 ####################################### Functions END ####################################
 
 
-try:
-    bot.polling(none_stop=True, timeout=1)
-except Exception as e:
-    print('Exception: {}'.format(e))
-    time.sleep(15)
+# Remove webhook, it fails sometimes the set if there is a previous webhook
+bot.remove_webhook()
 
-# Run Flask server
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+# Set webhook
+bot.set_webhook(url=WEBHOOK_URL_BASE+WEBHOOK_URL_PATH,
+                certificate=open(WEBHOOK_SSL_CERT, 'r'))
+
+# Start flask server
+app.run(host=WEBHOOK_LISTEN,
+        port=WEBHOOK_PORT,
+        ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
+        debug=True)
