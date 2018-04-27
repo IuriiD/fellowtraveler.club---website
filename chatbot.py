@@ -50,7 +50,8 @@ mail = Mail(app)
 ####################################### TG Bot INI START #######################################
 
 OURTRAVELLER = 'Teddy'
-PHOTO_DIR = 'static/uploads/'
+PHOTO_DIR = 'static/uploads/{}/'.format(OURTRAVELLER) # where photos from places visited are saved
+SERVICE_IMG_DIR = 'static/uploads/{}/service/'.format(OURTRAVELLER) # where 'general info' images are saved (summary map, secret code example etc)
 SHORT_TIMEOUT = 0  # 2 # seconds, between messages for imitation of 'live' typing
 MEDIUM_TIMEOUT = 0  # 4
 LONG_TIMEOUT = 0  # 6
@@ -146,7 +147,8 @@ def you_got_fellowtraveler(message):
 
     if 'code_correct' not in CONTEXTS:
         bot.send_message(message.chat.id, 'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please <b>enter the secret code</b> from the toy', parse_mode='html')
-        bot.send_photo(message.chat.id, 'https://iuriid.github.io/img/ft-3.jpg', reply_markup=chatbot_markup.cancel_help_contacts_menu)
+        secret_code_img = open(SERVICE_IMG_DIR + 'how_secret_code_looks_like.jpg', 'rb')
+        bot.send_photo(message.chat.id, secret_code_img, reply_markup=chatbot_markup.cancel_help_contacts_menu)
     # Console logging
     print()
     print('User entered "/you_got_fellowtraveler"')
@@ -253,14 +255,11 @@ def photo_handler(message):
         try:
             photo_filename = secure_filename(image_name)
             if tg_functions.valid_url_extension(photo_filename) and tg_functions.valid_url_mimetype(photo_filename):
-                file_name_wo_extension = os.path.splitext(photo_filename)[0]
-                if len(file_name_wo_extension) > 30:
-                    file_name_wo_extension = file_name_wo_extension[:30]
+                file_name_wo_extension = 'fellowtravelerclub-{}'.format(OURTRAVELLER)
                 file_extension = os.path.splitext(photo_filename)[1]
                 current_datetime = datetime.now().strftime("%d%m%y%H%M%S")
-                path = PHOTO_DIR + file_name_wo_extension + '-' + current_datetime + file_extension
-                # !!!
-                path4db = 'uploads/' + file_name_wo_extension + '-' + current_datetime + file_extension
+                path4db = file_name_wo_extension + '-' + current_datetime + file_extension
+                path = PHOTO_DIR + path4db
 
                 r = requests.get(image_url, timeout=0.5)
                 if r.status_code == 200:
@@ -392,7 +391,7 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
             bot.send_message(chat_id, 'Ok. Than we can just talk ;)\nJust in case here\'s my menu',
                              reply_markup=chatbot_markup.intro_menu)
         elif intent == 'smalltalk.confirmation.yes':
-            journey_intro(chat_id)
+            journey_intro(chat_id, OURTRAVELLER)
             if 'if_journey_info_needed' in CONTEXTS:
                 CONTEXTS.remove('if_journey_info_needed')
             CONTEXTS.append('journey_next_info')
@@ -803,7 +802,8 @@ def always_triggered(chat_id, intent, speech):
 
     # User typed 'Teddy's story' or similar
     elif intent == 'tell_your_story':
-        bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg',
+        traveler_photo = open(SERVICE_IMG_DIR + OURTRAVELLER + '.jpg', 'rb')
+        bot.send_photo(chat_id, traveler_photo,
                        caption='My name is <strong>{}</strong>. I\'m a traveler.\nMy dream is to see the world'.format(
                            OURTRAVELLER), parse_mode='html')
         time.sleep(SHORT_TIMEOUT)
@@ -820,8 +820,8 @@ def always_triggered(chat_id, intent, speech):
                              'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please <b>enter the secret code</b> from the toy',
                              parse_mode='html')
             # Image with an example of secret code
-            bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg',
-                           reply_markup=chatbot_markup.cancel_help_contacts_menu)
+            secret_code_img = open(SERVICE_IMG_DIR + 'how_secret_code_looks_like.jpg', 'rb')
+            bot.send_photo(chat_id, secret_code_img, reply_markup=chatbot_markup.cancel_help_contacts_menu)
             CONTEXTS.clear()
             CONTEXTS.append('enters_code')
         else:
@@ -879,47 +879,71 @@ def default_fallback(chat_id, intent, speech):
     if last_input_media_flag:
         CONTEXTS.append('last_input_media')
 
-    bot.send_message(chat_id, speech)
-    time.sleep(SHORT_TIMEOUT)
-    bot.send_message(chat_id, 'What would you like to do next?', reply_markup=chatbot_markup.intro_menu)
+    if intent == 'add_location':
+        if 'code_correct' not in CONTEXTS:
+            if 'enters_code' not in CONTEXTS:
+                CONTEXTS.append('enters_code')
+            bot.send_message(chat_id,
+                             'To proceed please <b>enter the secret code</b> from the toy',
+                             parse_mode='html')
+            secret_code_img = open(SERVICE_IMG_DIR + 'how_secret_code_looks_like.jpg', 'rb')
+            bot.send_photo(chat_id, secret_code_img, reply_markup=chatbot_markup.cancel_help_contacts_menu)
+        else:
+            bot.send_message(chat_id, speech)
+            time.sleep(SHORT_TIMEOUT)
+            bot.send_message(chat_id, 'What would you like to do next?', reply_markup=chatbot_markup.intro_menu)
+    else:
+        bot.send_message(chat_id, speech)
+        time.sleep(SHORT_TIMEOUT)
+        bot.send_message(chat_id, 'What would you like to do next?', reply_markup=chatbot_markup.intro_menu)
 
 def travelers_story_intro(chat_id):
     '''
         Traveler presents him/herself, his/her goal and asks if user would like to know more about traveler's journey
     '''
     # Traveler's photo
-    bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg',
+    traveler_photo = open(SERVICE_IMG_DIR + OURTRAVELLER + '.jpg', 'rb')
+    bot.send_photo(chat_id, traveler_photo,
                    caption='My name is <strong>{}</strong>. I\'m a traveler.\nMy dream is to see the world'.format(
                        OURTRAVELLER), parse_mode='html')
     time.sleep(SHORT_TIMEOUT)
     bot.send_message(chat_id, 'Do you want to know more about my journey?',
                      reply_markup=chatbot_markup.yes_no_gotteddy_menu)
 
-def journey_intro(chat_id):
+def journey_intro(chat_id, traveller):
     '''
-        Block 1.
         Displays short general 'intro' information about traveller's origin (for eg., 'I came from Cherkasy city,
-        Ukraine, from a family with 3 nice small kids'), presents a map with all visited locations with a link to
-        web-map and then user has a choice to click 'Next', 'Help' or just to talk about something
+        Ukraine, from a family with 3 nice small kids'), generates and presents an image from the map with all
+        visited locations with a link to web-map and then user has a choice to click 'Next', 'Help' or just to
+        talk about something
     '''
     time.sleep(SHORT_TIMEOUT)
     bot.send_message(chat_id, 'Ok, here is my story')
     time.sleep(MEDIUM_TIMEOUT)
-    bot.send_message(chat_id,
-                     'I came from <a href="{}">Cherkasy</a> city, Ukraine, from a family with 3 nice small kids'.format(
-                         'https://www.google.com/maps/place/Черкассы,+Черкасская+область,+18000/@50.5012899,25.9683426,6z'),
-                     parse_mode='html', disable_web_page_preview=True)
-    bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-4.jpg')
-    time.sleep(LONG_TIMEOUT)
-    bot.send_message(chat_id,
-                     'So far the map of my journey looks as follows:',
-                     parse_mode='html')
-    bot.send_chat_action(chat_id, action='upload_photo')
-    bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg',
-                         caption='<a href="{}">Open map in browser</a>'.format(
-                             'https://fellowtraveler.club/#journey_map'), parse_mode='html',
-                         reply_markup=chatbot_markup.next_or_help_menu)
-
+    if save_static_map(traveller):
+        bot.send_message(chat_id,
+                         'I came from <a href="{}">Cherkasy</a> city, Ukraine, from a family with 3 nice small kids'.format(
+                             'https://www.google.com/maps/place/Черкассы,+Черкасская+область,+18000/@50.5012899,25.9683426,6z'),
+                         parse_mode='html', disable_web_page_preview=True)
+        biography_photo = open(SERVICE_IMG_DIR + 'biography.jpg', 'rb')
+        bot.send_photo(chat_id, biography_photo)
+        time.sleep(LONG_TIMEOUT)
+        bot.send_message(chat_id,
+                         'So far the map of my journey looks as follows:',
+                         parse_mode='html')
+        bot.send_chat_action(chat_id, action='upload_photo')
+        static_summary_map = open(PHOTO_DIR + OURTRAVELLER + '_summary_map.png', 'rb')
+        bot.send_photo(chat_id, static_summary_map,
+                             caption='<a href="{}">Open map in browser</a>'.format(
+                                 'https://fellowtraveler.club/#journey_map'), parse_mode='html',
+                             reply_markup=chatbot_markup.next_or_help_menu)
+    else:
+        bot.send_message(chat_id,
+                         'I came from <a href="{}">Cherkasy</a> city, Ukraine, from a family with 3 nice small kids'.format(
+                             'https://www.google.com/maps/place/Черкассы,+Черкасская+область,+18000/@50.5012899,25.9683426,6z'),
+                         parse_mode='html', disable_web_page_preview=True, reply_markup=chatbot_markup.next_or_help_menu)
+        biography_photo = open(SERVICE_IMG_DIR + 'biography.jpg', 'rb')
+        bot.send_photo(chat_id, biography_photo)
 
 def journey_begins(chat_id, traveller):
     '''
@@ -979,13 +1003,14 @@ def the_1st_place(chat_id, traveller, if_to_continue):
         day_or_days = '{} days ago'.format(time_passed)
     message1 = '<strong>Place #1</strong>\nI started my journey on {} ({}) from \n<i>{}</i>'.format(start_date, day_or_days, formatted_address)
     bot.send_message(chat_id, message1, parse_mode='html')
+    print('starting location lat/long: {}, {}'.format(lat, long))
     bot.send_location(chat_id, latitude=lat, longitude=long)
     photos = the_1st_location['photos']
     if len(photos) > 0:
         for photo in photos:
             print(photo)
-            bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg')
-            bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg')
+            every_photo = open('static/' + photo, 'rb')
+            bot.send_photo(chat_id, every_photo)
     author = the_1st_location['author']
     comment = the_1st_location['comment']
     message2 = 'That was the 1st place'
@@ -1038,8 +1063,8 @@ def every_place(chat_id, traveller, location_to_show, if_to_continue):
     if len(photos) > 0:
         for photo in photos:
             print(photo)
-            bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-3.jpg')
-            bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg')
+            every_photo = open('static/' + photo, 'rb')
+            bot.send_photo(chat_id, every_photo)
     author = location['author']
     comment = location['comment']
     message2 = 'That was the place #{}'.format(location_to_show + 1)
@@ -1165,7 +1190,8 @@ def new_location_summary(chat_id, from_user):
         photos = NEWLOCATION['photos']
         if len(photos) > 0:
             for photo in photos:
-                bot.send_photo(chat_id, 'https://iuriid.github.io/img/ft-1.jpg')
+                location_photo = open(PHOTO_DIR + photo, 'rb')
+                bot.send_photo(chat_id, location_photo)
         author = '<b>{}</b>'.format(from_user.first_name)
         comment = NEWLOCATION['comment']
         if comment != '':
@@ -1190,6 +1216,28 @@ def send_email(from_user, users_input):
             print('send_email() exception: {}'.format(e))
             return False
 
+def save_static_map(traveller):
+    '''
+    https://developers.google.com/maps/documentation/static-maps/intro
+    Requests a list of places visited by traveller from DB and draws a static (png) map
+    '''
+    try:
+        markers = tg_functions.get_location_history(traveller)['mymarkers'][::-1]
+        latlongparams = ''
+        for index, marker in enumerate(markers):
+            latlongparams += '&markers=color:green%7Clabel:{}%7C{},{}'.format(index + 1, marker['lat'], marker['lng'])
+        query = 'https://maps.googleapis.com/maps/api/staticmap?size=700x400&maptype=roadmap{}&key={}'.format(latlongparams, GOOGLE_MAPS_API_KEY)
+
+        path = PHOTO_DIR + traveller + '_summary_map.png'
+
+        r = requests.get(query, timeout=0.5)
+        if r.status_code == 200:
+            with open(path, 'wb') as f:
+                f.write(r.content)
+        return True
+    except Exception as e:
+        print('save_static_map() exception: {}'.format(e))
+        return False
 
 ####################################### Functions END ####################################
 
