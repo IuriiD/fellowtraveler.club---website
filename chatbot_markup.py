@@ -6,7 +6,7 @@ OURTRAVELLER = 'Teddy'
 
 intro_menu = types.InlineKeyboardMarkup()
 intro_menu_mystory = types.InlineKeyboardButton("{}\'s story".format(OURTRAVELLER), callback_data="Tell your story")
-intro_menu_help = types.InlineKeyboardButton("Help", callback_data="FAQ")
+intro_menu_help = types.InlineKeyboardButton("FAQ", callback_data="FAQ")
 intro_menu_gotteddy = types.InlineKeyboardButton("You got {}?".format(OURTRAVELLER), callback_data="You got fellowtraveler")
 intro_menu.row(intro_menu_mystory, intro_menu_help, intro_menu_gotteddy)
 
@@ -19,17 +19,17 @@ yes_no_gotteddy_menu.row(yes_no_gotteddy_menu_yes, yes_no_gotteddy_menu_no, yes_
 yes_no_help_menu = types.InlineKeyboardMarkup()
 yes_no_help_menu_yes = types.InlineKeyboardButton("Yes", callback_data="Yes")
 yes_no_help_menu_no = types.InlineKeyboardButton("No, thanks", callback_data="No")
-yes_no_help_menu_help = types.InlineKeyboardButton("Help", callback_data="FAQ")
+yes_no_help_menu_help = types.InlineKeyboardButton("FAQ", callback_data="FAQ")
 yes_no_help_menu.row(yes_no_help_menu_yes, yes_no_help_menu_no, yes_no_help_menu_help)
 
 next_or_help_menu = types.InlineKeyboardMarkup()
 next_or_help_menu_next = types.InlineKeyboardButton("Next", callback_data="Next")
-next_or_help_menu_help = types.InlineKeyboardButton("Help", callback_data="FAQ")
+next_or_help_menu_help = types.InlineKeyboardButton("FAQ", callback_data="FAQ")
 next_or_help_menu.row(next_or_help_menu_next, next_or_help_menu_help)
 
 cancel_help_contacts_menu = types.InlineKeyboardMarkup()
 cancel_help_contacts_menu_cancel =  types.InlineKeyboardButton("Cancel", callback_data="Cancel")
-cancel_help_contacts_menu_help = types.InlineKeyboardButton("Help", callback_data="FAQ")
+cancel_help_contacts_menu_help = types.InlineKeyboardButton("FAQ", callback_data="FAQ")
 cancel_help_contacts_menu_contacts = types.InlineKeyboardButton("Contact support", callback_data="Contact support")
 cancel_help_contacts_menu.row(cancel_help_contacts_menu_cancel, cancel_help_contacts_menu_help, cancel_help_contacts_menu_contacts)
 

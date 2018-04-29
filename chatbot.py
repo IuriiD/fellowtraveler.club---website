@@ -82,10 +82,7 @@ NEWLOCATION = {    # stores data for traveler's location before storing it to DB
 def start_handler(message):
     global CONTEXTS
     # A fix intended not to respond to every image uploaded (if several)
-    if 'last_input_media' in CONTEXTS:
-        CONTEXTS.remove('last_input_media')
-    if 'media_input' in CONTEXTS:
-        CONTEXTS.remove('media_input')
+    respond_to_several_photos_only_once()
 
     if 'if_journey_info_needed' not in CONTEXTS:
         CONTEXTS.clear()
@@ -107,10 +104,7 @@ def start_handler(message):
 def tell_your_story(message):
     global CONTEXTS
     # A fix intended not to respond to every image uploaded (if several)
-    if 'last_input_media' in CONTEXTS:
-        CONTEXTS.remove('last_input_media')
-    if 'media_input' in CONTEXTS:
-        CONTEXTS.remove('media_input')
+    respond_to_several_photos_only_once()
 
     travelers_story_intro(message.chat.id)
     if 'if_journey_info_needed' not in CONTEXTS:
@@ -124,10 +118,7 @@ def tell_your_story(message):
 def help(message):
     global CONTEXTS
     # A fix intended not to respond to every image uploaded (if several)
-    if 'last_input_media' in CONTEXTS:
-        CONTEXTS.remove('last_input_media')
-    if 'media_input' in CONTEXTS:
-        CONTEXTS.remove('media_input')
+    respond_to_several_photos_only_once()
 
     get_help(message.chat.id)
     # Console logging
@@ -140,13 +131,10 @@ def help(message):
 def you_got_fellowtraveler(message):
     global CONTEXTS
     # A fix intended not to respond to every image uploaded (if several)
-    if 'last_input_media' in CONTEXTS:
-        CONTEXTS.remove('last_input_media')
-    if 'media_input' in CONTEXTS:
-        CONTEXTS.remove('media_input')
+    respond_to_several_photos_only_once()
 
     if 'code_correct' not in CONTEXTS:
-        bot.send_message(message.chat.id, 'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please <b>enter the secret code</b> from the toy', parse_mode='html')
+        bot.send_message(message.chat.id, 'Congratulations! That\'s a tiny adventure and some responsibility ;)\nTo proceed please <b>enter the secret code</b> from the toy', parse_mode='html')
         secret_code_img = open(SERVICE_IMG_DIR + 'how_secret_code_looks_like.jpg', 'rb')
         bot.send_photo(message.chat.id, secret_code_img, reply_markup=chatbot_markup.cancel_help_contacts_menu)
     # Console logging
@@ -165,10 +153,7 @@ def you_got_fellowtraveler(message):
 def text_handler(message):
     global CONTEXTS
     # A fix intended not to respond to every image uploaded (if several)
-    if 'last_input_media' in CONTEXTS:
-        CONTEXTS.remove('last_input_media')
-    if 'media_input' in CONTEXTS:
-        CONTEXTS.remove('media_input')
+    respond_to_several_photos_only_once()
 
     # Get input data
     users_input = message.text
@@ -189,13 +174,9 @@ def button_click_handler(call):
     # Buttons | Instructions | Add location | are activated always in context 'code_correct',
     # other buttons ( Yes | No, thanks | Cancel | Next) - depend on context, if contexts==[] or irrelevant context - they
     # should return a response for a Fallback_Intent
-
     global CONTEXTS
     # A fix intended not to respond to every image uploaded (if several)
-    if 'last_input_media' in CONTEXTS:
-        CONTEXTS.remove('last_input_media')
-    if 'media_input' in CONTEXTS:
-        CONTEXTS.remove('media_input')
+    respond_to_several_photos_only_once()
 
     bot.answer_callback_query(call.id, text="")
 
@@ -213,10 +194,7 @@ def location_handler(message):
     global CONTEXTS
     global NEWLOCATION
     # A fix intended not to respond to every image uploaded (if several)
-    if 'last_input_media' in CONTEXTS:
-        CONTEXTS.remove('last_input_media')
-    if 'media_input' in CONTEXTS:
-        CONTEXTS.remove('media_input')
+    respond_to_several_photos_only_once()
 
     # Get input data
     users_input = 'User posted location'
@@ -258,7 +236,8 @@ def photo_handler(message):
                 file_name_wo_extension = 'fellowtravelerclub-{}'.format(OURTRAVELLER)
                 file_extension = os.path.splitext(photo_filename)[1]
                 current_datetime = datetime.now().strftime("%d%m%y%H%M%S")
-                path4db = file_name_wo_extension + '-' + current_datetime + file_extension
+                random_int = random.randint(100, 999)
+                path4db = file_name_wo_extension + '-' + current_datetime + str(random_int) + file_extension
                 path = PHOTO_DIR + path4db
 
                 r = requests.get(image_url, timeout=0.5)
@@ -275,6 +254,7 @@ def photo_handler(message):
                     main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=True, other_input=False)
         except Exception as e:
             print('photo_handler() exception: {}'.format(e))
+            #send_email('Logger', 'photo_handler() exception: {}'.format(e))
             users_input = 'File has invalid image extension or invalid image format'
             main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False, other_input=False)
     else:
@@ -290,10 +270,7 @@ def other_content_types_handler(message):
     global CONTEXTS
     global NEWLOCATION
     # A fix intended not to respond to every image uploaded (if several)
-    if 'last_input_media' in CONTEXTS:
-        CONTEXTS.remove('last_input_media')
-    if 'media_input' in CONTEXTS:
-        CONTEXTS.remove('media_input')
+    respond_to_several_photos_only_once()
 
     # Get input data
     users_input = 'User entered something different from text, button_click, photo or location'
@@ -330,21 +307,25 @@ def dialogflow(query, chat_id, lang_code='en'):
 def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=None, media=False, other_input=False):
     '''
         Main handler. Function gets input from user (typed text OR callback_data from button clicks), 'feeds' it
-        to Dialogflow for NLP, receives intent and speech, and then depending on intent and context responds to user
-        users_input - typed text or callback_data from button
+        to Dialogflow for NLP, receives intent and speech, and then depending on intent and context responds to user.
+        users_input - typed text or callback_data from button, 'dummy' text in case location/photo/other content_types input
         chat_id - chat ID (call.message.chat.id or message.chat.id)
-        from_user - block of data about user (1st name, id etc)
+        from_user - block of data about user (containing his/her 1st name, id etc)
         is_btn_click - whether it's callback_data from button (True) or manual text input (False, default)
         geodata - dictionary with latitude/longitude or None (default)
+        media - if it's a photo (by default = False)
+        other_input - any other content type besides text, button click, location or photo (by default = False)
     '''
     global CONTEXTS
     global NEWLOCATION
 
     if geodata:
-        speech = 'Nice place ;)'
+        short_reaction_variants = [';)', 'Nice place ;)', 'That\'s interesting ;)', 'Hm..']
+        speech = random.choice(short_reaction_variants)
         intent = 'location_received'
     elif media:
-        speech = 'Nice image ;)'
+        short_reaction_variants = [';)', 'Nice image ;)', 'That\'s interesting ;)', 'Hm..']
+        speech = random.choice(short_reaction_variants)
         intent = 'media_received'
     elif other_input:
         intent = 'other_content_types'
@@ -358,25 +339,37 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
 
     # Block 0. User clicked/typed "Contact support" and the next text input should be sent to support email
     if 'contact_support' in CONTEXTS:
-        # Text input is supposed, any other will be rejected
-        if not is_btn_click \
-                and not media \
+        # Text input is supposed or button clicks, other content types will be rejected
+        if not is_btn_click:
+            if not media \
                 and not geodata \
                 and not other_input:
-            # Remove 'contact_support' from contexts
-            CONTEXTS.remove('contact_support')
-            # Redirect user's message to SUPPORT_EMAIL
-            if send_email(from_user, users_input):
-                # Report about successfull operation to user
-                bot.send_message(chat_id, 'Your message was successfully sent to my author\n(<b>iurii.dziuban@gmail.com</b>).\nWhat would you like to do next?',
-                             parse_mode='html', reply_markup=chatbot_markup.intro_menu)
+                # Remove 'contact_support' from contexts
+                CONTEXTS.remove('contact_support')
+                # Redirect user's message to SUPPORT_EMAIL
+                if send_email(from_user.id, users_input):
+                    # Report about successfull operation to user
+                    bot.send_message(chat_id, 'Your message was successfully sent to my author\n(<b>iurii.dziuban@gmail.com</b>).\nWhat would you like to do next?',
+                                 parse_mode='html', reply_markup=chatbot_markup.intro_menu)
+                else:
+                    # Report about unsuccessfull operation to user
+                    bot.send_message(chat_id, 'Some problems occured when trying to send you message to my author (<b>iurii.dziuban@gmail.com</b>). Could you please write to his email yourself? Sorry for that..',
+                                 parse_mode='html', reply_markup=chatbot_markup.intro_menu_mystory)
             else:
-                # Report about unsuccessfull operation to user
-                bot.send_message(chat_id, 'Some problems occured when trying to send you message to my author (<b>iurii.dziuban@gmail.com</b>). Could you please write to his email yourself? Sorry for that..',
-                             parse_mode='html', reply_markup=chatbot_markup.intro_menu_mystory)
+                bot.send_message(chat_id, 'Sorry but I can send only text. Please type something ;)',
+                                 parse_mode='html', reply_markup=chatbot_markup.cancel_help_contacts_menu)
         else:
-            bot.send_message(chat_id, 'Sorry but I can send only text. Please type something ;)',
-                         parse_mode='html')
+            # Button clicks
+            # If user cancels sending message to support
+            if intent == 'smalltalk.confirmation.cancel':
+                CONTEXTS.remove('contact_support')
+                bot.send_message(chat_id, 'Cancelled\nWhat would you like to do next?', reply_markup=chatbot_markup.intro_menu)
+            # All other button clicks
+            else:
+                # Buttons | You got Teddy? | Teddy's story | Help | are activated irrespective of context
+                if not always_triggered(chat_id, intent, speech):
+                    # All other text inputs/button clicks
+                    default_fallback(chat_id, intent, speech)
 
     # Block 1. Traveler's story
     # Block 1-1. Reply to typing/clocking_buttons 'Yes'/'No' displayed after the intro block asking
@@ -528,7 +521,7 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
                 CONTEXTS.remove('enters_code')
             CONTEXTS.append('contact_support')
             bot.send_message(chat_id, 'Any problems, questions, suggestions, remarks, proposals etc? Please enter them below or write to my author\'s email <b>iurii.dziuban@gmail.com</b>\n\n You may also consider visiting <a href="https://iuriid.github.io">iuriid.github.io</a>.',
-                         parse_mode='html')
+                         parse_mode='html', reply_markup=chatbot_markup.cancel_help_contacts_menu)
         # If user enters whatever else, not == intent 'smalltalk.confirmation.cancel'
         else:
             if not is_btn_click:
@@ -565,7 +558,7 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
             CONTEXTS.append('code_correct')
             CONTEXTS.append('contact_support')
             bot.send_message(chat_id, 'Any problems, questions, suggestions, remarks, proposals etc? Please enter them below or write to my author\'s email <b>iurii.dziuban@gmail.com</b>\n\n You may also consider visiting <a href="https://iuriid.github.io">iuriid.github.io</a>.',
-                         parse_mode='html')
+                         parse_mode='html', reply_markup=chatbot_markup.cancel_help_contacts_menu)
         elif intent == 'show_instructions':
             CONTEXTS.clear()
             CONTEXTS.append('code_correct')
@@ -627,9 +620,6 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
                     bot.send_message(chat_id,
                                      'That doesn\'t look like a valid location. Please try once again',
                                      parse_mode='html', reply_markup=chatbot_markup.cancel_or_instructions_menu)
-                    if not always_triggered(chat_id, intent, speech):
-                        # All other text inputs/button clicks
-                        default_fallback(chat_id, intent, speech)
 
             # Block 2-4. User should be uploading a/some photo/-s.
             elif 'media_input' in CONTEXTS:
@@ -654,6 +644,14 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
                                      'Any comments (how did you get {0}, what did you feel, any messages for future {0}\'s fellow travelers)?'.format(
                                          OURTRAVELLER),
                                      parse_mode='html', reply_markup=chatbot_markup.next_reset_instructions_menu)
+
+                # User resets location entry
+                elif intent == 'reset':
+                    CONTEXTS.clear()
+                    CONTEXTS.append('code_correct')
+                    bot.send_message(chat_id,
+                                     'Ok, let\'s try once again',
+                                     parse_mode='html', reply_markup=chatbot_markup.you_got_teddy_menu)
 
                 else:
                     # User should be uploading photos but he/she didn't and also didn't click 'Cancel' but
@@ -728,25 +726,27 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
             # Block 2-6. Submitting new location - user clicked 'Submit'
             elif 'ready_for_submit' in CONTEXTS:
                 if intent == 'submit':
-                    if submit_new_location(OURTRAVELLER):
-                        # Clear all contexts
-                        CONTEXTS.clear()
+                    # Clear all contexts
+                    CONTEXTS.clear()
 
-                        # Call function to generate new secret code
-                        # new_secret_code = code_regenerate(traveller)
+                    # Save location and get the new secret code
+                    location_submitted = submit_new_location(OURTRAVELLER)
+                    new_code_generated = code_regenerate(OURTRAVELLER)
 
+                    if location_submitted and new_code_generated:
                         bot.send_message(chat_id,
                                          'New location added!\n\n'
-                                         'Secret code for adding the next location: <code>XXX</code>\n\n'
+                                         'Secret code for adding the next location: <code>{}</code>\n\n'
                                          'Please save it somewhere or don\'t delete this message.\n'
-                                         'If you are going to pass {} to somebody please write this code similar to how you received it'.format(OURTRAVELLER),
+                                         'If you are going to pass {} to somebody please write this code similar to how you received it'.format(
+                                             new_code_generated, OURTRAVELLER),
                                          parse_mode='html', reply_markup=chatbot_markup.intro_menu)
                     else:
-                        # Clear all contexts
-                        CONTEXTS.clear()
-                        bot.send_message(chat_id, 'Hmm.. failed to save new location.\n'
-                                                  'Could you please try once again?',
-                                         parse_mode='html', reply_markup=chatbot_markup.intro_menu)
+                        bot.send_message(chat_id,
+                                             'Hmm... Sorry, but for some reason I failed to save your data to database.\n'
+                                             'I informed my author (<b>iurii.dziuban@gmail.com</b>) about this and hope that he finds the reason soon.\n'
+                                             'Sorry for inconveniences..',
+                                             parse_mode='html', reply_markup=chatbot_markup.intro_menu)
                 elif intent == 'reset':
                     CONTEXTS.clear()
                     CONTEXTS.append('code_correct')
@@ -817,7 +817,7 @@ def always_triggered(chat_id, intent, speech):
     elif intent == 'you_got_fellowtraveler':
         if 'code_correct' not in CONTEXTS:
             bot.send_message(chat_id,
-                             'Oh, that\'s a tiny adventure and some responsibility ;)\nTo proceed please <b>enter the secret code</b> from the toy',
+                             'Congratulations! That\'s a tiny adventure and some responsibility ;)\nTo proceed please <b>enter the secret code</b> from the toy',
                              parse_mode='html')
             # Image with an example of secret code
             secret_code_img = open(SERVICE_IMG_DIR + 'how_secret_code_looks_like.jpg', 'rb')
@@ -835,7 +835,7 @@ def always_triggered(chat_id, intent, speech):
         if 'contact_support' not in CONTEXTS:
             CONTEXTS.append('contact_support')
             bot.send_message(chat_id, 'Any problems, questions, suggestions, remarks, proposals etc? Please enter them below or write to my author\'s email <b>iurii.dziuban@gmail.com</b>\n\n You may also consider visiting <a href="https://iuriid.github.io">iuriid.github.io</a>.',
-                         parse_mode='html')
+                         parse_mode='html', reply_markup=chatbot_markup.cancel_help_contacts_menu)
         return True
 
     #if 'contact_support' in CONTEXTS:
@@ -955,7 +955,6 @@ def journey_begins(chat_id, traveller):
     db = client.TeddyGo
 
     # Message: I've checked in ... places in ... country[ies] (country1 [, country2 etc]) and have been traveling for ... days so far
-    tg_functions.summarize_journey(traveller)
     traveller_summary = db.travellers.find_one({'name': traveller})
     #print('traveller_summary: {}'.format(traveller_summary))
     total_locations = traveller_summary['total_locations']
@@ -963,6 +962,8 @@ def journey_begins(chat_id, traveller):
     countries_visited = traveller_summary['countries_visited']
     countries = ', '.join(countries_visited)
     journey_duration = tg_functions.time_passed(traveller)
+    total_distance = round(traveller_summary['total_distance'] / 1000, 1)
+    distance_from_home = round(traveller_summary['distance_from_home'] / 1000, 1)
     if total_countries == 1:
         countries_form = 'country'
     else:
@@ -971,8 +972,9 @@ def journey_begins(chat_id, traveller):
         day_or_days = 'day'
     else:
         day_or_days = 'days'
-    speech = 'So far I\'ve checked in <strong>{}</strong> places located in <strong>{}</strong> {} ({}) and have been traveling for <strong>{}</strong> {}.\n\nI covered about ... km it total and currently I\'m nearly .. km from home'.format(
-        total_locations, total_countries, countries_form, countries, journey_duration, day_or_days)
+
+    speech = 'So far I\'ve checked in <strong>{}</strong> places located in <strong>{}</strong> {} ({}) and have been traveling for <strong>{}</strong> {}.\n\nI covered about <b>{}</b> km it total and currently I\'m nearly <b>{}</b> km from home'.format(
+        total_locations, total_countries, countries_form, countries, journey_duration, day_or_days, total_distance, distance_from_home)
     bot.send_message(chat_id, speech, parse_mode='html')
     return total_locations
 
@@ -1009,7 +1011,7 @@ def the_1st_place(chat_id, traveller, if_to_continue):
     if len(photos) > 0:
         for photo in photos:
             print(photo)
-            every_photo = open('static/' + photo, 'rb')
+            every_photo = open(PHOTO_DIR + photo, 'rb')
             bot.send_photo(chat_id, every_photo)
     author = the_1st_location['author']
     comment = the_1st_location['comment']
@@ -1022,7 +1024,7 @@ def the_1st_place(chat_id, traveller, if_to_continue):
         message2 = 'My new friend {} wrote:\n<i>{}</i>'.format(author, comment)
     else:
         if author != 'Anonymous':
-            message2 = 'I got acquainted with a new friend - {} :)'.format(author)
+            message2 = 'I got acquainted with a new friend - <b>{}</b> :)'.format(author)
     if if_to_continue:
         bot.send_message(chat_id, message2, parse_mode='html', reply_markup=chatbot_markup.next_or_help_menu)
         #print('Here')
@@ -1063,7 +1065,7 @@ def every_place(chat_id, traveller, location_to_show, if_to_continue):
     if len(photos) > 0:
         for photo in photos:
             print(photo)
-            every_photo = open('static/' + photo, 'rb')
+            every_photo = open(PHOTO_DIR + photo, 'rb')
             bot.send_photo(chat_id, every_photo)
     author = location['author']
     comment = location['comment']
@@ -1147,11 +1149,13 @@ def gmaps_geocoder(lat, lng):
         return True
     except Exception as e:
         print('gmaps_geocoder() exception: {}'.format(e))
+        #send_email('Logger', 'gmaps_geocoder() exception: {}'.format(e))
         return False
 
 def submit_new_location(traveller):
     '''
         Saves new location (NEWLOCATION) to DB
+        Updates journey summary
     '''
     global NEWLOCATION
     try:
@@ -1165,9 +1169,14 @@ def submit_new_location(traveller):
         collection_teddy = db[traveller]
         NEWLOCATION.pop('_id', None)
         collection_teddy.insert_one(NEWLOCATION)
+
+        # Update journey summary
+        tg_functions.summarize_journey(OURTRAVELLER)
+
         return True
     except Exception as e:
         print('submit_new_location() exception: {}'.format(e))
+        #send_email('Logger', 'gmaps_geocoder() exception: {}'.format(e))
         return False
 
 def time_from_location(from_date):
@@ -1204,12 +1213,12 @@ def new_location_summary(chat_id, from_user):
         print('new_location_summary() exception: {}'.format(e))
         return False
 
-def send_email(from_user, users_input):
+def send_email(from_user_id, users_input):
     with app.app_context():
         try:
-            msg = Message("Fellowtraveler.club - message from Telegram user #{}".format(from_user.id),
+            msg = Message("Fellowtraveler.club - message from Telegram user #{}".format(from_user_id),
                           sender="mailvulgaris@gmail.com", recipients=[SUPPORT_EMAIL])
-            msg.html = "Telegram user ID<b>{}</b> wrote:<br><i>{}</i>".format(from_user.id, users_input)
+            msg.html = "Telegram user ID<b>{}</b> wrote:<br><i>{}</i>".format(from_user_id, users_input)
             mail.send(msg)
             return True
         except Exception as e:
@@ -1237,7 +1246,43 @@ def save_static_map(traveller):
         return True
     except Exception as e:
         print('save_static_map() exception: {}'.format(e))
+        #send_email('Logger', 'save_static_map() exception: {}'.format(e))
         return False
+
+def respond_to_several_photos_only_once():
+    '''
+        User may upload several photos for a location and each one triggers the corresponding handler
+        We needn't respond to every photo so we'll respond only to the 1st one (though our response
+        will be displayed after all photos)
+    '''
+    global CONTEXTS
+    if 'last_input_media' in CONTEXTS:
+        CONTEXTS.remove('last_input_media')
+        if 'media_input' in CONTEXTS:
+            CONTEXTS.remove('media_input')
+
+def code_regenerate(traveller):
+    '''
+        After adding a new location secret code is being regenerated so that if user1 passes the toy
+        to user2, user1 should not be able to add new locations or share secret code
+        New code is saved to traveller's summary document in DB (TeddyGo >> travellers >> <TravellerName>), secret_code
+    '''
+    new_code = ''
+    for x in range(4):
+        new_code += str(random.randint(0,9))
+    try:
+        client = MongoClient()
+        db = client.TeddyGo
+        db.travellers.update_one({'name': traveller}, {'$set': {'secret_code': sha256_crypt.encrypt(new_code)}})
+    except Exception as e:
+        print('code_regenerate() exception when updating secret code in DB: {}'.format(e))
+        #send_email('Logger', 'code_regenerate() exception when updating secret code in DB: {}'.format(e))
+        return False
+
+    # Logging
+    print()
+    print('New secret code for {}: {}'.format(traveller, new_code))
+    return new_code
 
 ####################################### Functions END ####################################
 
@@ -1245,7 +1290,8 @@ def save_static_map(traveller):
 try:
     bot.polling(none_stop=True, timeout=1)
 except Exception as e:
-    print('Exception: {}'.format(e))
+    print('bot.polling() exception: {}'.format(e))
+    send_email('Logger', 'bot.polling() exception: {}'.format(e))
     time.sleep(15)
 
 # Run Flask server

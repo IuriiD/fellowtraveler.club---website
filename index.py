@@ -30,6 +30,10 @@ LANGUAGES = {
     'fr': 'Français'
 }
 
+OURTRAVELLER = 'Teddy'
+PHOTO_DIR = 'static/uploads/{}/'.format(OURTRAVELLER) # where photos from places visited are saved
+SERVICE_IMG_DIR = 'static/uploads/{}/service/'.format(OURTRAVELLER) # where 'general info' images are saved (summary map, secret code example etc)
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 20 # max photo to upload is 20Mb
@@ -170,7 +174,7 @@ def index():
                         'addlocation')
                 print('No data in session!')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
-                                       locations_history=locations_history, teddy_map=teddy_map, language=user_language)
+                                       locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
 
             # Get user's input
             print('Here2')
@@ -194,11 +198,11 @@ def index():
                     if n<4:
                         path = tg_functions.photo_check_save(photos[n])
                         if path != 'error':
-                            photos[n].save(os.path.join(app.static_folder, path))
+                            photos[n].save(PHOTO_DIR + path)
                             photos_list.append(path)
                         else:
                             # At least one of images is invalid. Messages are flashed from photo_check_save()
-                            return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
+                            return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
                 if len(photos)>4:
                     flash(
                         gettext('Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'),
@@ -214,7 +218,7 @@ def index():
                 teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
                     flash(gettext('Invalid secret code'), 'addlocation')
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
                 else:
                     # Prepare dictionary with new location info
                     geodata = session['geodata']
@@ -276,13 +280,13 @@ def index():
 
                     return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
                                            locations_history=locations_history, teddy_map=teddy_map,
-                                           language=user_language)
+                                           language=user_language, PHOTO_DIR=PHOTO_DIR)
             else:
                 print('Here3')
                 # Clear data from session
                 session.pop('geodata', None)
 
-                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
 
         # GET request
         # Get travellers history (will be substituted with timeline embedded from Twitter )
@@ -326,7 +330,7 @@ def index():
 
         # Check for preferred language
         user_language = get_locale()
-        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language)
+        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
 
     except Exception as error:
         print("error: {}".format(error))
