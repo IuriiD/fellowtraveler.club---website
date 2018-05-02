@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% from '_formhelpers.html' import render_field %}
+
+{% block title %}Registration{% endblock %}
+
+{% block main_contents %}
+    <hr>
+
+    <div align="right">
+        Maybe just <a href="/login/">log in</a>?
+    </div>
+
+    <form role="form" action="/register/" method="POST">
+      <dl>
+
+        {{ render_field(form.email) }}
+        {{ render_field(form.password) }}
+        {{ render_field(form.confirm) }}
+        {{ form.submit(class_="btn btn-primary") }}
+      </dl>
+    </form>
+{% endblock %}

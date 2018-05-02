@@ -1,10 +1,12 @@
 {% extends "layout.html" %}
 {% from '_formhelpers.html' import render_field %}
 
+<!-- Block #1 - Title -->
 {% block title %}
     {{ gettext('Hi! My name is Teddy and I have a dream') }}
 {% endblock %}
 
+<!-- Block #2 - Head includes (other CSS & JS) -->
 {% block inhead %}
     {# JSGlue for using url_for in jQuery #}
     {{ JSGlue.include() }}
@@ -19,28 +21,21 @@
     {{ teddy_map.js }}
 {% endblock %}
 
+<!-- Block #3 - Main contents -->
+{% block main_contents %}
+    <!-- Traveller's journey so far -->
+    <div>
+        <b>Map of Teddy's journey so far</b>
+    </div>
 
-{% block headersubscribe4updates %}
-    <form role="form" action="/subscribe" method="POST">
-        <dl>
-            {{ whereisteddynowform.csrf_token }}
-            {{ render_field(subscribe2updatesform.email4updates) }}
-            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
-        </dl>
-    </form>
-{% endblock %}
-
-
-{% block travelmap %}
-    <!--
-    <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1UgBsp0NYrSmBzBrUzAnucKhaywY" width="750" height="540"></iframe>
-    -->
     <div>
         {{ teddy_map.html }}
     </div>
-{% endblock %}
 
-{% block traveltimeline %}
+    <div>
+        <b>Travel timeline</b>
+    </div>
+
     {% if locations_history|length>0 %}
         <div>
             {% for location_data in locations_history %}
@@ -63,43 +58,52 @@
             {% endfor %}
         </div>
     {% endif %}
-{% endblock %}
 
-{% block updatelocation %}
-    <a name="updatelocation"><b>{{ gettext('Where Teddy is now or was on the photo? (required)') }}</b></a>
-    <div>
-        <input id="pac-input" />
-        <div id="map" height="400" width="700"></div>
-    </div>
+    <!-- Adding a new location -->
+    {% if session['email'] %}
+        <!-- Flashed messages for adding new location (under block header)-->
+        <div>
+            {% with errors = get_flashed_messages(category_filter=["addlocation"]) %}
+            {% if errors %}
+                {%- for msg in errors %}
+                    <div class="alert alert-warning" role="alert">
+                        {{ msg|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </div>
+                {% endfor -%}
+            {% endif %}
+            {% endwith %}
+        </div>
 
-    <br>
-    <form role="form" action="/" method="POST" enctype="multipart/form-data">
-        <dl>
-            {{ whereisteddynowform.csrf_token }}
-            {{ render_field(whereisteddynowform.author) }}
-            <div>
-                <b>{{ gettext('Upload up to 4 photos/place') }}</b>
-                <p>
-                    <input type="file" accept="image/*" name="photo" id="photo" multiple>
-                </p>
-            </div>
-            {{ render_field(whereisteddynowform.comment) }}
-            {{ render_field(whereisteddynowform.email4updates) }}
-            {{ render_field(whereisteddynowform.secret_code) }}
-            {# { render_field(whereisteddynowform.recaptcha) } #}
-            <br>
-            {{ whereisteddynowform.submit(class_="btn btn-primary") }}
-        </dl>
-    </form>
-{% endblock %}
+        <b>{{ gettext('Where Teddy is now or was on the photo? (required)') }}</b>
+        <div>
+            <input id="pac-input" />
+            <div id="map" height="400" width="700"></div>
+        </div>
 
-
-{% block footersubscribe4updates %}
-    <form role="form" action="/subscribe" method="POST">
-        <dl>
-            {{ whereisteddynowform.csrf_token }}
-            {{ render_field(subscribe2updatesform.email4updates) }}
-            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
-        </dl>
-    </form>
+        <br>
+        <a name="updatelocation"></a>
+        <form role="form" action="/" method="POST" enctype="multipart/form-data">
+            <dl>
+                {{ whereisteddynowform.csrf_token }}
+                {{ render_field(whereisteddynowform.author) }}
+                <div>
+                    <b>{{ gettext('Upload up to 4 photos/place') }}</b>
+                    <p>
+                        <input type="file" accept="image/*" name="photo" id="photo" multiple>
+                    </p>
+                </div>
+                {{ render_field(whereisteddynowform.comment) }}
+                {{ render_field(whereisteddynowform.email4updates) }}
+                {{ render_field(whereisteddynowform.secret_code) }}
+                {# { render_field(whereisteddynowform.recaptcha) } #}
+                <br>
+                {{ whereisteddynowform.submit(class_="btn btn-primary") }}
+            </dl>
+        </form>
+    {% else %}
+        <a name="updatelocation"></a>
+        To add new Teddy's location first please <b><a href="/login/">log in</a></b> or <b><a href="/register/">register</a></b>
+    {% endif %}
 {% endblock %}

@@ -5,7 +5,7 @@ import datetime
 from flask import Flask, render_template, url_for, request, redirect, flash, session, make_response, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, PasswordField, BooleanField
-from wtforms.validators import DataRequired, Length, URL, Email, Optional
+from wtforms.validators import DataRequired, Length, URL, Email, Optional, EqualTo
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf.recaptcha import RecaptchaField
 from flask_mail import Mail, Message
@@ -15,6 +15,7 @@ from flask_jsglue import JSGlue
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
 from flask_babel import Babel, gettext
+from functools import wraps
 import twitter
 import uuid
 
@@ -67,9 +68,35 @@ class WhereisTeddyNow(FlaskForm):
     #recaptcha = RecaptchaField()
     submit = SubmitField(gettext('Submit'))
 
+class RegistrationForm(FlaskForm):
+    email = StringField('Email Address', validators=[Length(6, 50), DataRequired(), Email()])
+    password = PasswordField('New Password', validators=[DataRequired(), EqualTo('confirm', message='Passwords must match')])
+    confirm = PasswordField('Repeat Password')
+    submit = SubmitField(gettext('Submit'))
+
 class HeaderEmailSubscription(FlaskForm):
     email4updates = StringField(gettext('Get updates by email:'), validators=[Optional(), Email(gettext('Please enter a valid e-mail address'))])
     emailsubmit = SubmitField(gettext('Subscribe'))
+
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash(gettext('You need to <a href="/login/">log in</a> first'),'header')
+            return redirect(url_for('login'))
+    return wrap
+
+def notloggedin_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            flash(gettext('You need to <a href="/logout">log out</a> first'), 'header')
+            return redirect(url_for('index'))
+        else:
+            return f(*args, **kwargs)
+    return wrap
 
 def save_subscriber(email_entered):
     '''
@@ -131,6 +158,49 @@ def get_locale():
         return user_language
     else:
         return request.accept_languages.best_match(LANGUAGES.keys())
+
+@app.route('/register/', methods=['GET', 'POST'])
+@notloggedin_required
+@csrf.exempt
+def register():
+    try:
+        form = RegistrationForm()
+        subscribe2updatesform = HeaderEmailSubscription()
+
+        # registration data have been submitted (POST)
+        if request.method == 'POST':
+            if form.validate_on_submit():
+                email = form.email.data
+                password = sha256_crypt.encrypt(str(form.password.data))
+
+                client = MongoClient()
+                db = client.TeddyGo
+                users = db.users
+
+                # Let's check if username isn't already in our collection
+                # He/she may be there already but 'soft-deleted' (already registered but then unregistered ['status': 'active' >> 'status': 'inactive'])
+                if users.find_one({'email': email}):
+                    flash('Sorry, but username with such email already exists. Please choose a different email address or <a href="/login">login</a>', 'header')
+                    return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform)
+                else:
+                    users.insert_one(
+                        {
+                            'email': email,
+                            'password': password,
+                            'email_verified': False
+                        }
+                    )
+                    session['logged_in'] = True
+                    session['username'] = email
+                    flash('Almost finished. To complete registration please click on the verification link that has been sent to your email', 'header')
+                    return redirect(url_for('index'))
+        # GET request for a registration form
+        else:
+            return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform)
+
+    except Exception as e:
+        print('register() exception: {}'.format(e))
+        return redirect(url_for('index'))
 
 @app.route('/index/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST']) # later index page will aggragate info for several travellers
@@ -385,7 +455,7 @@ def user_language_to_coockie(lang_code):
     print('Preferred language, {}, was saved to coockie'.format(lang_code.upper()))
     return response
 
-@app.route("/subscribe", methods=["POST"])
+@app.route("/subscribe/", methods=["POST"])
 @csrf.exempt
 def direct_subscription():
     subscribe2updatesform = HeaderEmailSubscription()

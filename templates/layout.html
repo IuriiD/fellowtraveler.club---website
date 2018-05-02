@@ -2,45 +2,57 @@
 <html lang="en">
 
     <head>
-            <!-- Required meta tags -->
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
-            <title>{% block title %}{% endblock %}</title>
+        <!-- Block #1 - Title -->
+        <title>
+            {% block title %}{% endblock %} / fellowtraveler.club
+        </title>
 
-            <!-- Bootstrap CSS -->
-            <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-            <!-- jQuery -->
-            <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
-            <!-- Popper.js -->
-            <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-            <!-- Bootstrap.js -->
-            <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <!-- jQuery -->
+        <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+        <!-- Popper.js -->
+        <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+        <!-- Bootstrap.js -->
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+        <!-- Block #2 - Head includes (other CSS & JS) -->
         {% block inhead %}
         {% endblock %}
     </head>
 
     <body>
-        <!-- Main container -->
+        <!-- Main container START -->
         <div class="container" style="max-width: 768px">
 
-            <!-- Badge, chat and update location button -->
+            <!-- Header START -->
+                <!-- Table:
+                 1. Row 1 = 2 columns 50%/50%:
+                    1-1. Column 1: traveller's badge, contacts/email subscription form and update_location button,
+                    1-2. Column 2: links to Login/Register or AddLocation/Logout, change language and chat window;
+                 2. Row 2 = 1 column for flashing messages
+                 -->
             <div class="container">
+                <!-- 1. Row 1 (see above) -->
                 <div class="row">
-                    <!-- Badge and update location button -->
+                    <!-- 1-1. Row 1, left column -->
                     <div class="w-50">
                         <div>
-                            <img src="{{ url_for('static', filename='img/teddy_photo3.jpg') }}" style="height: 256px; width: 384px">
+                            <img src="{{ url_for('static', filename='../static/uploads/Teddy/service/Teddy.jpg') }}" style="height: 256px; width: 384px">
                         </div>
+
                         <div>
                             {{ gettext('Name') }}: <b>Teddy</b>
                             <br>
                             {% include '_speakwithmefollowme.html' %}
                         </div>
+
                         <div>
-                            {% block headersubscribe4updates %}
-                            {% endblock %}
+                            {% include '_subscribeform.html' %}
                         </div>
 
                         <!-- Update location button -->
@@ -50,8 +62,17 @@
                         </div>
                     </div>
 
-                    <!-- Chat -->
+                    <!-- 1-2. Row 1, right column -->
                     <div class="w-50">
+                        <!-- Login/Register or UpdateLocation/Logout links -->
+                        <div class="container-fluid" align="right">
+                            {% if session['username'] %}
+                                <b>{{ session['username'] }}: </b><a href="/add_location/">Update Teddy's location</a> | <a href="/logout/">Logout</a>
+                            {% else %}
+                                <a href="/login/">Log in</a> | <a href="/register/">Register</a>
+                            {% endif %}
+                        </div>
+
                         <!-- Choose language block -->
                         <div class="container-fluid" align="right">
                             {{ gettext('Change language') }}: {% if language != 'en' %}<a href="/language/en">{% endif %}En{% if language != 'en' %}</a>{% endif %} {% if language != 'de' %}<a href="/language/de">{% endif %}De{% if language != 'de' %}</a>{% endif %} {% if language != 'ru' %}<a href="/language/ru">{% endif %}Ru{% if language != 'ru' %}</a>{% endif %} {% if language != 'fr' %}<a href="/language/fr">{% endif %}Fr{% if language != 'fr' %}</a>{% endif %}
@@ -63,7 +84,7 @@
                     </div>
                 </div>
 
-                <!-- Disclaimer and precautions block -->
+                <!-- 2. Row 2, disclaimer and precautions block -->
                 <div>
                     {% with errors = get_flashed_messages(category_filter=["header"]) %}
                     {% if errors %}
@@ -77,94 +98,26 @@
                     {% endif %}
                     {% endwith %}
                 </div>
-
-                <!--div class="alert alert-info" role="alert">
-                    {# { gettext('No, it\'s not a trick and supposed to be safe but please see <a href="">safety info</a> and <a href="">disclaimer</a>') }#}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div-->
             </div>
+            <!-- Header END -->
 
-
-            <!-- Collapse with travel map, timeline and add new location form -->
-            <div id="accordion" style="width: 100%">
-              <div class="card">
-                <div class="card-header" id="headingOne">
-                  <h5 class="mb-0">
-                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        <a name="journey_map">{{ gettext('Map of my journey so far') }}</a>
-                    </button>
-                  </h5>
-                </div>
-                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-                  <div class="card-body">
-                    {% block travelmap %}
-                    {% endblock %}
-                  </div>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-header" id="headingTwo">
-                  <h5 class="mb-0">
-                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                      {{ gettext('Travel timeline') }}
-                    </button>
-                  </h5>
-                </div>
-                <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
-                  <div class="card-body">
-                    {% block traveltimeline %}
-                    {% endblock %}
-                  </div>
-                </div>
-              </div>
-
-              <div class="card">
-                <div class="card-header" id="headingThree">
-                  <h5 class="mb-0">
-                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                      {{ gettext('Update Teddy\'s location') }}
-                    </button>
-                  </h5>
-                </div>
-                <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
-                  <div class="card-body">
-                    <!-- Flashed messages for adding new location (under block header)-->
-                    <div>
-                        {% with errors = get_flashed_messages(category_filter=["addlocation"]) %}
-                        {% if errors %}
-                            {%- for msg in errors %}
-                                <div class="alert alert-warning" role="alert">
-                                    {{ msg|safe }}
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </div>
-                            {% endfor -%}
-                        {% endif %}
-                        {% endwith %}
-                    </div>
-                    <!-- Flashed messages END -->
-
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Collapse with travel map, timeline and add new location form END -->
+            <!-- Main placeholders START -->
+            <!-- Block #3 - Main contents -->
             <div>
-                {% block updatelocation %}
+                {% block main_contents %}
                 {% endblock %}
             </div>
-            <!-- Footer -->
+            <!-- Main placeholders END -->
+
+
+            <!-- Footer START -->
             <br>
             <hr>
             <div>
                 {% include '_speakwithmefollowme.html' %}
             </div>
             <div>
-                {% block footersubscribe4updates %}
-                {% endblock %}
+                {% include '_subscribeform.html' %}
             </div>
             <div>
                 <a href="">Disclaimer</a> | <a href="">Help us with translation</a> | <a href="">Support project</a>
@@ -172,7 +125,6 @@
 
             <hr>
 
-            <!-- Footer -->
             <div class="lead" style="font-size: 12pt">
                 <br>
                 <a href="https://iuriid.github.io/" target="_blank">Iurii Dziuban</a> (c) 2018
@@ -183,7 +135,11 @@
 
         </div>
         <!-- Main container END-->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=geometry,places"></script>
-    <script src="{{ url_for('static', filename='js/google.maps.autocomplete.js') }}"></script>
+
+
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARdglrtVqsOVKJbTOGQO_kt4PREU6IWRw&libraries=geometry,places"></script>
+        <script src="{{ url_for('static', filename='js/google.maps.autocomplete.js') }}"></script>
+
+
     </body>
 </html>

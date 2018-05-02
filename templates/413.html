@@ -1,33 +1,13 @@
-{% extends "error_layout.html" %}
+{% extends "layout.html" %}
 {% from '_formhelpers.html' import render_field %}
 
 {% block title %}
-    {{ gettext('Looks like your file is too big (5Mb/photo is maximum)') }}
+    {{ gettext('Looks like your file is too big') }}
 {% endblock %}
 
-{% block headersubscribe4updates %}
-    <form role="form" action="/subscribe" method="POST">
-        <dl>
-            {{ subscribe2updatesform.csrf_token }}
-            {{ render_field(subscribe2updatesform.email4updates) }}
-            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
-        </dl>
-    </form>
-{% endblock %}
-
-{% block error_body %}
+{% block main_contents %}
         <h1 class="display-2">
             {{ gettext('Looks like your file is too big (5Mb/photo is maximum)') }}
         </h1>
         <br>Return go to the <a href="/">main page</a>?
-{% endblock %}
-
-{% block footersubscribe4updates %}
-    <form role="form" action="/subscribe" method="POST">
-        <dl>
-            {{ subscribe2updatesform.csrf_token }}
-            {{ render_field(subscribe2updatesform.email4updates) }}
-            {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
-        </dl>
-    </form>
 {% endblock %}
