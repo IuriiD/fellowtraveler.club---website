@@ -138,7 +138,13 @@ def save_subscriber(email_entered):
 
         msg = Message("Fellowtraveler.club: email verification link",
                       sender="mailvulgaris@gmail.com", recipients=[email_entered])
-        msg.html = "Hi!<br><br>Thanks for subscribing to Teddy's location updates!<br>They won't be too often (not more than once a week).<br><br>Please verify your email address by clicking on the following link:<br><b><a href='{}' target='_blank'>{}</a></b><br><br>If for any reason later you will decide to unsubscribe, please click on the following link:<br><a href='{}' target='_blank'>{}</a>".format(verification_link, verification_link, unsubscription_link, unsubscription_link)
+        msg.html = "Hi!<br><br>" \
+                   "Thanks for subscribing to Teddy's location updates!<br>" \
+                   "They won't be too often (not more than once a week).<br><br>" \
+                   "Please verify your email address by clicking on the following link:<br><b>" \
+                   "<a href='{0}' target='_blank'>{0}</a></b><br><br>" \
+                   "If for any reason later you will decide to unsubscribe, please click on the following link:<br>" \
+                   "<a href='{1}' target='_blank'>{1}</a>".format(verification_link, unsubscription_link)
         mail.send(msg)
 
         flash(gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
@@ -177,22 +183,41 @@ def register():
                 db = client.TeddyGo
                 users = db.users
 
-                # Let's check if username isn't already in our collection
-                # He/she may be there already but 'soft-deleted' (already registered but then unregistered ['status': 'active' >> 'status': 'inactive'])
-                if users.find_one({'email': email}):
-                    flash('Sorry, but username with such email already exists. Please choose a different email address or <a href="/login">login</a>', 'header')
-                    return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform)
+                # Check if user with such email exists
+                email_already_submitted = users.find_one({"email": email})
+
+                if email_already_submitted:
+                    if email_already_submitted['email_verified']:
+                        flash(gettext("User with email {} is already registered. Please choose a different email address or <a href='/login'>log in</a>".format(email)), 'header')
+                        return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform)
+                    else:
+                        flash(gettext(
+                            "User with email {} is already registered but email has not been verified yet".format(email)),
+                              'header')
+                        return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform)
                 else:
+                    userid = str(uuid.uuid4())
+                    email_verification_link = '{}/verify_email/{}/{}'.format(SITE_URL, email, userid)
+
                     users.insert_one(
                         {
                             'email': email,
                             'password': password,
-                            'email_verified': False
+                            'email_verified': False,
+                            "email_verification_code": sha256_crypt.encrypt(userid)
                         }
                     )
-                    session['logged_in'] = True
-                    session['username'] = email
+
+                    msg = Message("Fellowtraveler.club: email verification link",
+                                  sender="mailvulgaris@gmail.com", recipients=[email])
+                    msg.html = "Hi!<br><br>" \
+                               "Thanks for registering on <a href='https://fellowtraveler.club'>fellowtraveler.club</a>!<br><br>" \
+                               "Please verify your email address by clicking on the following link:<br><b><a href='{0}' target='_blank'>{0}</a></b>".format(
+                        email_verification_link)
+                    mail.send(msg)
+
                     flash('Almost finished. To complete registration please click on the verification link that has been sent to your email', 'header')
+
                     return redirect(url_for('index'))
         # GET request for a registration form
         else:
