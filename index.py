@@ -61,10 +61,9 @@ mail = Mail(app)
 class WhereisTeddyNow(FlaskForm):
     author = StringField(gettext('Your name'), validators=[Length(-1, 50, gettext('Your name is a bit too long (50 characters max)'))])
     comment = TextAreaField(gettext('Add a comment'), validators=[Length(-1, 280, gettext('Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters'))])
-    email4updates = StringField(gettext('Get updates by email'),
-                               validators=[Optional(), Email(gettext('Please enter a valid e-mail address'))])
+    getupdatesbyemail = BooleanField('Get updates by email')
     secret_code = PasswordField(gettext('Secret code from the toy (required)'), validators=[DataRequired(gettext('Please enter the code which you can find on the label attached to the toy')),
-                              Length(6, 6, gettext('Secret code must have 6 digits'))])
+                              Length(4, 4, gettext('Secret code must have 4 digits'))])
     #recaptcha = RecaptchaField()
     submit = SubmitField(gettext('Submit'))
 
@@ -74,6 +73,11 @@ class RegistrationForm(FlaskForm):
     confirm = PasswordField('Repeat Password')
     submit = SubmitField(gettext('Submit'))
 
+class LoginForm(FlaskForm):
+    email = StringField('Email Address', validators=[Length(6, 50), DataRequired(), Email('Please enter a valid e-mail address')])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField(gettext('Submit'))
+
 class HeaderEmailSubscription(FlaskForm):
     email4updates = StringField(gettext('Get updates by email:'), validators=[Optional(), Email(gettext('Please enter a valid e-mail address'))])
     emailsubmit = SubmitField(gettext('Subscribe'))
@@ -81,7 +85,7 @@ class HeaderEmailSubscription(FlaskForm):
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if 'logged_in' in session:
+        if 'LoggedIn' in session:
             return f(*args, **kwargs)
         else:
             flash(gettext('You need to <a href="/login/">log in</a> first'),'header')
@@ -91,8 +95,8 @@ def login_required(f):
 def notloggedin_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            flash(gettext('You need to <a href="/logout">log out</a> first'), 'header')
+        if 'LoggedIn' in session:
+            flash(gettext('You need to <a href="/logout/">log out</a> first'), 'header')
             return redirect(url_for('index'))
         else:
             return f(*args, **kwargs)
@@ -234,6 +238,102 @@ def register():
         print('register() exception: {}'.format(e))
         return redirect(url_for('index'))
 
+
+@app.route('/login/', methods=['GET', 'POST'])
+@notloggedin_required
+@csrf.exempt
+def login():
+    try:
+        loginform = LoginForm()
+        subscribe2updatesform = HeaderEmailSubscription()
+
+        # Check for preferred language
+        user_language = get_locale()
+
+        # login data have been submitted (POST)
+        if request.method == 'POST' and loginform.validate_on_submit():
+            email = loginform.email.data
+            password = loginform.password.data
+
+            client = MongoClient()
+            db = client.TeddyGo
+            users = db.users
+
+            # check if email exist in DB and is verified
+            docID = None
+            if users.find_one({'email': email}):
+                docID = users.find_one({'email': email}).get('_id')
+                status = users.find_one({'_id': docID}).get('email_verified')
+                if not status:
+                    flash(
+                        'Such email is registered but hasn\'t been verified yet. '
+                        'If it\'s your email please verify it, otherwise choose different credentials to log in or <a href="/register/">register</a>',
+                        'header')
+                    return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
+            else:
+                flash(
+                    'Sorry, we do not recognize this email address. Please choose different credentials or <a href="/register/">register</a>',
+                    'header')
+                return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
+
+            # and then let's check for a password
+            pwd_should_be = users.find_one({'_id': docID})['password']
+            if sha256_crypt.verify(password, pwd_should_be):
+                flash('Login successfull!',
+                      'header')
+
+                # Update session data
+                session['LoggedIn'] = 'yes'
+                session['Email'] = email
+
+                # Update coockies
+                logged_in = request.cookies.get('LoggedIn', None)
+                if not logged_in:
+                    expire_date = datetime.datetime.now()
+                    expire_date = expire_date + datetime.timedelta(days=30)
+                    redirect_to_index = redirect('/')
+                    response = app.make_response(redirect_to_index)
+                    response.set_cookie('LoggedIn', 'yes', expires=expire_date)
+                    response.set_cookie('Email', email, expires=expire_date)
+                    print('LoggedIn and Email cookies set')
+                    return response
+                else:
+                    print('LoggedIn and Email cookies already exist')
+                    return redirect(url_for('index'))
+
+            # invalid password
+            else:
+                flash('Wrong password', 'header')
+                return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
+
+        # the first (GET) request for a login form
+        print()
+        print('login.html')
+        return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
+
+    except Exception as e:
+        print('register() exception: {}'.format(e))
+        return redirect(url_for('index'))
+
+
+@app.route('/logout/')
+@login_required
+def logout():
+    flash('You have been logged out', 'header')
+
+    # Clear session
+    session.clear()
+
+    # and cookies
+    expire_date = 0
+    redirect_to_index = redirect('/')
+    response = app.make_response(redirect_to_index)
+    response.set_cookie('LoggedIn', 'yes', expires=expire_date)
+    response.set_cookie('Email', 'dummy', expires=expire_date)
+    return response
+
+
+
 @app.route('/index/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST']) # later index page will aggragate info for several travellers
 #@app.route('/teddy/', methods=['GET', 'POST'])
@@ -297,9 +397,6 @@ def index():
                 #location = whereisteddynowform.location.data
                 comment = whereisteddynowform.comment.data
                 secret_code = whereisteddynowform.secret_code.data
-                email_entered = whereisteddynowform.email4updates.data
-                if email_entered != '':
-                    save_subscriber(email_entered)
 
                 # Get photos (4 at max)
                 photos = request.files.getlist('photo')
@@ -352,6 +449,23 @@ def index():
                     collection_teddy = db[traveller]
                     new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
                     print('new_teddy_location_id: {}'.format(new_teddy_location_id))
+
+                    # Get the new secret code
+                    new_code_generated = tg_functions.code_regenerate(traveller)
+
+                    if new_code_generated:
+                        # Flash the new code and send it to user's email
+                        email = session['Email']
+                        msg = Message("Fellowtraveler.club: secret code for adding the next location",
+                                      sender="mailvulgaris@gmail.com", recipients=[email])
+                        msg.html = "Hi!<br><br>" \
+                                   "You added a new {0}'s location, thanks. Secret code is being regenerated after every location and for adding the next location it will be:<br><br>" \
+                                   "<b><h1>{1}</h1></b><br><br>" \
+                                   "It's recommended that you write it down to {0}'s notebook immediately (and obligatorily if you are going to pass {0} to somebody)<br><br>" \
+                                   "In case of any problems please write to <a href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>"\
+                                   "Thank you for participating in <a href='https://fellowtraveler.club'>fellowtraveler.club</a>".format(traveller, new_code_generated)
+                        mail.send(msg)
+                        flash('New location added! NEW SECRET CODE for adding the next location is {} (was sent to your email {}). Please write the new secret code into {}\'s notebook'.format(new_code_generated, email, traveller), 'header')
 
                     # Update journey summary
                     tg_functions.summarize_journey('Teddy')
@@ -414,8 +528,6 @@ def index():
             redirect_to_index = redirect('/')
             response = app.make_response(redirect_to_index)
             response.set_cookie('DisclaimerShown', 'yes', expires=expire_date)
-            print('setting cookie')
-            print(str(response))
             return response
 
         # Get travellers history (will be substituted with timeline embedded from Twitter )
@@ -439,7 +551,6 @@ def index():
 
         # Check for preferred language
         user_language = get_locale()
-        print('GET - user_language: {}'.format(user_language))
         return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
 
     except Exception as error:
@@ -500,7 +611,6 @@ def user_language_to_coockie(lang_code):
 def direct_subscription():
     subscribe2updatesform = HeaderEmailSubscription()
     if request.method == "POST" and subscribe2updatesform.validate_on_submit():
-        print("Email entered: {}".format(subscribe2updatesform.email4updates.data))
         email_entered = subscribe2updatesform.email4updates.data
     else:
         flash(gettext("Please enter a valid e-mail address"), 'header')

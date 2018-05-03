@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 import datetime
 from random import randint
+from passlib.hash import sha256_crypt
 from keys import FLASK_SECRET_KEY, TG_TOKEN, DF_TOKEN, GOOGLE_MAPS_API_KEY, MAIL_PWD
 #import googlemaps
 
@@ -523,3 +524,26 @@ def last_segment_distance_append(traveller):
     except Exception as e:
         print('last_segment_distance_append() exception: {}'.format(e))
         return False
+
+def code_regenerate(traveller):
+    '''
+        After adding a new location secret code is being regenerated so that if user1 passes the toy
+        to user2, user1 should not be able to add new locations or share secret code
+        New code is saved to traveller's summary document in DB (TeddyGo >> travellers >> <TravellerName>), secret_code
+    '''
+    new_code = ''
+    for x in range(4):
+        new_code += str(randint(0,9))
+    try:
+        client = MongoClient()
+        db = client.TeddyGo
+        db.travellers.update_one({'name': traveller}, {'$set': {'secret_code': sha256_crypt.encrypt(new_code)}})
+    except Exception as e:
+        print('code_regenerate() exception when updating secret code in DB: {}'.format(e))
+        #send_email('Logger', 'code_regenerate() exception when updating secret code in DB: {}'.format(e))
+        return False
+
+    # Logging
+    print()
+    print('New secret code for {}: {}'.format(traveller, new_code))
+    return new_code

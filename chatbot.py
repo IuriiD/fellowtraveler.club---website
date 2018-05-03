@@ -731,7 +731,7 @@ def main_handler(users_input, chat_id, from_user, is_btn_click=False, geodata=No
 
                     # Save location and get the new secret code
                     location_submitted = submit_new_location(OURTRAVELLER)
-                    new_code_generated = code_regenerate(OURTRAVELLER)
+                    new_code_generated = tg_functions.code_regenerate(OURTRAVELLER)
 
                     if location_submitted and new_code_generated:
                         bot.send_message(chat_id,
@@ -1260,29 +1260,6 @@ def respond_to_several_photos_only_once():
         CONTEXTS.remove('last_input_media')
         if 'media_input' in CONTEXTS:
             CONTEXTS.remove('media_input')
-
-def code_regenerate(traveller):
-    '''
-        After adding a new location secret code is being regenerated so that if user1 passes the toy
-        to user2, user1 should not be able to add new locations or share secret code
-        New code is saved to traveller's summary document in DB (TeddyGo >> travellers >> <TravellerName>), secret_code
-    '''
-    new_code = ''
-    for x in range(4):
-        new_code += str(random.randint(0,9))
-    try:
-        client = MongoClient()
-        db = client.TeddyGo
-        db.travellers.update_one({'name': traveller}, {'$set': {'secret_code': sha256_crypt.encrypt(new_code)}})
-    except Exception as e:
-        print('code_regenerate() exception when updating secret code in DB: {}'.format(e))
-        #send_email('Logger', 'code_regenerate() exception when updating secret code in DB: {}'.format(e))
-        return False
-
-    # Logging
-    print()
-    print('New secret code for {}: {}'.format(traveller, new_code))
-    return new_code
 
 ####################################### Functions END ####################################
 

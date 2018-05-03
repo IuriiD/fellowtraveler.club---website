@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% from '_formhelpers.html' import render_field %}
+
+{% block title %}Log in{% endblock %}
+
+{% block main_contents %}
+    <hr>
+
+    <div align="right">
+         <a href="/">Main page</a>?
+    </div>
+
+    <form role="form" action="/login/" method="POST">
+      <dl>
+        {{ loginform.csrf_token }}
+        {{ render_field(loginform.email) }}
+        {{ render_field(loginform.password) }}
+        {{ loginform.submit(class_="btn btn-primary") }} <a href="/password_reset/">Forgot password?</a>
+      </dl>
+    </form>
+{% endblock %}
