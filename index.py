@@ -456,7 +456,7 @@ def index():
                     if new_code_generated:
                         # Flash the new code and send it to user's email
                         email = session['Email']
-                        msg = Message("Fellowtraveler.club: secret code for adding the next location",
+                        msg = Message("Fellowtraveler.club: new secret code - {}".format(new_code_generated),
                                       sender="mailvulgaris@gmail.com", recipients=[email])
                         msg.html = "Hi!<br><br>" \
                                    "You added a new {0}'s location, thanks. Secret code is being regenerated after every location and for adding the next location it will be:<br><br>" \
