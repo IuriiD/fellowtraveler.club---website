@@ -60,7 +60,7 @@
     {% endif %}
 
     <!-- Adding a new location -->
-    {% if session['email'] %}
+    {% if session['LoggedIn'] %}
         <!-- Flashed messages for adding new location (under block header)-->
         <div>
             {% with errors = get_flashed_messages(category_filter=["addlocation"]) %}
@@ -75,7 +75,7 @@
             {% endif %}
             {% endwith %}
         </div>
-
+        <a name="updatelocation"></a>
         <b>{{ gettext('Where Teddy is now or was on the photo? (required)') }}</b>
         <div>
             <input id="pac-input" />
@@ -83,7 +83,6 @@
         </div>
 
         <br>
-        <a name="updatelocation"></a>
         <form role="form" action="/" method="POST" enctype="multipart/form-data">
             <dl>
                 {{ whereisteddynowform.csrf_token }}

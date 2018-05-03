@@ -69,7 +69,7 @@ class WhereisTeddyNow(FlaskForm):
     submit = SubmitField(gettext('Submit'))
 
 class RegistrationForm(FlaskForm):
-    email = StringField('Email Address', validators=[Length(6, 50), DataRequired(), Email()])
+    email = StringField('Email Address', validators=[Length(6, 50), DataRequired(), Email('Please enter a valid e-mail address')])
     password = PasswordField('New Password', validators=[DataRequired(), EqualTo('confirm', message='Passwords must match')])
     confirm = PasswordField('Repeat Password')
     submit = SubmitField(gettext('Submit'))
@@ -173,11 +173,15 @@ def register():
         form = RegistrationForm()
         subscribe2updatesform = HeaderEmailSubscription()
 
+        # Check for preferred language
+        user_language = get_locale()
+
         # registration data have been submitted (POST)
         if request.method == 'POST':
             if form.validate_on_submit():
                 email = form.email.data
                 password = sha256_crypt.encrypt(str(form.password.data))
+                print('email: {}, pwd: {}'.format(email, form.password.data))
 
                 client = MongoClient()
                 db = client.TeddyGo
@@ -189,12 +193,12 @@ def register():
                 if email_already_submitted:
                     if email_already_submitted['email_verified']:
                         flash(gettext("User with email {} is already registered. Please choose a different email address or <a href='/login'>log in</a>".format(email)), 'header')
-                        return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform)
+                        return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language)
                     else:
                         flash(gettext(
                             "User with email {} is already registered but email has not been verified yet".format(email)),
                               'header')
-                        return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform)
+                        return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language)
                 else:
                     userid = str(uuid.uuid4())
                     email_verification_link = '{}/verify_email/{}/{}'.format(SITE_URL, email, userid)
@@ -210,18 +214,21 @@ def register():
 
                     msg = Message("Fellowtraveler.club: email verification link",
                                   sender="mailvulgaris@gmail.com", recipients=[email])
-                    msg.html = "Hi!<br><br>" \
-                               "Thanks for registering on <a href='https://fellowtraveler.club'>fellowtraveler.club</a>!<br><br>" \
-                               "Please verify your email address by clicking on the following link:<br><b><a href='{0}' target='_blank'>{0}</a></b>".format(
-                        email_verification_link)
+                    msg.html = "Hi! Thanks for registering on <b><a href='https://fellowtraveler.club'>fellowtraveler.club</a></b>.<br><br>" \
+                               "Please verify your email address by clicking on the following link:<br><b><a href='{0}' target='_blank'>{0}</a></b><br><br>" \
+                               "If it wasn't you please simply ignore this message".format(email_verification_link)
                     mail.send(msg)
 
                     flash('Almost finished. To complete registration please click on the verification link that has been sent to your email', 'header')
 
                     return redirect(url_for('index'))
+            else:
+                print('Registration form input did not validate')
+                return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language)
         # GET request for a registration form
         else:
-            return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform)
+            print('Post failed')
+            return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language)
 
     except Exception as e:
         print('register() exception: {}'.format(e))
@@ -237,6 +244,14 @@ def index():
         traveller = 'Teddy'
         whereisteddynowform = WhereisTeddyNow()
         subscribe2updatesform = HeaderEmailSubscription()
+
+        if request.cookies.get('LoggedIn', None):
+            print('session["LoggedIn"] = "yes"')
+            session['LoggedIn'] = 'yes'
+        if request.cookies.get('Email', None):
+            print("request.cookies.get('Email')")
+            email = request.cookies.get('Email')
+            session['Email'] = email.replace('"', '')
 
         # POST-request
         if request.method == 'POST':
@@ -389,7 +404,6 @@ def index():
 
         # Flashing disclaimer message
         disclaimer_shown = request.cookies.get('DisclaimerShown')
-        print("$$$$$$$ {}".format(disclaimer_shown))
         if not disclaimer_shown:
             flash(gettext(
                 'No, it\'s not a trick and supposed to be safe but please see <a href="">disclaimer</a>'),
@@ -425,11 +439,12 @@ def index():
 
         # Check for preferred language
         user_language = get_locale()
+        print('GET - user_language: {}'.format(user_language))
         return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
 
     except Exception as error:
         print("error: {}".format(error))
-        return render_template('error.html', error=error, subscribe2updatesform=subscribe2updatesform)
+        return render_template('error.html', error=error, subscribe2updatesform=subscribe2updatesform, language=user_language)
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt
@@ -496,6 +511,9 @@ def direct_subscription():
 @app.route("/verify/<user_email>/<verification_code>")
 @csrf.exempt
 def verify_email(user_email, verification_code):
+    '''
+        Verification of new email for getting updates (DB TeddyGo >> subscribers)
+    '''
     try:
         # Check if user's email exists in DB and is not unsubscribed
         client = MongoClient()
@@ -531,6 +549,64 @@ def verify_email(user_email, verification_code):
                 subscribers.update_one({'_id': docID}, {'$set': {'verified': True, 'unsubscribed': False}})
                 flash(gettext('Email verified! Thanks for subscribing to Teddy\'s location updates!'), 'header')
                 return redirect(url_for('index'))
+    except Exception as error:
+        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        return redirect(url_for('index'))
+
+@app.route("/verify_email/<user_email>/<email_verification_code>")
+@csrf.exempt
+def verify_registration(user_email, email_verification_code):
+    '''
+        Verification of new user's email (DB TeddyGo >> users)
+    '''
+    try:
+        # Check if user's email exists in DB
+        client = MongoClient()
+        db = client.TeddyGo
+        users = db.users
+        email_already_submitted = users.find_one({"email": user_email})
+        if not email_already_submitted:
+            flash(gettext("Email {} was not found".format(user_email)), 'header')
+            return redirect(url_for('index'))
+
+        # Find sha256_crypt-encrypted verification code in DB for a given user_email
+        docID = users.find_one(
+            {"$and": [{"email": user_email}, {'email_verified': {'$ne': True}}]}).get('_id')
+
+        email_verification_code_should_be = users.find_one({'_id': docID})['email_verification_code']
+
+        # Compare it with the code submitted
+        if not sha256_crypt.verify(email_verification_code, email_verification_code_should_be):
+            # If invalid code - inform user
+            flash(gettext('Sorry but you submitted an invalid verification code. Email address not verified'), 'header')
+            return redirect(url_for('index'))
+        else:
+            # If code Ok, check if email is not already verified
+            if users.find_one({'_id': docID})['email_verified'] == True:
+                flash(gettext('Email address {} already verified'.format(user_email)), 'header')
+                return redirect(url_for('index'))
+            else:
+                # update the document in DB and inform user
+                users.update_one({'_id': docID}, {'$set': {'email_verified': True}})
+
+                flash(gettext(
+                    'Email verified! Thanks for registration. If you have Teddy you can add his new location now'),
+                      'header')
+
+                # Update coockies
+                logged_in = request.cookies.get('LoggedIn', None)
+                if not logged_in:
+                    expire_date = datetime.datetime.now()
+                    expire_date = expire_date + datetime.timedelta(days=30)
+                    redirect_to_index = redirect('/')
+                    response = app.make_response(redirect_to_index)
+                    response.set_cookie('LoggedIn', 'yes', expires=expire_date)
+                    response.set_cookie('Email', user_email, expires=expire_date)
+                    print('LoggedIn and Email cookies set')
+                    return response
+                else:
+                    print('LoggedIn and Email cookies already exist')
+                    return redirect(url_for('index'))
     except Exception as error:
         flash(gettext("Error happened ('{}')".format(error)), 'header')
         return redirect(url_for('index'))
@@ -573,13 +649,17 @@ def unsubscribe(user_email, verification_code):
 @csrf.exempt
 def page_not_found(error):
     subscribe2updatesform = HeaderEmailSubscription()
-    return render_template('404.html', subscribe2updatesform=subscribe2updatesform), 404
+    # Check for preferred language
+    user_language = get_locale()
+    return render_template('404.html', subscribe2updatesform=subscribe2updatesform, language=user_language), 404
 
 @app.errorhandler(413)
 @csrf.exempt
 def file_too_large(error):
     subscribe2updatesform = HeaderEmailSubscription()
-    return render_template('413.html', subscribe2updatesform=subscribe2updatesform), 413
+    # Check for preferred language
+    user_language = get_locale()
+    return render_template('413.html', subscribe2updatesform=subscribe2updatesform, language=user_language), 413
 
 @app.route('/webhook', methods=['POST'])
 @csrf.exempt
