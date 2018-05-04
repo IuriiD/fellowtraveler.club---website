@@ -8,7 +8,7 @@ import os
 from pymongo import MongoClient
 from passlib.hash import sha256_crypt
 
-TRAVELLER = 'Stone'
+TRAVELLER = 'Teddy'
 INITIAL_PASSWORD = 1111
 TRAVELLERS_DIR = os.path.join('static', 'uploads', TRAVELLER, 'service')
 
