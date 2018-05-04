@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import os
-import mimetypes
-import requests
 from flask import request, flash, url_for, redirect
 from werkzeug.utils import secure_filename
-from pymongo import MongoClient
-import datetime
-from random import randint
 from passlib.hash import sha256_crypt
+import requests
+from pymongo import MongoClient
+import mimetypes
+from random import randint
+import datetime
+
 from keys import FLASK_SECRET_KEY, TG_TOKEN, DF_TOKEN, GOOGLE_MAPS_API_KEY, MAIL_PWD
-#import googlemaps
 
 VALID_IMAGE_EXTENSIONS = [
     ".jpg",
@@ -87,6 +87,7 @@ def get_location_history(traveller):
     mymarkers = []
     start_lat = None
     start_long = None
+    marker_number = db[traveller].find().count()
     for location in teddys_locations:
         author = location['author']
         comment = location['comment']
@@ -116,12 +117,13 @@ def get_location_history(traveller):
 
         mymarkers.append(
             {
-                'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+                'icon': 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld={}|AFC846|304300'.format(marker_number),
                 'lat': location['latitude'],
                 'lng': location['longitude'],
                 'infobox': infobox
             }
         )
+        marker_number -= 1
     return {'locations_history': locations_history, 'start_lat': start_lat, 'start_long': start_long, 'mymarkers': mymarkers}
 
 def make_speech(ourspeech, oursource, outputcontext):

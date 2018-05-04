@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
+#import os
 import datetime
 from flask import Flask, render_template, url_for, request, redirect, flash, session, make_response, jsonify
 from flask_wtf import FlaskForm
@@ -21,7 +21,7 @@ import uuid
 
 from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET, MAIL_PWD
 
-import tg_functions
+import ft_functions
 RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
 SITE_URL = 'https://fellowtraveler.club'
 LANGUAGES = {
@@ -154,6 +154,62 @@ def save_subscriber(email_entered):
         flash(gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
         return {"status": "success",
                 "message": "A verification link has been sent to your email address. Please click on it to verify your email"}
+    except Exception as error:
+        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        return {"status": "error",
+                "message": "Error happened ('{}')".format(error)}
+
+def save_user_as_subscriber(email_entered):
+    '''
+        If a registered user (with already verified email) submits a new location with 'Get email updates' checkbox checked,
+        add his/her email to subscribers collection. No verification is needed. Flash corresponding message to user
+    '''
+    try:
+        # Check if user's email is not already in DB
+        # In rare cases user might subscribe 1st (and verify email or not) and then register to add locations
+        user_locale = get_locale()
+        userid = str(uuid.uuid4())
+
+        client = MongoClient()
+        db = client.TeddyGo
+        subscribers = db.subscribers
+        email_already_submitted = subscribers.find_one({"email": email_entered})
+
+        if email_already_submitted:
+            # Update it as verified (it has been verified during registration) and not unsubscribed
+            update_subscription = {
+                "verified": True,
+                "unsubscribed": False,
+                "locale": user_locale
+            }
+            subscribers.update_one({'email': email_entered}, {'$set': update_subscription})
+            flash(gettext("Email {} is already subscribed for updates".format(email_entered)), 'header')
+        else:
+            # A registered user (with verified email) wants to get email updates
+            new_subscriber = {
+                "email": email_entered,
+                "locale": user_locale,
+                "verified": True,
+                "verification_code": sha256_crypt.encrypt(userid),
+                "unsubscribed": None
+            }
+
+            unsubscription_link = '{}/unsubscribe/{}/{}'.format(SITE_URL, email_entered, userid)
+
+            new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
+
+            msg = Message("Fellowtraveler.club: you subscribed to email updates",
+                      sender="mailvulgaris@gmail.com", recipients=[email_entered])
+            msg.html = "Hi!<br><br>" \
+                   "Thanks for subscribing to Teddy's location updates!<br>" \
+                   "They won't be too often (not more than once a week).<br><br>" \
+                   "If for any reason later you will decide to unsubscribe, please click on the following link:<br>" \
+                   "<a href='{0}' target='_blank'>{0}</a>".format(unsubscription_link)
+            mail.send(msg)
+
+            flash(gettext("Your email {} was subscribed to Teddy\'s location updates".format(email_entered)), 'header')
+            return {"status": "success",
+                "message": "Your email {} was subscribed to Teddy\'s location updates".format(email_entered)}
     except Exception as error:
         flash(gettext("Error happened ('{}')".format(error)), 'header')
         return {"status": "error",
@@ -358,7 +414,7 @@ def index():
             print('Index-Post')
 
             # Get travellers history
-            whereteddywas = tg_functions.get_location_history(traveller)
+            whereteddywas = ft_functions.get_location_history(traveller)
             locations_history = whereteddywas['locations_history']
 
             # Prepare a map
@@ -397,13 +453,14 @@ def index():
                 #location = whereisteddynowform.location.data
                 comment = whereisteddynowform.comment.data
                 secret_code = whereisteddynowform.secret_code.data
+                receive_email_updates = whereisteddynowform.getupdatesbyemail.data
 
                 # Get photos (4 at max)
                 photos = request.files.getlist('photo')
                 photos_list = []
                 for n in range(len(photos)):
                     if n<4:
-                        path = tg_functions.photo_check_save(photos[n])
+                        path = ft_functions.photo_check_save(photos[n])
                         if path != 'error':
                             photos[n].save(PHOTO_DIR + path)
                             photos_list.append(path)
@@ -451,7 +508,10 @@ def index():
                     print('new_teddy_location_id: {}'.format(new_teddy_location_id))
 
                     # Get the new secret code
-                    new_code_generated = tg_functions.code_regenerate(traveller)
+                    new_code_generated = ft_functions.code_regenerate(traveller)
+
+                    if receive_email_updates:
+                        save_user_as_subscriber(session['Email'])
 
                     if new_code_generated:
                         # Flash the new code and send it to user's email
@@ -468,7 +528,7 @@ def index():
                         flash('New location added! NEW SECRET CODE for adding the next location is {} (was sent to your email {}). Please write the new secret code into {}\'s notebook'.format(new_code_generated, email, traveller), 'header')
 
                     # Update journey summary
-                    tg_functions.summarize_journey('Teddy')
+                    ft_functions.summarize_journey('Teddy')
 
                     # Post to Twitter
                     '''
@@ -484,7 +544,7 @@ def index():
                     session.pop('geodata', None)
 
                     # Get travellers history
-                    whereteddywas = tg_functions.get_location_history(traveller)
+                    whereteddywas = ft_functions.get_location_history(traveller)
                     locations_history = whereteddywas['locations_history']
 
                     # Prepare a map
@@ -531,7 +591,7 @@ def index():
             return response
 
         # Get travellers history (will be substituted with timeline embedded from Twitter )
-        whereteddywas = tg_functions.get_location_history(traveller)
+        whereteddywas = ft_functions.get_location_history(traveller)
         print('whereteddywas!')
         locations_history = whereteddywas['locations_history']
         print('locations_history!')
@@ -555,6 +615,7 @@ def index():
 
     except Exception as error:
         print("error: {}".format(error))
+        user_language = get_locale()
         return render_template('error.html', error=error, subscribe2updatesform=subscribe2updatesform, language=user_language)
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
@@ -749,7 +810,7 @@ def unsubscribe(user_email, verification_code):
         else:
             # If code Ok, "soft"-delete the document
             subscribers.update_one({'_id': docID}, {'$set': {'unsubscribed': True}})
-            flash(gettext('Email successfully unsubscribed'), 'header')
+            flash(gettext('Email {} successfully unsubscribed'.format(user_email)), 'header')
             return redirect(url_for('index'))
     except Exception as error:
         flash(gettext("Error happened ('{}')".format(error)), 'header')
@@ -780,10 +841,10 @@ def webhook():
 
     # TeddyGo - show timeline
     if action == "teddygo_show_timeline":
-        location_iteration = tg_functions.show_location('Teddy', req)
+        location_iteration = ft_functions.show_location('Teddy', req)
         ourspeech = location_iteration['payload']
         output_context = location_iteration['updated_context']
-        res = tg_functions.make_speech(ourspeech, action, output_context)
+        res = ft_functions.make_speech(ourspeech, action, output_context)
 
     else:
         # If the request is not of our actions throw an error
