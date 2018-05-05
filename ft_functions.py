@@ -61,7 +61,7 @@ def image_exists(url):
 
 # Check image validity using valid_url_extension() and valid_url_mimetype() and return new file name or flash an error
 def photo_check_save(photo_file):
-    print('photo_file: {}'.format(photo_file))
+    #print('photo_file: {}'.format(photo_file))
     photo_filename = secure_filename(photo_file.filename)
     if valid_url_extension(photo_filename) and valid_url_mimetype(photo_filename):
         file_name_wo_extension = 'fellowtravelerclub-{}'.format(OURTRAVELLER)
@@ -381,9 +381,9 @@ def summarize_journey(traveller):
             'countries_visited': countries_visited
         }
 
-        # Update total distance and distance from home
-        distance_from_home(traveller)
-        last_segment_distance_append(traveller)
+    # Update total distance and distance from home
+    distance_from_home(traveller)
+    last_segment_distance_append(traveller)
 
     try:
         db.travellers.update_one({'name': traveller}, {'$set': datatoupdate})
@@ -469,22 +469,24 @@ def distance_from_home(traveller):
         Value is stored in DB (TeddyGo >> travellers >> <Traveller> document >> 'distance_from_home' field
     '''
     try:
+        distance_from_home = 0
+
         client = MongoClient()
         db = client.TeddyGo
-        origin_location = db[traveller].find().limit(1)[0]
-        last_location = db[traveller].find().limit(1).sort([('_id', -1)])[0]
-        print(origin_location)
-        print(last_location)
+        if db[traveller].find().count() >= 2:
+            origin_location = db[traveller].find().limit(1)[0]
+            last_location = db[traveller].find().limit(1).sort([('_id', -1)])[0]
 
-        origin = [origin_location['latitude'], origin_location['longitude']]
-        destination = [last_location['latitude'], last_location['longitude']]
+            origin = [origin_location['latitude'], origin_location['longitude']]
+            destination = [last_location['latitude'], last_location['longitude']]
 
-        distance_from_home = get_distance(origin, destination)
-        if not distance_from_home:
-            distance_from_home = 0
+            distance_from_home = get_distance(origin, destination)
+            if not distance_from_home:
+                distance_from_home = 0
 
         db.travellers.update_one({'name': traveller}, {'$set': {'distance_from_home': distance_from_home}})
         print('From home: {}'.format(distance_from_home))
+        print()
         return True
     except Exception as e:
         print('distance_from_home() exception: {}'.format(e))
@@ -492,36 +494,41 @@ def distance_from_home(traveller):
 
 def last_segment_distance_append(traveller):
     '''
-        Calculates using Distance Matrix API approximate distance (km) between 2 last locations and
+        Calculates using Distance Matrix API approximate distance (meters) between 2 last locations and
         adds it to the value 'total_distance' in TeddyGo >> travellers >> <Traveller> document
         The function is used after adding every location
         https://developers.google.com/maps/documentation/distance-matrix/intro
     '''
     try:
+        new_distance = 0
+
         client = MongoClient()
         db = client.TeddyGo
-        locations = db[traveller].find().limit(2).sort([('_id', -1)])
-        curr_location = locations[0]
-        prev_location = locations[1]
-        print(curr_location)
-        print(prev_location)
+        if db[traveller].find().count() >= 2:
+            locations = db[traveller].find().sort([('_id', -1)]).limit(2)
+            curr_location = locations[0]
+            prev_location = locations[1]
+            print()
+            print('Current location: {}'.format(curr_location))
+            print('Previous location: {}'.format(prev_location))
 
-        # Total distance before current location was added ('total_distance' field in <Traveller> doc)
-        last_distance = db.travellers.find_one({'name': traveller})['total_distance']
-        print('Last distance was: {}'.format(last_distance))
+            # Total distance before current location was added ('total_distance' field in <Traveller> doc)
+            last_distance = db.travellers.find_one({'name': traveller})['total_distance']
+            print('Last distance was: {}'.format(last_distance))
 
-        origin = [prev_location['latitude'], prev_location['longitude']]
-        destination = [curr_location['latitude'], curr_location['longitude']]
+            origin = [prev_location['latitude'], prev_location['longitude']]
+            destination = [curr_location['latitude'], curr_location['longitude']]
 
-        last_segment_distance = get_distance(origin, destination)
+            last_segment_distance = get_distance(origin, destination)
 
-        if not last_segment_distance:
-            last_segment_distance = 0
-        print('last_segment_distance: {}'.format(last_segment_distance))
+            if not last_segment_distance:
+                last_segment_distance = 0
+            print('last_segment_distance: {}'.format(last_segment_distance))
 
-        new_distance = last_distance + last_segment_distance
+            new_distance = last_distance + last_segment_distance
         db.travellers.update_one({'name': traveller}, {'$set': {'total_distance': new_distance}})
         print('New total distance: {}'.format(new_distance))
+        print()
         return True
     except Exception as e:
         print('last_segment_distance_append() exception: {}'.format(e))

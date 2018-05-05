@@ -218,8 +218,8 @@ def save_user_as_subscriber(email_entered):
 @babel.localeselector
 def get_locale():
     user_language = request.cookies.get('UserPreferredLanguage')
-    print("user_language: {}".format(user_language))
-    print("autodetect_language: {}".format(request.accept_languages.best_match(LANGUAGES.keys())))
+    #print("user_language: {}".format(user_language))
+    #print("autodetect_language: {}".format(request.accept_languages.best_match(LANGUAGES.keys())))
     if user_language != None:
         return user_language
     else:
@@ -241,7 +241,7 @@ def register():
             if form.validate_on_submit():
                 email = form.email.data
                 password = sha256_crypt.encrypt(str(form.password.data))
-                print('email: {}, pwd: {}'.format(email, form.password.data))
+                #print('email: {}, pwd: {}'.format(email, form.password.data))
 
                 client = MongoClient()
                 db = client.TeddyGo
@@ -402,10 +402,10 @@ def index():
         subscribe2updatesform = HeaderEmailSubscription()
 
         if request.cookies.get('LoggedIn', None):
-            print('session["LoggedIn"] = "yes"')
+            #print('session["LoggedIn"] = "yes"')
             session['LoggedIn'] = 'yes'
         if request.cookies.get('Email', None):
-            print("request.cookies.get('Email')")
+            #print("request.cookies.get('Email')")
             email = request.cookies.get('Email')
             session['Email'] = email.replace('"', '')
 
@@ -435,7 +435,7 @@ def index():
             # Check if user entered some location (required parameter) (data is passed from jQuery to Flask and
             # saved in session
             if 'geodata' not in session:
-                print('Here1')
+                #print('Here1')
                 flash(gettext('Please enter Teddy\'s location (current or on the photo)'),
                         'addlocation')
                 print('No data in session!')
@@ -443,9 +443,9 @@ def index():
                                        locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
 
             # Get user's input
-            print('Here2')
+            #print('Here2')
             if whereisteddynowform.validate_on_submit():
-                print('Here4')
+                #print('Here4')
                 # Get user's input
                 author = whereisteddynowform.author.data
                 if author == '':
@@ -469,7 +469,7 @@ def index():
                             return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
                 if len(photos)>4:
                     flash(
-                        gettext('Comments are uploaded to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'),
+                        gettext('Teddy\'s locations are reposted to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'),
                         'addlocation')
 
                 # Save data to DB
@@ -505,7 +505,7 @@ def index():
                     # Connect to collection and insert document
                     collection_teddy = db[traveller]
                     new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
-                    print('new_teddy_location_id: {}'.format(new_teddy_location_id))
+                    #print('new_teddy_location_id: {}'.format(new_teddy_location_id))
 
                     # Get the new secret code
                     new_code_generated = ft_functions.code_regenerate(traveller)
@@ -566,7 +566,7 @@ def index():
                                            locations_history=locations_history, teddy_map=teddy_map,
                                            language=user_language, PHOTO_DIR=PHOTO_DIR)
             else:
-                print('Here3')
+                #print('Here3')
                 # Clear data from session
                 session.pop('geodata', None)
 
@@ -592,9 +592,7 @@ def index():
 
         # Get travellers history (will be substituted with timeline embedded from Twitter )
         whereteddywas = ft_functions.get_location_history(traveller)
-        print('whereteddywas!')
         locations_history = whereteddywas['locations_history']
-        print('locations_history!')
 
         # Prepare a map
         teddy_map = Map(
@@ -699,9 +697,6 @@ def verify_email(user_email, verification_code):
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
         docID = subscribers.find_one(
             {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]}).get('_id')
-        print("##### docID: {}".format(docID))
-        print("##### Verif code: {}".format(subscribers.find_one({'_id': docID})['verification_code']))
-        print("##### Verif code should be: {}".format(verification_code))
 
         verification_code_should_be = subscribers.find_one({'_id': docID})['verification_code']
 
