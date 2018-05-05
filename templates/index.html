@@ -3,7 +3,7 @@
 
 <!-- Block #1 - Title -->
 {% block title %}
-    {{ gettext('Hi! My name is Teddy and I have a dream') }}
+    {{ gettext('Hi! My name is')}} {{ traveler }} {{ gettext('and I have a dream') }}
 {% endblock %}
 
 <!-- Block #2 - Head includes (other CSS & JS) -->
@@ -25,7 +25,7 @@
 {% block main_contents %}
     <!-- Traveller's journey so far -->
     <div>
-        <h2><b>Map of Teddy's journey so far</b></h2>
+        <h2><b>Map of {{ traveler }}'s journey so far</b></h2>
     </div>
 
     <!-- Journey map -->
@@ -85,7 +85,7 @@
             {% endwith %}
         </div>
         <a name="updatelocation"></a>
-        <b>{{ gettext('Where Teddy is now or was on the photo? (required)') }}</b>
+        <b>{{ gettext('Where') }}{{ traveler }} {{gettext('is now or was on the photo? (required)') }}</b>
         <div>
             <input id="pac-input" />
             <div id="map" height="400" width="700"></div>
@@ -105,13 +105,13 @@
                 {{ render_field(whereisteddynowform.comment) }}
                 {{ render_field(whereisteddynowform.getupdatesbyemail) }}
                 {{ render_field(whereisteddynowform.secret_code) }}
-                {# { render_field(whereisteddynowform.recaptcha) } #}
+                {{ render_field(whereisteddynowform.recaptcha) }}
                 <br>
                 {{ whereisteddynowform.submit(class_="btn btn-primary") }}
             </dl>
         </form>
     {% else %}
         <a name="updatelocation"></a>
-        To add new Teddy's location first please <b><a href="/login/">log in</a></b> or <b><a href="/register/">register</a></b>
+        To add new {{ traveler }}'s location first please <b><a href="/login/">log in</a></b> or <b><a href="/register/">register</a></b>
     {% endif %}
 {% endblock %}

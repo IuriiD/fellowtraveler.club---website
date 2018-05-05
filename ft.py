@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#import os
 import datetime
 from flask import Flask, render_template, url_for, request, redirect, flash, session, make_response, jsonify
 from flask_wtf import FlaskForm
@@ -19,10 +18,10 @@ from functools import wraps
 import twitter
 import uuid
 
-from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, GOOGLE_MAPS_API_KEY, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET, MAIL_PWD
+from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, RECAPTCHA_PUBLIC_KEY, GOOGLE_MAPS_API_KEY, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET, MAIL_PWD
 
 import ft_functions
-RECAPTCHA_PUBLIC_KEY = '6LdlTE0UAAAAACb7TQc6yp12Klp0fzgifr3oF-BC'
+
 SITE_URL = 'https://fellowtraveler.club'
 LANGUAGES = {
     'en': 'English',
@@ -31,9 +30,9 @@ LANGUAGES = {
     'fr': 'Français'
 }
 
-OURTRAVELLER = 'Teddy'
-PHOTO_DIR = 'static/uploads/{}/'.format(OURTRAVELLER) # where photos from places visited are saved
-SERVICE_IMG_DIR = 'static/uploads/{}/service/'.format(OURTRAVELLER) # where 'general info' images are saved (summary map, secret code example etc)
+#OURTRAVELLER = 'Teddy'
+#PHOTO_DIR = 'static/uploads/{}/'.format(OURTRAVELLER) # where photos from places visited are saved
+#SERVICE_IMG_DIR = 'static/uploads/{}/service/'.format(OURTRAVELLER) # where 'general info' images are saved (summary map, secret code example etc)
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -44,7 +43,12 @@ app.secret_key = FLASK_SECRET_KEY
 GoogleMaps(app, key=GOOGLE_MAPS_API_KEY)
 jsglue = JSGlue(app)
 babel = Babel(app)
-twitter_api = twitter.Api(consumer_key=TWITTER_CONSUMER_KEY, consumer_secret=TWITTER_CONSUMER_SECRET, access_token_key=TWITTER_ACCESS_TOKEN_KEY, access_token_secret=TWITTER_ACCESS_TOKEN_SECRET)
+twitter_api = twitter.Api(
+    consumer_key = TWITTER_CONSUMER_KEY,
+    consumer_secret = TWITTER_CONSUMER_SECRET,
+    access_token_key = TWITTER_ACCESS_TOKEN_KEY,
+    access_token_secret = TWITTER_ACCESS_TOKEN_SECRET
+)
 
 mail = Mail(app)
 app.config.update(
@@ -64,7 +68,7 @@ class WhereisTeddyNow(FlaskForm):
     getupdatesbyemail = BooleanField('Get updates by email')
     secret_code = PasswordField(gettext('Secret code from the toy (required)'), validators=[DataRequired(gettext('Please enter the code which you can find on the label attached to the toy')),
                               Length(4, 4, gettext('Secret code must have 4 digits'))])
-    #recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField()
     submit = SubmitField(gettext('Submit'))
 
 class RegistrationForm(FlaskForm):
@@ -392,12 +396,18 @@ def logout():
 
 @app.route('/index/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST']) # later index page will aggragate info for several travellers
-#@app.route('/teddy/', methods=['GET', 'POST'])
+@app.route('/teddy/', methods=['GET', 'POST'])
 @csrf.exempt
 def index():
+    OURTRAVELLER = 'Teddy'
+    PHOTO_DIR = 'static/uploads/{}/'.format(OURTRAVELLER)  # where photos from places visited are saved
+    SERVICE_IMG_DIR = 'static/uploads/{}/service/'.format(
+        OURTRAVELLER)  # where 'general info' images are saved (summary map, secret code example etc)
+    print('Traveler: {}'.format(OURTRAVELLER))
     print('Index!')
+
     try:
-        traveller = 'Teddy'
+        #traveller = 'Teddy'
         whereisteddynowform = WhereisTeddyNow()
         subscribe2updatesform = HeaderEmailSubscription()
 
@@ -414,7 +424,7 @@ def index():
             print('Index-Post')
 
             # Get travellers history
-            whereteddywas = ft_functions.get_location_history(traveller)
+            whereteddywas = ft_functions.get_location_history(OURTRAVELLER)
             locations_history = whereteddywas['locations_history']
 
             # Prepare a map
@@ -431,7 +441,7 @@ def index():
 
             # Get journey summary
             journey_summary = ''
-            travelled_so_far = ft_functions.get_journey_summary('Teddy')
+            travelled_so_far = ft_functions.get_journey_summary(OURTRAVELLER)
             if not travelled_so_far:
                 journey_summary = ''
             else:
@@ -444,11 +454,11 @@ def index():
             # saved in session
             if 'geodata' not in session:
                 #print('Here1')
-                flash(gettext('Please enter Teddy\'s location (current or on the photo)'),
+                flash(gettext('Please enter {}\'s location (current or on the photo)'.format(OURTRAVELLER)),
                         'addlocation')
                 print('No data in session!')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
-                                       locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
+                                       locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
 
             # Get user's input
             #print('Here2')
@@ -474,10 +484,10 @@ def index():
                             photos_list.append(path)
                         else:
                             # At least one of images is invalid. Messages are flashed from photo_check_save()
-                            return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
+                            return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
                 if len(photos)>4:
                     flash(
-                        gettext('Teddy\'s locations are reposted to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'),
+                        gettext('{}\'s locations are reposted to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'.format(OURTRAVELLER)),
                         'addlocation')
 
                 # Save data to DB
@@ -487,10 +497,10 @@ def index():
 
                 # Check secret code in collection 'travellers'
                 collection_travellers = db.travellers
-                teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
+                teddys_sc_should_be = collection_travellers.find_one({"name": OURTRAVELLER})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
                     flash(gettext('Invalid secret code'), 'addlocation')
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
                 else:
                     # Prepare dictionary with new location info
                     geodata = session['geodata']
@@ -511,12 +521,12 @@ def index():
                     }
 
                     # Connect to collection and insert document
-                    collection_teddy = db[traveller]
+                    collection_teddy = db[OURTRAVELLER]
                     new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
                     #print('new_teddy_location_id: {}'.format(new_teddy_location_id))
 
                     # Get the new secret code
-                    new_code_generated = ft_functions.code_regenerate(traveller)
+                    new_code_generated = ft_functions.code_regenerate(OURTRAVELLER)
 
                     if receive_email_updates:
                         save_user_as_subscriber(session['Email'])
@@ -531,12 +541,12 @@ def index():
                                    "<b><h1>{1}</h1></b><br><br>" \
                                    "It's recommended that you write it down to {0}'s notebook immediately (and obligatorily if you are going to pass {0} to somebody)<br><br>" \
                                    "In case of any problems please write to <a href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>"\
-                                   "Thank you for participating in <a href='https://fellowtraveler.club'>fellowtraveler.club</a>".format(traveller, new_code_generated)
+                                   "Thank you for participating in <a href='https://fellowtraveler.club'>fellowtraveler.club</a>".format(OURTRAVELLER, new_code_generated)
                         mail.send(msg)
-                        flash('New location added! NEW SECRET CODE for adding the next location is {} (was sent to your email {}). Please write the new secret code into {}\'s notebook'.format(new_code_generated, email, traveller), 'header')
+                        flash('New location added! NEW SECRET CODE for adding the next location is {} (was sent to your email {}). Please write the new secret code into {}\'s notebook'.format(new_code_generated, email, OURTRAVELLER), 'header')
 
                     # Update journey summary
-                    ft_functions.summarize_journey('Teddy')
+                    ft_functions.summarize_journey(OURTRAVELLER)
 
                     # Post to Twitter
                     '''
@@ -552,7 +562,7 @@ def index():
                     session.pop('geodata', None)
 
                     # Get travellers history
-                    whereteddywas = ft_functions.get_location_history(traveller)
+                    whereteddywas = ft_functions.get_location_history(OURTRAVELLER)
                     locations_history = whereteddywas['locations_history']
 
                     # Prepare a map
@@ -569,7 +579,7 @@ def index():
 
                     # Get journey summary
                     journey_summary = ''
-                    travelled_so_far = ft_functions.get_journey_summary('Teddy')
+                    travelled_so_far = ft_functions.get_journey_summary(OURTRAVELLER)
                     if not travelled_so_far:
                         journey_summary = ''
                     else:
@@ -580,13 +590,13 @@ def index():
 
                     return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
                                            locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary,
-                                           language=user_language, PHOTO_DIR=PHOTO_DIR)
+                                           language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
             else:
                 #print('Here3')
                 # Clear data from session
                 session.pop('geodata', None)
 
-                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
 
         # GET request
         # Get travellers history (will be substituted with timeline embedded from Twitter )
@@ -607,7 +617,7 @@ def index():
             return response
 
         # Get travellers history (will be substituted with timeline embedded from Twitter )
-        whereteddywas = ft_functions.get_location_history(traveller)
+        whereteddywas = ft_functions.get_location_history(OURTRAVELLER)
         locations_history = whereteddywas['locations_history']
 
         # Prepare a map
@@ -625,7 +635,7 @@ def index():
 
         # Get journey summary
         journey_summary = ''
-        travelled_so_far = ft_functions.get_journey_summary('Teddy')
+        travelled_so_far = ft_functions.get_journey_summary(OURTRAVELLER)
         print('travelled_so_far: {}'.format(travelled_so_far))
         if not travelled_so_far:
             journey_summary = ''
@@ -637,16 +647,16 @@ def index():
                 print('travelled_so_far["total_locations"] < 2')
             else:
                 print('travelled_so_far["speech"]: {}'.format(travelled_so_far['speech']))
-                journey_summary = travelled_so_far['speech']#.replace('<b>', '').replace('</b>', '')
+                journey_summary = travelled_so_far['speech']
 
         # Check for preferred language
         user_language = get_locale()
-        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
+        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
 
     except Exception as error:
         print("error: {}".format(error))
         user_language = get_locale()
-        return render_template('error.html', error=error, subscribe2updatesform=subscribe2updatesform, language=user_language)
+        return render_template('error.html', error=error, subscribe2updatesform=subscribe2updatesform, language=user_language, traveler=OURTRAVELLER)
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt

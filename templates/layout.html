@@ -42,11 +42,11 @@
                     <!-- 1-1. Row 1, left column -->
                     <div class="w-50">
                         <div>
-                            <img src="{{ url_for('static', filename='../static/uploads/Teddy/service/Teddy.jpg') }}" style="height: 256px; width: 384px">
+                            <img src="{{ PHOTO_DIR }}/service/{{ traveler }}.jpg" style="height: 256px; width: 384px">
                         </div>
 
                         <div>
-                            {{ gettext('Name') }}: <b>Teddy</b>
+                            {{ gettext('Name') }}: <b>{{ traveler }}</b>
                             <br>
                             {% include '_speakwithmefollowme.html' %}
                         </div>
@@ -58,7 +58,7 @@
                         <!-- Update location button -->
                         <br>
                         <div>
-                            <a href="/#updatelocation"><button type="button" class="alert btn-success" role="alert">{{ gettext('Update Teddy\'s location') }}</button></a>
+                            <a href="/#updatelocation"><button type="button" class="alert btn-success" role="alert">{{ gettext('Update') }} {{ traveler }}{{gettext('\'s location') }}</button></a>
                         </div>
                     </div>
 
@@ -67,7 +67,7 @@
                         <!-- Login/Register or UpdateLocation/Logout links -->
                         <div class="container-fluid" align="right">
                             {% if session['LoggedIn'] %}
-                                <b>{{ session['Email'] }}: </b><a href="/#updatelocation">Update Teddy's location</a> | <a href="/logout/">Logout</a>
+                                <b>{{ session['Email'] }}: </b><a href="/#updatelocation">Update {{ traveler }}'s location</a> | <a href="/logout/">Logout</a>
                             {% else %}
                                 <a href="/login/">Log in</a> | <a href="/register/">Register</a>
                             {% endif %}
