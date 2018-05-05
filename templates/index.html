@@ -28,10 +28,17 @@
         <h2><b>Map of Teddy's journey so far</b></h2>
     </div>
 
+    <!-- Journey map -->
     <div>
         {{ teddy_map.html }}
     </div>
 
+    <!-- Journey text summary -->
+    <div>
+        {{ journey_summary|safe }}
+    </div>
+
+    <br>
     <div>
         <h2><b>Travel timeline</b></h2>
     </div>
@@ -40,6 +47,8 @@
         <div>
             {% for location_data in locations_history %}
                 <p>
+                    {{ gettext('Place #') }}: <b>{{ location_data.location_number }}</b>
+                    <br>
                     {{ gettext('Author') }}: {{ location_data.author }}
                     <br>
                     {{ gettext('Time') }}: {{ location_data.time }}

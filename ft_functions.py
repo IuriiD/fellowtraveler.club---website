@@ -94,6 +94,7 @@ def get_location_history(traveller):
         photos = location['photos']
 
         location_data = {
+            'location_number': marker_number,
             'author': author,
             'location': location['formatted_address'],
             'time': '{} {}'.format(location['_id'].generation_time.date(), location['_id'].generation_time.time()),
@@ -392,6 +393,44 @@ def summarize_journey(traveller):
 
     #print('Journey summary: {}'.format(datatoupdate))
     return {'status': 'success', 'message': datatoupdate}
+
+
+def get_journey_summary(traveller):
+    '''
+    Retrieves journey summary for a given traveller
+    '''
+    try:
+        client = MongoClient()
+        db = client.TeddyGo
+
+        # Message: I've checked in ... places in ... country[ies] (country1 [, country2 etc]) and have been traveling for ... days so far
+        traveller_summary = db.travellers.find_one({'name': traveller})
+        if traveller_summary:
+            total_locations = traveller_summary['total_locations']
+            total_countries = traveller_summary['total_countries']
+            countries_visited = traveller_summary['countries_visited']
+            countries = ', '.join(countries_visited)
+            journey_duration = time_passed(traveller)
+            total_distance = round(traveller_summary['total_distance'] / 1000, 1)
+            distance_from_home = round(traveller_summary['distance_from_home'] / 1000, 1)
+            if total_countries == 1:
+                countries_form = 'country'
+            else:
+                countries_form = 'countries'
+            if journey_duration == 1:
+                day_or_days = 'day'
+            else:
+                day_or_days = 'days'
+
+            speech = 'So far I\'ve checked in <b>{}</b> places located in <b>{}</b> {} ({}) and have been traveling for <b>{}</b> {}.\n\nI covered about <b>{}</b> km it total and currently I\'m nearly <b>{}</b> km from home'.format(
+                total_locations, total_countries, countries_form, countries, journey_duration, day_or_days, total_distance,
+                distance_from_home)
+            return {'speech': speech, 'total_locations': total_locations}
+        else:
+            return {'speech': '', 'total_locations': 0}
+    except Exception as e:
+        print('get_journey_summary() exception: {}'.format(e))
+        return False
 
 def time_passed(traveller):
     '''

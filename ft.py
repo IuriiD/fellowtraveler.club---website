@@ -429,6 +429,14 @@ def index():
                 fit_markers_to_bounds = True
             )
 
+            # Get journey summary
+            journey_summary = ''
+            travelled_so_far = ft_functions.get_journey_summary('Teddy')
+            if not travelled_so_far:
+                journey_summary = ''
+            else:
+                journey_summary = travelled_so_far['speech']
+
             # Check for preferred language
             user_language = get_locale()
 
@@ -440,7 +448,7 @@ def index():
                         'addlocation')
                 print('No data in session!')
                 return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
-                                       locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
+                                       locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
 
             # Get user's input
             #print('Here2')
@@ -466,7 +474,7 @@ def index():
                             photos_list.append(path)
                         else:
                             # At least one of images is invalid. Messages are flashed from photo_check_save()
-                            return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
+                            return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
                 if len(photos)>4:
                     flash(
                         gettext('Teddy\'s locations are reposted to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'),
@@ -482,7 +490,7 @@ def index():
                 teddys_sc_should_be = collection_travellers.find_one({"name": 'Teddy'})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
                     flash(gettext('Invalid secret code'), 'addlocation')
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
+                    return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
                 else:
                     # Prepare dictionary with new location info
                     geodata = session['geodata']
@@ -559,18 +567,26 @@ def index():
                         fit_markers_to_bounds=True
                     )
 
+                    # Get journey summary
+                    journey_summary = ''
+                    travelled_so_far = ft_functions.get_journey_summary('Teddy')
+                    if not travelled_so_far:
+                        journey_summary = ''
+                    else:
+                        journey_summary = travelled_so_far['speech']
+
                     # Check for preferred language
                     user_language = get_locale()
 
                     return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
-                                           locations_history=locations_history, teddy_map=teddy_map,
+                                           locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary,
                                            language=user_language, PHOTO_DIR=PHOTO_DIR)
             else:
                 #print('Here3')
                 # Clear data from session
                 session.pop('geodata', None)
 
-                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
 
         # GET request
         # Get travellers history (will be substituted with timeline embedded from Twitter )
@@ -607,9 +623,25 @@ def index():
         )
         print('teddy_map!')
 
+        # Get journey summary
+        journey_summary = ''
+        travelled_so_far = ft_functions.get_journey_summary('Teddy')
+        print('travelled_so_far: {}'.format(travelled_so_far))
+        if not travelled_so_far:
+            journey_summary = ''
+            print('not travelled_so_far')
+        else:
+            print('travelled_so_far ;)')
+            if travelled_so_far['total_locations'] < 2:
+                journey_summary = ''
+                print('travelled_so_far["total_locations"] < 2')
+            else:
+                print('travelled_so_far["speech"]: {}'.format(travelled_so_far['speech']))
+                journey_summary = travelled_so_far['speech']#.replace('<b>', '').replace('</b>', '')
+
         # Check for preferred language
         user_language = get_locale()
-        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, language=user_language, PHOTO_DIR=PHOTO_DIR)
+        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR)
 
     except Exception as error:
         print("error: {}".format(error))
