@@ -400,7 +400,6 @@ def get_journey_summary(traveller):
     Retrieves journey summary for a given traveller
     '''
     try:
-        '''
         client = MongoClient()
         db = client.TeddyGo
 
@@ -408,6 +407,7 @@ def get_journey_summary(traveller):
         traveller_summary = db.travellers.find_one({'name': traveller})
         if traveller_summary:
             total_locations = traveller_summary['total_locations']
+            '''
             total_countries = traveller_summary['total_countries']
             countries_visited = traveller_summary['countries_visited']
             countries = ', '.join(countries_visited)
@@ -430,8 +430,9 @@ def get_journey_summary(traveller):
         else:
             return {'speech': '', 'total_locations': 0}
         '''
+
         speech = 'So far I\'ve checked in <b>X</b> places located in <b>X</b> {} (XX) and have been traveling for <b>X</b> {}.\n\nI covered about <b>{}</b> km it total and currently I\'m nearly <b>X</b> km from home'
-        return {'speech': '', 'total_locations': 1}
+        return {'speech': speech, 'total_locations': total_locations}
     except Exception as e:
         print('get_journey_summary() exception: {}'.format(e))
         return False
