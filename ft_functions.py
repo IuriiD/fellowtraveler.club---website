@@ -547,13 +547,13 @@ def last_segment_distance_append(traveller):
             locations = db[traveller].find().sort([('_id', -1)]).limit(2)
             curr_location = locations[0]
             prev_location = locations[1]
-            print()
-            print('Current location: {}'.format(curr_location))
-            print('Previous location: {}'.format(prev_location))
+            #print()
+            #print('Current location: {}'.format(curr_location))
+            #print('Previous location: {}'.format(prev_location))
 
             # Total distance before current location was added ('total_distance' field in <Traveller> doc)
             last_distance = db.travellers.find_one({'name': traveller})['total_distance']
-            print('Last distance was: {}'.format(last_distance))
+            #print('Last distance was: {}'.format(last_distance))
 
             origin = [prev_location['latitude'], prev_location['longitude']]
             destination = [curr_location['latitude'], curr_location['longitude']]
@@ -562,12 +562,12 @@ def last_segment_distance_append(traveller):
 
             if not last_segment_distance:
                 last_segment_distance = 0
-            print('last_segment_distance: {}'.format(last_segment_distance))
+            #print('last_segment_distance: {}'.format(last_segment_distance))
 
             new_distance = last_distance + last_segment_distance
         db.travellers.update_one({'name': traveller}, {'$set': {'total_distance': new_distance}})
-        print('New total distance: {}'.format(new_distance))
-        print()
+        #print('New total distance: {}'.format(new_distance))
+        #print()
         return True
     except Exception as e:
         print('last_segment_distance_append() exception: {}'.format(e))

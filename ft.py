@@ -639,14 +639,14 @@ def index():
         print('travelled_so_far: {}'.format(travelled_so_far))
         if not travelled_so_far:
             journey_summary = ''
-            print('not travelled_so_far')
+            #print('not travelled_so_far')
         else:
-            print('travelled_so_far ;)')
+            #print('travelled_so_far ;)')
             if travelled_so_far['total_locations'] < 2:
                 journey_summary = ''
-                print('travelled_so_far["total_locations"] < 2')
+                #print('travelled_so_far["total_locations"] < 2')
             else:
-                print('travelled_so_far["speech"]: {}'.format(travelled_so_far['speech']))
+                #print('travelled_so_far["speech"]: {}'.format(travelled_so_far['speech']))
                 journey_summary = travelled_so_far['speech']
 
         # Check for preferred language
