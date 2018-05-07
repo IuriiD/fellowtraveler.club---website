@@ -29,9 +29,9 @@ VALID_IMAGE_MIMETYPES = [
     "image"
 ]
 
-OURTRAVELLER = 'Teddy'
-PHOTO_DIR = 'static/uploads/{}/'.format(OURTRAVELLER) # where photos from places visited are saved
-SERVICE_IMG_DIR = 'static/uploads/{}/service/'.format(OURTRAVELLER) # where 'general info' images are saved (summary map, secret code example etc)
+#OURTRAVELLER = 'Teddy'
+#PHOTO_DIR = 'static/uploads/{}/'.format(OURTRAVELLER) # where photos from places visited are saved
+#SERVICE_IMG_DIR = 'static/uploads/{}/service/'.format(OURTRAVELLER) # where 'general info' images are saved (summary map, secret code example etc)
 
 # Validating image extension
 def valid_url_extension(url, extension_list=VALID_IMAGE_EXTENSIONS):
@@ -60,7 +60,7 @@ def image_exists(url):
     return r.status_code == 200
 
 # Check image validity using valid_url_extension() and valid_url_mimetype() and return new file name or flash an error
-def photo_check_save(photo_file):
+def photo_check_save(photo_file, OURTRAVELLER):
     #print('photo_file: {}'.format(photo_file))
     photo_filename = secure_filename(photo_file.filename)
     if valid_url_extension(photo_filename) and valid_url_mimetype(photo_filename):
@@ -78,7 +78,7 @@ def photo_check_save(photo_file):
         return 'error'
 
 # Return locations history for a given traveller (will be substituted with Twitter's timeline)
-def get_location_history(traveller):
+def get_location_history(traveller, PHOTO_DIR):
     client = MongoClient()
     db = client.TeddyGo
     teddys_locations = db[traveller].find().sort([('_id', -1)])
@@ -383,8 +383,12 @@ def summarize_journey(traveller):
         }
 
     # Update total distance and distance from home
-    distance_from_home(traveller)
-    last_segment_distance_append(traveller)
+    new_distance_from_home = distance_from_home(traveller)
+    if new_distance_from_home:
+        datatoupdate['distance_from_home'] = new_distance_from_home
+    new_total_distance = last_segment_distance_append(traveller)
+    if new_total_distance:
+        datatoupdate['total_distance'] = new_total_distance
 
     try:
         db.travellers.update_one({'name': traveller}, {'$set': datatoupdate})
@@ -407,7 +411,6 @@ def get_journey_summary(traveller):
         traveller_summary = db.travellers.find_one({'name': traveller})
         if traveller_summary:
             total_locations = traveller_summary['total_locations']
-            '''
             total_countries = traveller_summary['total_countries']
             countries_visited = traveller_summary['countries_visited']
             countries = ', '.join(countries_visited)
@@ -429,9 +432,7 @@ def get_journey_summary(traveller):
             return {'speech': speech, 'total_locations': total_locations}
         else:
             return {'speech': '', 'total_locations': 0}
-        '''
 
-        speech = 'So far I\'ve checked in <b>X</b> places located in <b>X</b> {} (XX) and have been traveling for <b>X</b> {}.\n\nI covered about <b>{}</b> km it total and currently I\'m nearly <b>X</b> km from home'
         return {'speech': speech, 'total_locations': total_locations}
     except Exception as e:
         print('get_journey_summary() exception: {}'.format(e))
@@ -507,10 +508,9 @@ def journey_distance_recalculate(traveller):
 
 def distance_from_home(traveller):
     '''
-        Calculates using Distance Matrix API approximate distance (km) between the 1st and the last locations
-        (which may be less than the sum of distances between all locations if traveller is returning 'home' for eg.)
+        Using Distance Matrix API calculates and returns approximate distance (meters) between the 1st and the last locations
+        (this distance may be less than the sum of distances between all locations if traveller is 'returning home' for eg.)
         https://developers.google.com/maps/documentation/distance-matrix/intro
-        Value is stored in DB (TeddyGo >> travellers >> <Traveller> document >> 'distance_from_home' field
     '''
     try:
         distance_from_home = 0
@@ -528,18 +528,18 @@ def distance_from_home(traveller):
             if not distance_from_home:
                 distance_from_home = 0
 
-        db.travellers.update_one({'name': traveller}, {'$set': {'distance_from_home': distance_from_home}})
+        #db.travellers.update_one({'name': traveller}, {'$set': {'distance_from_home': distance_from_home}})
         print('From home: {}'.format(distance_from_home))
         print()
-        return True
+        return distance_from_home
     except Exception as e:
         print('distance_from_home() exception: {}'.format(e))
         return False
 
 def last_segment_distance_append(traveller):
     '''
-        Calculates using Distance Matrix API approximate distance (meters) between 2 last locations and
-        adds it to the value 'total_distance' in TeddyGo >> travellers >> <Traveller> document
+        Using Distance Matrix API calculates approximate distance (meters) between the last 2 locations and
+        adds it to the value of 'total_distance' field in db TeddyGo >> travellers >> <Traveller> document
         The function is used after adding every location
         https://developers.google.com/maps/documentation/distance-matrix/intro
     '''
@@ -570,10 +570,10 @@ def last_segment_distance_append(traveller):
             #print('last_segment_distance: {}'.format(last_segment_distance))
 
             new_distance = last_distance + last_segment_distance
-        db.travellers.update_one({'name': traveller}, {'$set': {'total_distance': new_distance}})
+        #db.travellers.update_one({'name': traveller}, {'$set': {'total_distance': new_distance}})
         #print('New total distance: {}'.format(new_distance))
         #print()
-        return True
+        return new_distance
     except Exception as e:
         print('last_segment_distance_append() exception: {}'.format(e))
         return False

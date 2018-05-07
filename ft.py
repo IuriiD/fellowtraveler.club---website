@@ -65,21 +65,21 @@ mail = Mail(app)
 class WhereisTeddyNow(FlaskForm):
     author = StringField(gettext('Your name'), validators=[Length(-1, 50, gettext('Your name is a bit too long (50 characters max)'))])
     comment = TextAreaField(gettext('Add a comment'), validators=[Length(-1, 280, gettext('Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters'))])
-    getupdatesbyemail = BooleanField('Get updates by email')
-    secret_code = PasswordField(gettext('Secret code from the toy (required)'), validators=[DataRequired(gettext('Please enter the code which you can find on the label attached to the toy')),
+    getupdatesbyemail = BooleanField(gettext('Get updates by email'))
+    secret_code = PasswordField(gettext('Secret code from the toy (required)'), validators=[DataRequired(gettext('Please enter the code which you can find on the toy')),
                               Length(4, 4, gettext('Secret code must have 4 digits'))])
     recaptcha = RecaptchaField()
     submit = SubmitField(gettext('Submit'))
 
 class RegistrationForm(FlaskForm):
-    email = StringField('Email Address', validators=[Length(6, 50), DataRequired(), Email('Please enter a valid e-mail address')])
-    password = PasswordField('New Password', validators=[DataRequired(), EqualTo('confirm', message='Passwords must match')])
-    confirm = PasswordField('Repeat Password')
+    email = StringField(gettext('Email Address'), validators=[Length(6, 50), DataRequired(), Email(gettext('Please enter a valid e-mail address'))])
+    password = PasswordField(gettext('New Password'), validators=[DataRequired(), EqualTo('confirm', message=gettext('Passwords must match'))])
+    confirm = PasswordField(gettext('Repeat Password'))
     submit = SubmitField(gettext('Submit'))
 
 class LoginForm(FlaskForm):
-    email = StringField('Email Address', validators=[Length(6, 50), DataRequired(), Email('Please enter a valid e-mail address')])
-    password = PasswordField('Password', validators=[DataRequired()])
+    email = StringField(gettext('Email Address'), validators=[Length(6, 50), DataRequired(), Email(gettext('Please enter a valid e-mail address'))])
+    password = PasswordField(gettext('Password'), validators=[DataRequired()])
     submit = SubmitField(gettext('Submit'))
 
 class HeaderEmailSubscription(FlaskForm):
@@ -92,7 +92,7 @@ def login_required(f):
         if 'LoggedIn' in session:
             return f(*args, **kwargs)
         else:
-            flash(gettext('You need to <a href="/login/">log in</a> first'),'header')
+            flash(gettext('You need to <a href="%(url)s">log in</a> first', url='/login/'),'header')
             return redirect(url_for('login'))
     return wrap
 
@@ -100,7 +100,7 @@ def notloggedin_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         if 'LoggedIn' in session:
-            flash(gettext('You need to <a href="/logout/">log out</a> first'), 'header')
+            flash(gettext('You need to <a href="%(url)s">log out</a> first', url='/logout/'), 'header')
             return redirect(url_for('index'))
         else:
             return f(*args, **kwargs)
@@ -144,15 +144,15 @@ def save_subscriber(email_entered):
 
         new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
 
-        msg = Message("Fellowtraveler.club: email verification link",
+        msg = Message(gettext("Fellowtraveler.club: email verification link"),
                       sender="mailvulgaris@gmail.com", recipients=[email_entered])
-        msg.html = "Hi!<br><br>" \
+        msg.html = gettext("Hi!<br><br>" \
                    "Thanks for subscribing to Teddy's location updates!<br>" \
                    "They won't be too often (not more than once a week).<br><br>" \
                    "Please verify your email address by clicking on the following link:<br><b>" \
                    "<a href='{0}' target='_blank'>{0}</a></b><br><br>" \
                    "If for any reason later you will decide to unsubscribe, please click on the following link:<br>" \
-                   "<a href='{1}' target='_blank'>{1}</a>".format(verification_link, unsubscription_link)
+                   "<a href='{1}' target='_blank'>{1}</a>").format(verification_link, unsubscription_link)
         mail.send(msg)
 
         flash(gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
@@ -202,13 +202,13 @@ def save_user_as_subscriber(email_entered):
 
             new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
 
-            msg = Message("Fellowtraveler.club: you subscribed to email updates",
+            msg = Message(gettext("Fellowtraveler.club: you subscribed to email updates"),
                       sender="mailvulgaris@gmail.com", recipients=[email_entered])
-            msg.html = "Hi!<br><br>" \
+            msg.html = gettext("Hi!<br><br>" \
                    "Thanks for subscribing to Teddy's location updates!<br>" \
                    "They won't be too often (not more than once a week).<br><br>" \
                    "If for any reason later you will decide to unsubscribe, please click on the following link:<br>" \
-                   "<a href='{0}' target='_blank'>{0}</a>".format(unsubscription_link)
+                   "<a href='{0}' target='_blank'>{0}</a>").format(unsubscription_link)
             mail.send(msg)
 
             flash(gettext("Your email {} was subscribed to Teddy\'s location updates".format(email_entered)), 'header')
@@ -478,7 +478,7 @@ def index():
                 photos_list = []
                 for n in range(len(photos)):
                     if n<4:
-                        path = ft_functions.photo_check_save(photos[n])
+                        path = ft_functions.photo_check_save(photos[n], OURTRAVELLER)
                         if path != 'error':
                             photos[n].save(PHOTO_DIR + path)
                             photos_list.append(path)
@@ -562,7 +562,7 @@ def index():
                     session.pop('geodata', None)
 
                     # Get travellers history
-                    whereteddywas = ft_functions.get_location_history(OURTRAVELLER)
+                    whereteddywas = ft_functions.get_location_history(OURTRAVELLER, PHOTO_DIR)
                     locations_history = whereteddywas['locations_history']
 
                     # Prepare a map
