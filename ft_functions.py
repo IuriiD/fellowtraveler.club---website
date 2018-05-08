@@ -326,8 +326,8 @@ def distance_from_home(traveller):
                 distance_from_home = 0
 
         #db.travellers.update_one({'name': traveller}, {'$set': {'distance_from_home': distance_from_home}})
-        print('From home: {}'.format(distance_from_home))
-        print()
+        #print('From home: {}'.format(distance_from_home))
+        #print()
         return distance_from_home
     except Exception as e:
         print('distance_from_home() exception: {}'.format(e))

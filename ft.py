@@ -637,7 +637,7 @@ def index():
         # Get journey summary
         journey_summary = ''
         travelled_so_far = ft_functions.get_journey_summary(OURTRAVELLER)
-        print('travelled_so_far: {}'.format(travelled_so_far))
+        #print('travelled_so_far: {}'.format(travelled_so_far))
         if not travelled_so_far:
             journey_summary = ''
             #print('not travelled_so_far')
