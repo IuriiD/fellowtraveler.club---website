@@ -2,14 +2,14 @@
 {% from '_formhelpers.html' import render_field %}
 
 {% block title %}
-    Ouups... error happened
+    {{ gettext('Ouups... error happened') }}
 {% endblock %}
 
 {% block main_contents %}
     <h1 class="display-2">
-        Ouups... the following exception was got:
+        {{ gettext('Ouups... the following exception was got:') }}
     <br>
         {{ error }}
     </h1>
-    <br>Return to the <a href="/">main page</a>?
+    <br>{{ gettext('Return to the <a href="/">main page</a>?') }}
 {% endblock %}

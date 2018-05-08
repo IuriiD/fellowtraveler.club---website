@@ -67,15 +67,15 @@
                         <!-- Login/Register or UpdateLocation/Logout links -->
                         <div class="container-fluid" align="right">
                             {% if session['LoggedIn'] %}
-                                <b>{{ session['Email'] }}: </b><a href="/#updatelocation">Update location</a> | <a href="/logout/">Logout</a>
+                                <b>{{ session['Email'] }}: </b><a href="/#updatelocation">{{ gettext('Update location') }}</a> | <a href="/logout/">{{ gettext('Logout') }}</a>
                             {% else %}
-                                <a href="/login/">Log in</a> | <a href="/register/">Register</a>
+                                <a href="/login/">{{ gettext('Log in') }}</a> | <a href="/register/">{{ gettext('Register') }}</a>
                             {% endif %}
                         </div>
 
                         <!-- Choose language block -->
                         <div class="container-fluid" align="right">
-                            {{ gettext('Change language') }}: {% if language != 'en' %}<a href="/language/en">{% endif %}En{% if language != 'en' %}</a>{% endif %} {% if language != 'de' %}<a href="/language/de">{% endif %}De{% if language != 'de' %}</a>{% endif %} {% if language != 'ru' %}<a href="/language/ru">{% endif %}Ru{% if language != 'ru' %}</a>{% endif %} {% if language != 'fr' %}<a href="/language/fr">{% endif %}Fr{% if language != 'fr' %}</a>{% endif %}
+                            {{ gettext('Change language') }}: {% if language != 'en' %}<a href="/language/en">{% endif %}En{% if language != 'en' %}</a>{% endif %} {% if language != 'de' %}<a href="/language/de">{% endif %}De{% if language != 'de' %}</a>{% endif %} {% if language != 'ru' %}<a href="/language/ru">{% endif %}Ru{% if language != 'ru' %}</a>{% endif %} {% if language != 'uk' %}<a href="/language/uk">{% endif %}Uk{% if language != 'uk' %}</a>{% endif %} {% if language != 'fr' %}<a href="/language/fr">{% endif %}Fr{% if language != 'fr' %}</a>{% endif %}
                         </div>
 
                         <!-- Webchat -->
@@ -120,7 +120,7 @@
                 {% include '_subscribeform.html' %}
             </div>
             <div>
-                <a href="">Disclaimer</a> | <a href="">Help us with translation</a> | <a href="">Support project</a>
+                <a href="">{{ gettext('Disclaimer') }}</a> | <a href="">{{ gettext('Help us with translation') }}</a> | <a href="">{{ gettext('Support project') }}</a>
             </div>
 
             <hr>

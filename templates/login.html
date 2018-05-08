@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% from '_formhelpers.html' import render_field %}
 
-{% block title %}Log in{% endblock %}
+{% block title %}{{ gettext('Log in') }}{% endblock %}
 
 {% block main_contents %}
     <hr>
 
     <div align="right">
-         <a href="/">Main page</a>?
+         <a href="/">{{ gettext('Main page') }}</a>?
     </div>
 
     <form role="form" action="/login/" method="POST">

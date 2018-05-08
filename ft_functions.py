@@ -8,6 +8,7 @@ import requests
 from pymongo import MongoClient
 import mimetypes
 from random import randint
+from flask_babel import Babel, gettext, lazy_gettext
 import datetime
 
 from keys import FLASK_SECRET_KEY, TG_TOKEN, DF_TOKEN, GOOGLE_MAPS_API_KEY, MAIL_PWD
@@ -72,8 +73,7 @@ def photo_check_save(photo_file, OURTRAVELLER):
         #path = PHOTO_DIR + path4db
         return path4db
     else:
-        flash(
-            'File {} has invalid image extension (not ".jpg", ".jpeg", ".png", ".gif" or ".bmp") or invalid image format'.format(photo_filename),
+        flash(lazy_gettext('File {} has invalid image extension (not ".jpg", ".jpeg", ".png", ".gif" or ".bmp") or invalid image format').format(photo_filename),
             'addlocation')
         return 'error'
 
@@ -126,209 +126,6 @@ def get_location_history(traveller, PHOTO_DIR):
         )
         marker_number -= 1
     return {'locations_history': locations_history, 'start_lat': start_lat, 'start_long': start_long, 'mymarkers': mymarkers}
-
-def make_speech(ourspeech, oursource, outputcontext):
-    '''
-        Composes response for different platforms
-    '''
-    basic_txt_message = ourspeech["speech"]
-    if "rich_messages" in ourspeech:
-        rich_messages = ourspeech["rich_messages"]
-    else:
-        rich_messages = []
-
-    res = {
-        'speech': basic_txt_message,
-        'displayText': basic_txt_message,
-        'source': oursource,
-
-        'messages': [message for message in rich_messages],
-        'contextOut': outputcontext
-    }
-    return res
-
-def last_location_shown(req):
-    '''
-        From JSON-response got from webhook retrieves context 'location_shown' and value of parameter 'locationN'
-        (last shown location's number; -1 if we only start to display locations
-    '''
-    contexts = req.get('result').get('contexts')
-    last_location = -1
-    for context in contexts:
-        if context['name'] == 'location_shown':
-            last_location = context.get('parameters').get('locationN')
-    return int(last_location)
-
-def show_next_location(req, locations_history, last_location_shown):
-    total_locations = len(locations_history)
-    contexts = req.get('result').get('contexts')
-    if (last_location_shown + 1) > total_locations:
-        # all locations have been shown
-        payload = {
-            "speech": "That\'s all my travel so far",
-            "rich_messages": [
-                {
-                    "platform": "telegram",
-                    "type": 0,
-                    "speech": "That\'s all my travel so far"
-                }
-            ]
-        }
-        for context in contexts:
-            if context['name'] == 'location_shown':
-                context['parameters']['locationN'] = -1
-    else:
-        location_to_show = locations_history[last_location_shown + 1]
-        author = location_to_show['author']
-        location = location_to_show['formatted_address'].split()[0]
-        time = location_to_show['time']
-        comment = location_to_show['comment']
-        photos = location_to_show['photos']
-        title = "{} - {}".format(time, location)
-        if len(photos) > 0:
-            imageUrl = "https://iuriid.github.io/img/pb-3.jpg"
-        else:
-            imageUrl = ""
-        if len(comment) > 0:
-            subtitle = "{} wrote: {}".format(author, comment)
-        else:
-            subtitle = ""
-        if (last_location_shown + 1) < total_locations:
-            buttons = [
-                {
-                    "postback": "Show next location",
-                    "text": "Show next place"
-                }
-            ]
-        else:
-            buttons = []
-
-        for context in contexts:
-            if context['name'] == 'location_shown':
-                context['parameters']['locationN'] = last_location_shown + 1
-
-        payload = {
-            "speech": "{}\n{}\n{}".format(title, subtitle, imageUrl),
-            "rich_messages": [
-                {
-                    "platform": "telegram",
-                    "type": 1,
-                    "title": title,
-                    "subtitle": subtitle,
-                    "imageUrl": imageUrl,
-                    "buttons": buttons
-                }
-            ]
-        }
-
-    response = {"status": "ok", "payload": payload, 'updated_context': contexts}
-    return response
-
-def show_location(traveller, req):
-    '''
-        Function gets traveller name (for eg., 'Teddy') and request JSON from webhook ('teddygo_show_timeline')
-        Displays the next location for traveller depending on locations previously shown (which is saved in req's
-        context named 'location_shown' >> parameter 'locationN'
-        1) If it's the 1st location - returns an 'intro' message, location + 'Show next location' button
-        2) If it's not the 1st, but not the last location - shows location and 'Show next location' button
-        3) If it's the last location to show - no 'Show next location' button and a 'summary' message
-    '''
-    # Get a list of all traveller's locations
-    allhistory = get_location_history(traveller)['locations_history'][::-1]
-
-    # Get the number of last shown location from req's contexts
-    contexts = req.get('result').get('contexts')
-    for context in contexts:
-        if context['name'] == 'location_shown':
-            last_location = int(context.get('parameters').get('locationN', -1))
-            if last_location == -1 or (last_location + 1) < len(allhistory):
-                context['parameters']['locationN'] = int(last_location) + 1
-            else:
-                context['parameters']['locationN'] = -1
-    #print("Locations N: {}".format(len(allhistory)))
-    #print("Last location shown #: {}".format(last_location))
-
-    if (last_location + 1) <= len(allhistory):
-        location_to_show = allhistory[last_location + 1]
-        author = location_to_show['author']
-        location = location_to_show['location']
-        time = location_to_show['time']
-        comment = location_to_show['comment']
-        photos = location_to_show['photos']
-        title = "{} - {}".format(time, location)
-        if len(photos) > 0:
-            imageUrl = url_for('static', filename=photos[0])
-            #print("imageUrl: {}".format(imageUrl))
-        else:
-            imageUrl = ""
-        if len(comment) > 0:
-            subtitle = "{} wrote: {}".format(author, comment)
-        else:
-            subtitle = ""
-
-    # 1) If it's the 1st location - returns an 'intro' message, location + 'Show next location' button
-    if last_location == -1:
-        payload = {
-            "speech": "{}\n{}\n{}".format(title, subtitle, imageUrl),
-            "rich_messages": [
-                {
-                    "platform": "telegram",
-                    "type": 1,
-                    "title": "My travel started in {} on {}".format(location, time),
-                    "subtitle": subtitle,
-                    "imageUrl": imageUrl,
-                    "buttons": [
-                        {
-                            "postback": "timeline",
-                            "text": "Show the next place"
-                        }
-                    ]
-                }
-            ]
-        }
-    # 2) If it's not the 1st, but not the last location - shows location and 'Show next location' button
-    elif (last_location + 1) < len(allhistory):
-        payload = {
-            "speech": "{}\n{}\n{}".format(title, subtitle, imageUrl),
-            "rich_messages": [
-                {
-                    "platform": "telegram",
-                    "type": 1,
-                    "title": title,
-                    "subtitle": subtitle,
-                    "imageUrl": imageUrl,
-                    "buttons": [
-                        {
-                            "postback": "timeline",
-                            "text": "Show the next place"
-                        }
-                    ]
-                }
-            ]
-        }
-    # 3) If it's the last location to show - no 'Show next location' button and a 'summary' message
-    elif (last_location + 1) == len(allhistory):
-        payload = {
-            "speech": "{}\n{}\n{}".format(title, subtitle, imageUrl),
-            "rich_messages": [
-                {
-                    "platform": "telegram",
-                    "type": 1,
-                    "title": title,
-                    "subtitle": subtitle,
-                    "imageUrl": imageUrl,
-                    "buttons": []
-                },
-                {
-                    "platform": "telegram",
-                    "type": 0,
-                    "speech": "And that's all my travel so far.\nWill you help me to continue it?",
-                }
-            ]
-        }
-
-    response = {"status": "ok", "payload": payload, "updated_context": contexts}
-    return response
 
 def summarize_journey(traveller):
     '''
@@ -418,15 +215,15 @@ def get_journey_summary(traveller):
             total_distance = round(traveller_summary['total_distance'] / 1000, 1)
             distance_from_home = round(traveller_summary['distance_from_home'] / 1000, 1)
             if total_countries == 1:
-                countries_form = 'country'
+                countries_form = gettext('country')
             else:
-                countries_form = 'countries'
+                countries_form = gettext('countries')
             if journey_duration == 1:
-                day_or_days = 'day'
+                day_or_days = gettext('day')
             else:
-                day_or_days = 'days'
+                day_or_days = gettext('days')
 
-            speech = 'So far I\'ve checked in <b>{}</b> places located in <b>{}</b> {} ({}) and have been traveling for <b>{}</b> {}.\n\nI covered about <b>{}</b> km it total and currently I\'m nearly <b>{}</b> km from home'.format(
+            speech = gettext('So far I\'ve checked in <b>{}</b> places located in <b>{}</b> {} ({}) and have been traveling for <b>{}</b> {}.\n\nI covered about <b>{}</b> km it total and currently I\'m nearly <b>{}</b> km from home').format(
                 total_locations, total_countries, countries_form, countries, journey_duration, day_or_days, total_distance,
                 distance_from_home)
             return {'speech': speech, 'total_locations': total_locations}

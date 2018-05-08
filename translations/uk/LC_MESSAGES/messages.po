@@ -1,17 +1,19 @@
-# Translations template for PROJECT.
+# Ukrainian translations for PROJECT.
 # Copyright (C) 2018 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2018-05-08 08:14+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2018-05-08 08:23+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: uk\n"
+"Language-Team: uk <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,7 +21,7 @@ msgstr ""
 
 #: ft.py:148 ft.py:280
 msgid "Fellowtraveler.club: email verification link"
-msgstr ""
+msgstr "Fellowtraveler.club: посилання для підтверждения адреси email"
 
 #: ft.py:150
 msgid ""
@@ -30,10 +32,17 @@ msgid ""
 "decide to unsubscribe, please click on the following link:<br><a "
 "href='{1}' target='_blank'>{1}</a>"
 msgstr ""
+"Привіт!<br><br>Дякуємо за те, що підписались на розсилку про мандрівку "
+"Teddy!<br>Цих повідомлень не буде багато (не більше одного на "
+"тиждень).<br><br>Будь-ласка, підтвердіть Вашу адресу email клікнувши по "
+"наступному посиланню:<br><b><a href='{0}' "
+"target='_blank'>{0}</a></b><br><br>Якщо з будь-якої причини "
+"згодом Ви вирішите відписатись від цієї розсилки, будь-ласка, клікніть по "
+"наступному посиланню:<br><a href='{1}' target='_blank'>{1}</a>"
 
 #: ft.py:206
 msgid "Fellowtraveler.club: you subscribed to email updates"
-msgstr ""
+msgstr "Fellowtraveler.club: Ви підписались на розсилку оновлень"
 
 #: ft.py:208
 msgid ""
@@ -42,6 +51,11 @@ msgid ""
 "later you will decide to unsubscribe, please click on the following "
 "link:<br><a href='{0}' target='_blank'>{0}</a>"
 msgstr ""
+"Привіт!<br><br>Дякуємо за те, що підписались на розсилку про мандрівку "
+"Teddy!<br>Цих повідомлень не буде багато (не більше одного на "
+"тиждень).<br><br>Якщо з будь-якої причини згодом Ви вирішите "
+"відписатись від цієї розсилки, будь-ласка, клікніть по "
+"наступному посиланню:link:<br><a href='{0}' target='_blank'>{0}</a>"
 
 #: ft.py:282
 msgid ""
@@ -51,14 +65,19 @@ msgid ""
 "href='{0}' target='_blank'>{0}</a></b><br><br>If it wasn't you please "
 "simply ignore this message"
 msgstr ""
+"Привіт! Дякуємо, що зареєструвались на <b><a "
+"href='https://fellowtraveler.club'>fellowtraveler.club</a></b>.<br><br>Будь-ласка,"
+" підтвердіть Вашу адресу email клікнувши по наступному посиланню:<br><b><a "
+"href='{0}' target='_blank'>{0}</a></b><br><br>Якщо це були не Ви, "
+"будь-ласка, просто ігноруйте це повідомлення"
 
 #: ft.py:472
 msgid "Anonymous"
-msgstr ""
+msgstr "Анонім"
 
 #: ft.py:541
 msgid "Fellowtraveler.club: new secret code - {}"
-msgstr ""
+msgstr "Fellowtraveler.club: новий секретний код - {}"
 
 #: ft.py:543
 msgid ""
@@ -71,6 +90,16 @@ msgid ""
 " you for participating in <a "
 "href='https://fellowtraveler.club'>fellowtraveler.club</a>"
 msgstr ""
+"Привіт!<br><br>Ви додали нове місцезнаходження {0}, дякуємо. Після "
+"додавання кожного місцезнаходження генеруєтся новий секретний код, і для"
+" додавання наступного він буде "
+"таким:<br><br><b><h1>{1}</h1></b><br><br>Краще його одразу ж записати у "
+"блокнот {0} (і це обов'язково, якщо Ви плануєте передати {0} комусь "
+"іншому)<br><br>Виникли якісь проблеми? Будь-ласка, "
+"пишіть на адресу <a "
+"href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>Дякуємо"
+" за участь у проекті <a "
+"href='https://fellowtraveler.club'>fellowtraveler.club</a>"
 
 #: ft_functions.py:226
 msgid ""
@@ -80,138 +109,145 @@ msgid ""
 "I covered about <b>{}</b> km it total and currently I'm nearly <b>{}</b> "
 "km from home"
 msgstr ""
+"На даний момент я побував в <b>{}</b> місцях, що знаходяться у <b>{}</b> {} ({}) і "
+"мандрую ось уже <b>{}</b> {}.\n"
+"\n"
+"Я подолав загалом біля <b>{}</b> км і зараз знаходжусь приблизно за <b>{}</b> "
+"км від дому"
 
 #: ft_env/lib/python3.4/site-packages/flask_wtf/file.py:51
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:203
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:243
 msgid "This field is required."
-msgstr ""
+msgstr "Це поле обов'язкове для заповнення."
 
 #: ft_env/lib/python3.4/site-packages/flask_wtf/file.py:85
 msgid "File does not have an approved extension: {extensions}"
-msgstr ""
+msgstr "Розширення файлу не відповідає списку дозволених: {extensions}"
 
 #: ft_env/lib/python3.4/site-packages/flask_wtf/file.py:90
 msgid "File does not have an approved extension."
-msgstr ""
+msgstr "Файл має недозволене розширення."
 
 #: ft_env/lib/python3.4/site-packages/flask_wtf/recaptcha/validators.py:16
 msgid "The secret parameter is missing."
-msgstr ""
+msgstr "Відсутній секретний параметр."
 
 #: ft_env/lib/python3.4/site-packages/flask_wtf/recaptcha/validators.py:17
 msgid "The secret parameter is invalid or malformed."
-msgstr ""
+msgstr "Секретний параметр невірний або спотворений."
 
 #: ft_env/lib/python3.4/site-packages/flask_wtf/recaptcha/validators.py:18
 msgid "The response parameter is missing."
-msgstr ""
+msgstr "Відсутній параметр відповіді."
 
 #: ft_env/lib/python3.4/site-packages/flask_wtf/recaptcha/validators.py:19
 msgid "The response parameter is invalid or malformed."
-msgstr ""
+msgstr "Параметр відповіді невірний або спотворений."
 
 #: ft_env/lib/python3.4/site-packages/passlib/ext/django/utils.py:957
 msgid "algorithm"
-msgstr ""
+msgstr "алгоритм"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:56
 #, python-format
 msgid "Invalid field name '%s'."
-msgstr ""
+msgstr "Невірне им'я файлу '%s'."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:64
 #, python-format
 msgid "Field must be equal to %(other_name)s."
-msgstr ""
+msgstr "Значення поля повинне співпадати з %(other_name)s."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:97
 #, python-format
-msgid "Field must be at least %(min)d character long."
-msgid_plural "Field must be at least %(min)d characters long."
-msgstr[0] ""
-msgstr[1] ""
+msgid "Field must be at least %(min)s character long."
+msgid_plural "Field must be at least %(min)s characters long."
+msgstr[0] "Довжина поля повинна бути не менше %(min)s символа."
+msgstr[1] "Довжина поля повинна бути не менше %(min)s символів."
+msgstr[2] ""
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:100
 #, python-format
-msgid "Field cannot be longer than %(max)d character."
-msgid_plural "Field cannot be longer than %(max)d characters."
-msgstr[0] ""
-msgstr[1] ""
+msgid "Field cannot be longer than %(max)s character."
+msgid_plural "Field cannot be longer than %(max)s characters."
+msgstr[0] "Довжина поля повинна бути не більше %(min)s символа."
+msgstr[1] "Довжина поля повинна бути не більше %(min)s символів."
+msgstr[2] ""
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:103
 #, python-format
-msgid "Field must be between %(min)d and %(max)d characters long."
-msgstr ""
+msgid "Field must be between %(min)s and %(max)s characters long."
+msgstr "Довжина поля повинна бути від %(min)s до %(max)s символів."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:139
 #, python-format
 msgid "Number must be at least %(min)s."
-msgstr ""
+msgstr "Число має бути не меньше %(min)s."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:141
 #, python-format
 msgid "Number must be at most %(max)s."
-msgstr ""
+msgstr "Число має бути не більше %(min)s."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:143
 #, python-format
 msgid "Number must be between %(min)s and %(max)s."
-msgstr ""
+msgstr "Число має бути від %(min)s до %(max)s."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:275
 msgid "Invalid input."
-msgstr ""
+msgstr "Невірний ввод."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:301
 msgid "Invalid email address."
-msgstr ""
+msgstr "Невірна адреса email."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:335
 msgid "Invalid IP address."
-msgstr ""
+msgstr "Невірна IP адреса"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:386
 msgid "Invalid Mac address."
-msgstr ""
+msgstr "Невірна Mac адреса."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:415
 msgid "Invalid URL."
-msgstr ""
+msgstr "Невірний URL."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:436
 msgid "Invalid UUID."
-msgstr ""
+msgstr "Невірний UUID."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:464
 #, python-format
 msgid "Invalid value, must be one of: %(values)s."
-msgstr ""
+msgstr "Невірне значення, має бути одним з: %(values)s."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/validators.py:496
 #, python-format
 msgid "Invalid value, can't be any of: %(values)s."
-msgstr ""
+msgstr "Неверне значення, НЕ може бути одним из: %(values)s."
 
 #: ft_env/lib/python3.4/site-packages/wtforms/csrf/core.py:98
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/csrf/form.py:47
 msgid "Invalid CSRF Token"
-msgstr ""
+msgstr "Невірний маркер CSRF"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/csrf/session.py:61
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:58
 msgid "CSRF token missing"
-msgstr ""
+msgstr "Відсутній маркер CSRF"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/csrf/session.py:69
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:66
 msgid "CSRF failed"
-msgstr ""
+msgstr "Збій CSRF"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/csrf/session.py:74
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:71
 msgid "CSRF token expired"
-msgstr ""
+msgstr "Термін дії маркера CSRF збіг"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:87
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:164
@@ -223,24 +259,24 @@ msgstr ""
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:185
 #: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:472
 msgid "Not a valid choice"
-msgstr ""
+msgstr "Невірний вибір"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:185
 msgid "Not a valid list"
-msgstr ""
+msgstr "Невірний список"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:204
 msgid "Not a valid integer list"
-msgstr ""
+msgstr "Невірний список цілочислених значень"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:63
 msgid "Please input a date/time value"
-msgstr ""
+msgstr "Будь-ласка, введіь дату/час"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:75
 #: ft_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:83
 msgid "Invalid date/time input"
-msgstr ""
+msgstr "Невірний ввод дати/часу"
 
 #: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:465
 msgid "Invalid Choice: could not coerce"
@@ -277,144 +313,174 @@ msgstr ""
 
 #: templates/413.html:5
 msgid "Looks like your file is too big"
-msgstr ""
+msgstr "Схоже, що завантажуваний файл завеликий"
 
 #: templates/413.html:10
 msgid "Looks like your file is too big (5Mb/photo is maximum)"
-msgstr ""
+msgstr "Завантажуваний файл завеликий (максимально допустимий розмір - 20 Мб)"
 
 #: templates/_speakwithmefollowme.html:1
 msgid "Let's talk:"
-msgstr ""
+msgstr "Поговоримо?"
 
 #: templates/_speakwithmefollowme.html:3
 msgid "Follow me"
-msgstr ""
+msgstr "Слідкуйте за мною"
 
 #: templates/error.html:5
 msgid "Ouups... error happened"
-msgstr ""
+msgstr "Упс... трапилася помилка"
 
 #: templates/error.html:10
 msgid "Ouups... the following exception was got:"
-msgstr ""
+msgstr "Упс... відбувся наступний збій:"
 
 #: templates/error.html:14
 msgid "Return to the <a href=\"/\">main page</a>?"
-msgstr ""
+msgstr "Повернутись на <a href=\"/\">головну сторінку</a>?"
 
 #: templates/index.html:6
 msgid "Hi! My name is"
-msgstr ""
+msgstr "Привіт! Мене звати"
 
 #: templates/index.html:6
 msgid "and I have a dream"
-msgstr ""
+msgstr "і у мене є мрія"
 
 #: templates/index.html:28
 msgid "Map of "
-msgstr ""
+msgstr "Карта мандрівки "
 
 #: templates/index.html:28
 msgid "'s journey so far"
-msgstr ""
+msgstr " на сьогодні"
 
 #: templates/index.html:43
 msgid "Travel timeline"
-msgstr ""
+msgstr "Хроніки мандрівки"
 
 #: templates/index.html:50
 msgid "Place #"
-msgstr ""
+msgstr "Місце №"
 
 #: templates/index.html:52
 msgid "Author"
-msgstr ""
+msgstr "Автор"
 
 #: templates/index.html:54
 msgid "Time"
-msgstr ""
+msgstr "Час"
 
 #: templates/index.html:56
 msgid "Location"
-msgstr ""
+msgstr "Місцезнаходження"
 
 #: templates/index.html:59
 msgid "Photos"
-msgstr ""
+msgstr "Фото"
 
 #: templates/index.html:75
 msgid "Add new location"
-msgstr ""
+msgstr "Додати нове місцезнаходження"
 
 #: templates/index.html:94
 msgid "Where"
-msgstr ""
+msgstr "Де"
 
 #: templates/index.html:94
 msgid "is now or was on the photo? (required)"
-msgstr ""
+msgstr "зараз або був у момент, коли було зроблене фото (обов'язково)"
 
 #: templates/index.html:106
 msgid "Upload up to 4 photos/place"
-msgstr ""
+msgstr "Завантажити до 4 фото/місце"
 
 #: templates/index.html:121
 msgid "To add new "
-msgstr ""
+msgstr "Щоб додати нове місцезнаходження "
 
 #: templates/index.html:121
 msgid ""
 "'s location first please <b><a href=\"/login/\">log in</a></b> or <b><a "
 "href=\"/register/\">register</a></b>"
 msgstr ""
+", будь-ласка, <b><a href=\"/login/\">увійдіть</a></b> або <b><a "
+"href=\"/register/\">зареєструйтесь</a></b>"
 
 #: templates/layout.html:49
 msgid "Name"
-msgstr ""
+msgstr "Ім'я"
 
 #: templates/layout.html:61 templates/layout.html:70
 msgid "Update location"
-msgstr ""
+msgstr "Оновити місцезнаходження"
 
 #: templates/layout.html:70
 msgid "Logout"
-msgstr ""
+msgstr "Вийти"
 
 #: templates/layout.html:72 templates/login.html:4
 msgid "Log in"
-msgstr ""
+msgstr "Увійти"
 
 #: templates/layout.html:72
 msgid "Register"
-msgstr ""
+msgstr "Зареєструватись"
 
 #: templates/layout.html:78
 msgid "Change language"
-msgstr ""
+msgstr "Змінити мову"
 
 #: templates/layout.html:123
 msgid "Disclaimer"
-msgstr ""
+msgstr "Попередження"
 
 #: templates/layout.html:123
 msgid "Help us with translation"
-msgstr ""
+msgstr "Допомогти з перекладом"
 
 #: templates/layout.html:123
 msgid "Support project"
-msgstr ""
+msgstr "Підтримати проект"
 
 #: templates/login.html:10
 msgid "Main page"
-msgstr ""
+msgstr "Головна сторінка"
 
 #: templates/register.html:4
 msgid "Registration"
-msgstr ""
+msgstr "Реєстрація"
 
 #: templates/register.html:10
 #, python-format
 msgid "Maybe just <a href=\"%(url)s\">log in</a>?"
-msgstr ""
+msgstr "Може, просто <a href=\"%(url)s\">увійдете</a>?"
+
+#: ft.py:69 ft.py:87
+msgid "Get updates by email:"
+msgstr "Отримувати оновлення на пошту:"
+
+#: ft.py:88
+msgid "Subscribe"
+msgstr "Підписатись"
+
+#: ft.py:88
+msgid "Subscribe"
+msgstr "Подписаться"
+
+#: ft_functions.py:218
+msgid "country"
+msgstr "країні"
+
+#: ft_functions.py:220
+msgid "countries"
+msgstr "країнах"
+
+#: ft_functions.py:222
+msgid "day"
+msgstr "день"
+
+#: ft_functions.py:224
+msgid "days"
+msgstr "дні"
 

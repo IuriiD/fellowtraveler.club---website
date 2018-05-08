@@ -1,15 +1,15 @@
-# Russian translations for PROJECT.
+# Russian translations for FELLOWTRAVELER.
 # Copyright (C) 2018 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# FIRST AUTHOR <IURII.DZIUBAN@GMAIL.COM>, 2018.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-27 12:46+0000\n"
-"PO-Revision-Date: 2018-03-27 12:26+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Report-Msgid-Bugs-To: IURII.DZIUBAN@GMAIL.COM\n"
+"POT-Creation-Date: 2018-05-08 08:14+0000\n"
+"PO-Revision-Date: 2018-05-07 10:16+0000\n"
+"Last-Translator: IURII DZIUBAN <IURII.DZIUBAN@GMAIL.COM>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
@@ -19,309 +19,700 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
 
-#: index.py:41
-msgid "Your name"
-msgstr "Ваше имя"
+#: ft.py:148 ft.py:280
+msgid "Fellowtraveler.club: email verification link"
+msgstr "Fellowtraveler.club: ссылка для подтверждения адреса email"
 
-#: index.py:41
-msgid "Your name is a bit too long (50 characters max)"
-msgstr "Ваше имя слишком долгое (должно быть не более 50 знаков)"
+#: ft.py:69 ft.py:87
+msgid "Get updates by email:"
+msgstr "Получать обновления по почте:"
 
-#: index.py:42
-msgid "Add a comment"
-msgstr "Комментарий"
+#: ft.py:88
+msgid "Subscribe"
+msgstr "Подписаться"
 
-#: index.py:42
+#: ft_functions.py:218
+msgid "country"
+msgstr "стране"
+
+#: ft_functions.py:220
+msgid "countries"
+msgstr "странах"
+
+#: ft_functions.py:222
+msgid "day"
+msgstr "день"
+
+#: ft_functions.py:224
+msgid "days"
+msgstr "дня"
+
+#: ft.py:150
 msgid ""
-"Sorry but comments are uploaded to Twitter and thus can't be longer than "
-"280 characters"
-msgstr "Извините, но комментарии загружаются на Twitter, вследствие чего не могут быть дольше чем 280 символов"
+"Hi!<br><br>Thanks for subscribing to Teddy's location updates!<br>They "
+"won't be too often (not more than once a week).<br><br>Please verify your"
+" email address by clicking on the following link:<br><b><a href='{0}' "
+"target='_blank'>{0}</a></b><br><br>If for any reason later you will "
+"decide to unsubscribe, please click on the following link:<br><a "
+"href='{1}' target='_blank'>{1}</a>"
+msgstr ""
+"Привет!<br><br>Спасибо что подписались на рассылку о путешествии "
+"Teddy!<br>Этих сообщений не будет много (не больше одного в "
+"неделю).<br><br>Пожалуйста, подтвердите Ваш адрес email кликнув по "
+"следующей ссылке:<br><b><a href='{0}' "
+"target='_blank'>{0}</a></b><br><br>Если по какой-либо причине "
+"впоследствии Вы решите отписаться от рассылки, пожалуйста, кликните по "
+"следующей ссылке:<br><a href='{1}' target='_blank'>{1}</a>"
 
-#: index.py:43
-msgid "Secret code from the toy (required)"
-msgstr "Секретный код с игрушки (обязательно)"
+#: ft.py:206
+msgid "Fellowtraveler.club: you subscribed to email updates"
+msgstr "Fellowtraveler.club: Вы подписались на рассылку обновлений"
 
-#: index.py:43
-msgid "Please enter the code which you can find on the label attached to the toy"
-msgstr "Пожалуйста, введите код, который можно найти на этикетке, прикрепленной к игрушке"
+#: ft.py:208
+msgid ""
+"Hi!<br><br>Thanks for subscribing to Teddy's location updates!<br>They "
+"won't be too often (not more than once a week).<br><br>If for any reason "
+"later you will decide to unsubscribe, please click on the following "
+"link:<br><a href='{0}' target='_blank'>{0}</a>"
+msgstr ""
+"Привет!<br><br>Спасибо что подписались на рассылку о путешествии "
+"Teddy!<br>Этих сообщений не будет много (не больше одного в "
+"неделю).<br><br>Если по какой-либо причине впоследствии Вы решите "
+"отписаться от рассылки, пожалуйста, кликните по следующей "
+"ссылке:link:<br><a href='{0}' target='_blank'>{0}</a>"
 
-#: index.py:44
-msgid "Secret code must have 6 digits"
-msgstr "Секретный код должен иметь 6 знаков"
+#: ft.py:282
+msgid ""
+"Hi! Thanks for registering on <b><a "
+"href='https://fellowtraveler.club'>fellowtraveler.club</a></b>.<br><br>Please"
+" verify your email address by clicking on the following link:<br><b><a "
+"href='{0}' target='_blank'>{0}</a></b><br><br>If it wasn't you please "
+"simply ignore this message"
+msgstr ""
+"Привет! Спасибо, что зарегистрировались на <b><a "
+"href='https://fellowtraveler.club'>fellowtraveler.club</a></b>.<br><br>Пожалуйста,"
+" подтвердите Ваш адрес email кликнув по следующей ссылке:<br><b><a "
+"href='{0}' target='_blank'>{0}</a></b><br><br>Если это были не Вы, "
+"пожалуйста, просто игнорируйте это сообщение"
 
-#: index.py:46
-msgid "Submit"
-msgstr "Отправить"
-
-#: index.py:95
-msgid "Please enter Teddy's location (current or on the photo)"
-msgstr "Пожалуйста, укажите местонахождение Teddy (текущее или на фото)"
-
-#: index.py:108
+#: ft.py:472
 msgid "Anonymous"
 msgstr "Аноним"
 
-#: index.py:127
+#: ft.py:541
+msgid "Fellowtraveler.club: new secret code - {}"
+msgstr "Fellowtraveler.club: новый секретный код - {}"
+
+#: ft.py:543
 msgid ""
-"Comments are uploaded to Twitter and thus can't have more than 4 images "
-"each. Only the first 4 photos were uploaded"
+"Hi!<br><br>You added a new {0}'s location, thanks. Secret code is being "
+"regenerated after every location and for adding the next location it will"
+" be:<br><br><b><h1>{1}</h1></b><br><br>It's recommended that you write it"
+" down to {0}'s notebook immediately (and obligatorily if you are going to"
+" pass {0} to somebody)<br><br>In case of any problems please write to <a "
+"href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>Thank"
+" you for participating in <a "
+"href='https://fellowtraveler.club'>fellowtraveler.club</a>"
 msgstr ""
-"Комментарии загружаются в т.ч. на Twitter, поэтому не могут содержать "
-"более чем по 4 картинки. Будут загружены лишь первые 4 изображения"
+"Привет!<br><br>Вы добавили новое местоположение {0}, спасибо. После "
+"добавления каждого местоположения генерируется новый секретный код, и для"
+" добавления следующего он будет "
+"таким:<br><br><b><h1>{1}</h1></b><br><br>Лучше его сразу же записать в "
+"блокнот {0} (и это обязательно, если Вы планируете передать {0} кому-то "
+"другому)<br><br>В случае возникновения каких-либо проблем, пожалуйста, "
+"пишите по адресу <a "
+"href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>Спасибо"
+" за участие в проекте <a "
+"href='https://fellowtraveler.club'>fellowtraveler.club</a>"
 
-#: index.py:139
-msgid "Invalid secret code"
-msgstr "Неверный секретный код"
-
-#: mybabel.py:18 templates/babel.html:8
-msgid "Hello man"
-msgstr "Привет, чувак"
-
-#: templates/index.html:5
-msgid "Hi! My name is Teddy and I have a dream"
-msgstr "Привет! Меня зовут Teddy и у меня есть мечта"
-
-#: templates/index.html:42
-msgid "Author"
-msgstr "Автор"
-
-#: templates/index.html:44
-msgid "Time"
-msgstr "Дата/время"
-
-#: templates/index.html:46
-msgid "Location"
-msgstr "Местонахождение"
-
-#: templates/index.html:49
-msgid "Photos"
-msgstr "Фото"
-
-#: templates/index.html:63
-msgid "Where Teddy is now or was on the photo? (required)"
-msgstr "Где Teddy сейчас или был в момент на фото (обязательно)"
-
-#: templates/index.html:75
-msgid "Upload up to 4 photos/place"
-msgstr "Загрузите до 4 фотографий/точку"
-
-#: templates/layout.html:37
-msgid "Name"
-msgstr "Имя"
-
-#: templates/layout.html:39 templates/layout.html:162
-msgid "Contacts"
-msgstr "Контакты"
-
-#: templates/layout.html:45 templates/layout.html:171
-msgid "Follow me"
-msgstr "Следите за мной"
-
-#: templates/layout.html:50 templates/layout.html:180
-msgid "Get updates by email"
-msgstr "Получать обновления по почте"
-
-#: templates/layout.html:60 templates/layout.html:125
-msgid "Update Teddy's location"
-msgstr "Обновить местонахождение Teddy"
-
-#: templates/layout.html:68
-msgid "Change language"
-msgstr "Изменить язык"
-
-#: templates/layout.html:79
+#: ft_functions.py:226
 msgid ""
-"No, it's not a trick and supposed to be safe but please see <a "
-"href=\"\">safety info</a> and <a href=\"\">disclaimer</a>"
+"So far I've checked in <b>{}</b> places located in <b>{}</b> {} ({}) and "
+"have been traveling for <b>{}</b> {}.\n"
+"\n"
+"I covered about <b>{}</b> km it total and currently I'm nearly <b>{}</b> "
+"km from home"
 msgstr ""
-"Нет, это не шутка и безопасно, но, пожалуйста, ознакомьтесь с <a "
-"href=\"\">информацией по безопасности</a> и <a href=\"\">заявлением</a>"
+"На текущий момент я побывал в <b>{}</b> местах, расположенных в <b>{}</b> {} ({}) и "
+"путешествую вот уже <b>{}</b> {}.\n"
+"\n"
+"Я преодолел в общей сложности около <b>{}</b> км и в настоящее время нахожусь приблизительно в <b>{}</b> "
+"км от дома"
 
-#: templates/layout.html:93
-msgid "Map of my journey so far"
-msgstr "Мое путешествие на текущий момент"
-
-#: templates/layout.html:109
-msgid "Travel timeline"
-msgstr "Хронология событий"
-
-#: tg_env/lib/python3.4/site-packages/flask_wtf/file.py:51
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:203
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:243
+#: ft_env/lib/python3.4/site-packages/flask_wtf/file.py:51
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:203
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:243
 msgid "This field is required."
-msgstr "Это поле является обязательным для заполнения"
+msgstr "Это поле обязательно к заполнению."
 
-#: tg_env/lib/python3.4/site-packages/flask_wtf/file.py:85
+#: ft_env/lib/python3.4/site-packages/flask_wtf/file.py:85
 msgid "File does not have an approved extension: {extensions}"
-msgstr "Расширение файла не соответствует разрешенным: {extensions}"
+msgstr "Расширение файла не соответствует списку разрешенных: {extensions}"
 
-#: tg_env/lib/python3.4/site-packages/flask_wtf/file.py:90
+#: ft_env/lib/python3.4/site-packages/flask_wtf/file.py:90
 msgid "File does not have an approved extension."
-msgstr "Этот файл имеет неразрешенное расширение"
+msgstr "Файл имеет неразрешенное расширение."
 
-#: tg_env/lib/python3.4/site-packages/passlib/ext/django/utils.py:957
+#: ft_env/lib/python3.4/site-packages/flask_wtf/recaptcha/validators.py:16
+msgid "The secret parameter is missing."
+msgstr "Отсутствует секретный параметр."
+
+#: ft_env/lib/python3.4/site-packages/flask_wtf/recaptcha/validators.py:17
+msgid "The secret parameter is invalid or malformed."
+msgstr "Секретный параметр неверен или искажен."
+
+#: ft_env/lib/python3.4/site-packages/flask_wtf/recaptcha/validators.py:18
+msgid "The response parameter is missing."
+msgstr "Отсутствует параметр ответа."
+
+#: ft_env/lib/python3.4/site-packages/flask_wtf/recaptcha/validators.py:19
+msgid "The response parameter is invalid or malformed."
+msgstr "Параметр ответа неверен или искажен."
+
+#: ft_env/lib/python3.4/site-packages/passlib/ext/django/utils.py:957
 msgid "algorithm"
 msgstr "алгоритм"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:56
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:56
 #, python-format
 msgid "Invalid field name '%s'."
 msgstr "Неверное имя файла '%s'."
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:64
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:64
 #, python-format
 msgid "Field must be equal to %(other_name)s."
-msgstr "Значение поля должно быть равным %(other_name)s."
+msgstr "Значение поля должно совпадать с %(other_name)s."
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:97
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:97
 #, python-format
 msgid "Field must be at least %(min)d character long."
-msgid_plural "Field must be at least %(min)d characters long."
-msgstr[0] ""
-msgstr[1] ""
+msgid_plural "Field must be at least %(min)s characters long."
+msgstr[0] "Длина поля должна быть не менее %(min)s символа."
+msgstr[1] "Длина поля должна быть не менее %(min)s символов"
 msgstr[2] ""
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:100
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:100
 #, python-format
-msgid "Field cannot be longer than %(max)d character."
-msgid_plural "Field cannot be longer than %(max)d characters."
-msgstr[0] ""
-msgstr[1] ""
+msgid "Field cannot be longer than %(max)s character."
+msgid_plural "Field cannot be longer than %(max)s characters."
+msgstr[0] "Длина поля должна быть не более %(min)s символа."
+msgstr[1] "Длина поля должна быть не более %(min)s символов"
 msgstr[2] ""
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:103
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:103
 #, python-format
 msgid "Field must be between %(min)d and %(max)d characters long."
-msgstr ""
+msgstr "Длина поля должна быть от %(min)d до %(max)d символов."
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:139
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:139
 #, python-format
 msgid "Number must be at least %(min)s."
-msgstr ""
+msgstr "Число должно быть не меньше %(min)s."
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:141
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:141
 #, python-format
 msgid "Number must be at most %(max)s."
-msgstr ""
+msgstr "Число должно быть не больше %(min)s."
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:143
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:143
 #, python-format
 msgid "Number must be between %(min)s and %(max)s."
-msgstr ""
+msgstr "Число должно быть от %(min)s до %(max)s."
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:275
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:275
 msgid "Invalid input."
-msgstr "Неверный ввод."
+msgstr "Неверный ввод"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:301
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:301
 msgid "Invalid email address."
-msgstr "Неверный адресс email."
+msgstr "Неверный адрес email"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:335
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:335
 msgid "Invalid IP address."
-msgstr ""
+msgstr "Неверный IP адрес"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:386
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:386
 msgid "Invalid Mac address."
-msgstr ""
+msgstr "Неверный Mac адрес"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:415
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:415
 msgid "Invalid URL."
 msgstr "Неверный URL."
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:436
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:436
 msgid "Invalid UUID."
-msgstr ""
+msgstr "Неверный UUID"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:464
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:464
 #, python-format
 msgid "Invalid value, must be one of: %(values)s."
-msgstr ""
+msgstr "Неверное значение, должно быть одним из: %(values)s."
 
-#: tg_env/lib/python3.4/site-packages/wtforms/validators.py:496
+#: ft_env/lib/python3.4/site-packages/wtforms/validators.py:496
 #, python-format
 msgid "Invalid value, can't be any of: %(values)s."
-msgstr ""
+msgstr "Неверное значение, НЕ может быть одним из: %(values)s."
 
-#: tg_env/lib/python3.4/site-packages/wtforms/csrf/core.py:98
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/csrf/form.py:47
+#: ft_env/lib/python3.4/site-packages/wtforms/csrf/core.py:98
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/csrf/form.py:47
 msgid "Invalid CSRF Token"
-msgstr ""
+msgstr "Неверный маркер CSRF"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/csrf/session.py:61
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:58
+#: ft_env/lib/python3.4/site-packages/wtforms/csrf/session.py:61
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:58
 msgid "CSRF token missing"
-msgstr ""
+msgstr "Отсутствует маркер CSRF"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/csrf/session.py:69
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:66
+#: ft_env/lib/python3.4/site-packages/wtforms/csrf/session.py:69
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:66
 msgid "CSRF failed"
-msgstr ""
+msgstr "Сбой CSRF"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/csrf/session.py:74
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:71
+#: ft_env/lib/python3.4/site-packages/wtforms/csrf/session.py:74
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/csrf/session.py:71
 msgid "CSRF token expired"
-msgstr ""
+msgstr "Срок действия маркера CSRF истек"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:87
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:164
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:166
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/django/fields.py:95
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:125
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:127
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:180
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:185
-#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:472
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:87
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:164
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:166
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/django/fields.py:95
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:125
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:127
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:180
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/sqlalchemy/fields.py:185
+#: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:472
 msgid "Not a valid choice"
-msgstr ""
+msgstr "Неверный выбор"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:185
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:185
 msgid "Not a valid list"
-msgstr ""
+msgstr "Неверный список"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:204
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/appengine/fields.py:204
 msgid "Not a valid integer list"
-msgstr ""
+msgstr "Неверный список целочисленных переменных"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:63
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:63
 msgid "Please input a date/time value"
-msgstr ""
+msgstr "Пожалуйста, введите дату/время"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:75
-#: tg_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:83
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:75
+#: ft_env/lib/python3.4/site-packages/wtforms/ext/dateutil/fields.py:83
 msgid "Invalid date/time input"
-msgstr ""
+msgstr "Неверный ввод даты/времени"
 
-#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:465
+#: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:465
 msgid "Invalid Choice: could not coerce"
 msgstr ""
 
-#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:498
+#: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:498
 msgid "Invalid choice(s): one or more data inputs could not be coerced"
 msgstr ""
 
-#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:505
+#: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:505
 #, python-format
 msgid "'%(value)s' is not a valid choice for this field"
 msgstr ""
 
-#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:588
+#: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:588
 msgid "Not a valid integer value"
 msgstr ""
 
-#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:654
+#: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:654
 msgid "Not a valid decimal value"
 msgstr ""
 
-#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:681
+#: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:681
 msgid "Not a valid float value"
 msgstr ""
 
-#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:742
+#: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:742
 msgid "Not a valid datetime value"
 msgstr ""
 
-#: tg_env/lib/python3.4/site-packages/wtforms/fields/core.py:759
+#: ft_env/lib/python3.4/site-packages/wtforms/fields/core.py:759
 msgid "Not a valid date value"
 msgstr ""
+
+#: templates/413.html:5
+msgid "Looks like your file is too big"
+msgstr "Похоже, что загружаемый файл слишком большой"
+
+#: templates/413.html:10
+msgid "Looks like your file is too big (5Mb/photo is maximum)"
+msgstr "Загружаемый файл слишком большой (максимально допустимый размер - 20 Мб)"
+
+#: templates/_speakwithmefollowme.html:1
+msgid "Let's talk:"
+msgstr "Поболтаем?"
+
+#: templates/_speakwithmefollowme.html:3
+msgid "Follow me"
+msgstr "Следите за мной"
+
+#: templates/error.html:5
+msgid "Ouups... error happened"
+msgstr "Упс... произошла ошибка"
+
+#: templates/error.html:10
+msgid "Ouups... the following exception was got:"
+msgstr "Упс... произошел следующий сбой:"
+
+#: templates/error.html:14
+msgid "Return to the <a href=\"/\">main page</a>?"
+msgstr "Вернуться на <a href=\"/\">главную страницу</a>?"
+
+#: templates/index.html:6
+msgid "Hi! My name is"
+msgstr "Привет! Меня зовут"
+
+#: templates/index.html:6
+msgid "and I have a dream"
+msgstr "и у меня есть мечта"
+
+#: templates/index.html:28
+msgid "Map of "
+msgstr "Карта путешествия "
+
+#: templates/index.html:28
+msgid "'s journey so far"
+msgstr " на сегодня"
+
+#: templates/index.html:43
+msgid "Travel timeline"
+msgstr "Хроники путешествия"
+
+#: templates/index.html:50
+msgid "Place #"
+msgstr "Место №"
+
+#: templates/index.html:52
+msgid "Author"
+msgstr "Автор"
+
+#: templates/index.html:54
+msgid "Time"
+msgstr "Время"
+
+#: templates/index.html:56
+msgid "Location"
+msgstr "Местонахождение"
+
+#: templates/index.html:59
+msgid "Photos"
+msgstr "Фото"
+
+#: templates/index.html:75
+msgid "Add new location"
+msgstr "Добавить новое местоположение"
+
+#: templates/index.html:94
+msgid "Where"
+msgstr "Где "
+
+#: templates/index.html:94
+msgid "is now or was on the photo? (required)"
+msgstr "сейчас или был, когда был сделан снимок (обязательно)"
+
+#: templates/index.html:106
+msgid "Upload up to 4 photos/place"
+msgstr "Загрузить до 4 фото/место"
+
+#: templates/index.html:121
+msgid "To add new "
+msgstr "Чтобы добавить новое местоположение "
+
+#: templates/index.html:121
+msgid ""
+"'s location first please <b><a href=\"/login/\">log in</a></b> or <b><a "
+"href=\"/register/\">register</a></b>"
+msgstr ""
+", пожалуйста, <b><a href=\"/login/\">войдите</a></b> или <b><a "
+"href=\"/register/\">зарегистрируйтесь</a></b>"
+
+#: templates/layout.html:49
+msgid "Name"
+msgstr "Имя"
+
+#: templates/layout.html:61 templates/layout.html:70
+msgid "Update location"
+msgstr "Обновить местонахождение"
+
+#: templates/layout.html:70
+msgid "Logout"
+msgstr "Выйти"
+
+#: templates/layout.html:72 templates/login.html:4
+msgid "Log in"
+msgstr "Войти"
+
+#: templates/layout.html:72
+msgid "Register"
+msgstr "Зарегистрироваться"
+
+#: templates/layout.html:78
+msgid "Change language"
+msgstr "Сменить язык"
+
+#: templates/layout.html:123
+msgid "Disclaimer"
+msgstr "Предупреждение"
+
+#: templates/layout.html:123
+msgid "Help us with translation"
+msgstr "Помочь с переводом"
+
+#: templates/layout.html:123
+msgid "Support project"
+msgstr "Поддержать проект"
+
+#: templates/login.html:10
+msgid "Main page"
+msgstr "Главная страница"
+
+#: templates/register.html:4
+msgid "Registration"
+msgstr "Регистрация"
+
+
+
+#: templates/register.html:10
+#, python-format
+msgid "Maybe just <a href=\"%(url)s\">log in</a>?"
+msgstr "Может, просто <a href=\"%(url)s\">войдете</a>?"
+
+msgid "You need to <a href=\"%(url)s\">log in</a> first"
+msgstr "Для начала, пожалуйста, <a href=\"%(url)s\">войдите</a>"
+
+msgid "You need to <a href=\"%(url)s\">log out</a> first"
+msgstr "Сначала Вам необходимо <a href=\"%(url)s\">выйти</a>"
+
+msgid ""
+"Such email is registered but hasn't "
+"been verified yet. If it's your "
+"email please verify it, otherwise choose"
+" different credentials to log in or"
+" <a href=\"%(url)s\">register</a>"
+msgstr ""
+"Такой адрес email уже зарегистрирован, "
+"но еще не был подтвержден. Если "
+"это Ваш адрес email,пожалуйста, подтвердите"
+" его. Если нет, пожалуйста, используйте "
+"для входа другой адрес email или "
+"<a href=\"%(url)s\">зарегистрируйтесь</a>"
+
+msgid ""
+"Sorry, we do not recognize this "
+"email address. Please choose different "
+"credentials or <a href=\"%(url)s\">register</a>"
+msgstr ""
+"Такой адрес email не найден. Пожалуйста,"
+" используйте для входа другой адрес "
+"email или <a href=\"%(url)s\">зарегистрируйтесь</a>"
+
+msgid "Your name"
+msgstr "Ваше имя"
+
+msgid "Your name is a bit too long (50 characters max)"
+msgstr "Слишком длинное имя (должно быть не больше 50 знаков)"
+
+msgid "Add a comment"
+msgstr "Комментарий"
+
+msgid ""
+"Sorry but comments are uploaded to "
+"Twitter and thus can't be longer "
+"than 280 characters"
+msgstr ""
+"Извините, но комментарии перепубликуются в "
+"т.ч. на Twitter, и поэтому не "
+"могут быть длинее 280 знаков"
+
+msgid "Get updates by email"
+msgstr "Получать обновления по почте"
+
+msgid "Secret code from the toy (required)"
+msgstr "Секретный код с игрушки (обязательно)"
+
+msgid "Please enter the code which you can find on the toy"
+msgstr "Пожалуйста, введите код, который можно найти на игрушке"
+
+msgid "Secret code must have 4 digits"
+msgstr "Секретный код должен иметь 4 знака"
+
+msgid "Submit"
+msgstr "Отправить"
+
+msgid "Email Address"
+msgstr "Адрес email"
+
+msgid "Please enter a valid e-mail address"
+msgstr "Пожалуйста, введите корректный адрес email"
+
+msgid "New Password"
+msgstr "Новый пароль"
+
+msgid "Passwords must match"
+msgstr "Пароли должны совпадать"
+
+msgid "Repeat Password"
+msgstr "Повторить пароль"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Get updates by email:"
+msgstr "Получать обновления по почте:"
+
+msgid "You need to <a href=\"/logout/\">log out</a> first"
+msgstr "Сперва Вам необходимо <a href=\"/logout/\">выйти</a>"
+
+msgid "Email {} is already subscribed and verified"
+msgstr "Адрес email {} уже подписан на рассылку и подтвержден"
+
+msgid "Email {} is already subscribed but has not been verified yet"
+msgstr "Адрес email {} уже подписан на рассылку, но еще не подтвержден"
+
+msgid ""
+"A verification link has been sent "
+"to your email address. Please click "
+"on it to verify your email"
+msgstr ""
+"На Ваш адрес email была отправлена "
+"ссылка для подтверждения. Пожалуйста, кликните"
+" по ней, чтобы подтвердить Ваш адрес"
+" email"
+
+msgid "Error happened ('{}')"
+msgstr "Произошла ошибка ('{}')"
+
+msgid "Email {} is already subscribed for updates"
+msgstr "Адрес email {} уже подписан на рассылку"
+
+msgid "Your email {} was subscribed to Teddy's location updates"
+msgstr "Ваш адрес email {} был подписан на рассылку о путешествии Teddy"
+
+msgid ""
+"User with email {} is already "
+"registered. Please choose a different "
+"email address or <a href='/login'>log "
+"in</a>"
+msgstr ""
+"Пользователь с адресом email {} уже "
+"зарегистрирован. Пожалуйста, выберите другой "
+"адрес email или <a href='/login'>войдите</a>"
+
+msgid ""
+"User with email {} is already "
+"registered but email has not been "
+"verified yet"
+msgstr ""
+"Пользователь с адресом email {} уже "
+"зарегистрирован, но еще не был "
+"подтвержден"
+
+msgid ""
+"Almost finished. To complete registration "
+"please click on the verification link"
+" that has been sent to your "
+"email"
+msgstr ""
+"Почти все ;) Чтобы завершить "
+"регистрацию, пожалуйста, кликните по ссылке"
+" для подтверждения, которая была отправлена"
+" на Ваш email"
+
+msgid "Login successfull!"
+msgstr "Вы успешно вошли"
+
+msgid "Wrong password"
+msgstr "Неверный пароль"
+
+msgid "You have been logged out"
+msgstr "Вы вышли из системы"
+
+msgid "Please enter {}'s location (current or on the photo)"
+msgstr ""
+"Пожалуйста, введите местоположение {} (текущее"
+" или где было сделано фото)"
+
+msgid ""
+"{}'s locations are reposted to Twitter"
+" and thus can't have more than "
+"4 images each. Only the first 4"
+" photos were uploaded"
+msgstr ""
+"Сообщения о местоположении {} перепубликуються"
+" в т.ч. на Twitter, поэтому не "
+"могут содержать более чем по 4 "
+"изображения. Будут загружены лишь 4 "
+"первые фото"
+
+msgid "Invalid secret code"
+msgstr "Неверный секретный код"
+
+msgid ""
+"New location added! NEW SECRET CODE "
+"for adding the next location is {}"
+" (was sent to your email {}). "
+"Please write the new secret code "
+"into {}'s notebook"
+msgstr ""
+"Новое местоположение успешно добавлено! НОВЫЙ"
+" СЕКРЕТНЫЙ КОД для добавления следующего"
+" местоположения - {} (был отправлен "
+"на Ваш адрес email {}). Пожалуйста, "
+"запишите новый секретный код в блокнот"
+" {}"
+
+msgid ""
+"No, it's not a trick and supposed"
+" to be safe but please see <a"
+" href=\"\">disclaimer</a>"
+msgstr ""
+"Нет, это не шутка и безопасно, но,"
+" пожалуйста, ознакомьтесь с <a "
+"href=\"\">предупреждением</a>"
+
+msgid "Email {} was not found"
+msgstr "Адрес email {} не найден"
+
+msgid ""
+"Sorry but you submitted an invalid "
+"verification code. Email address not "
+"verified"
+msgstr ""
+"Извините, но Вы ввели неверный код. "
+"Адрес email address не был подтвержден"
+
+msgid "Email address {} already verified"
+msgstr "Адрес email {} уже подтвержден"
+
+msgid "Email verified! Thanks for subscribing to Teddy's location updates!"
+msgstr ""
+"Адрес email успешно подтвержден! Спасибо, "
+"что подписались на рассылку о "
+"путешествии Teddy!"
+
+msgid ""
+"Email verified! Thanks for registration. "
+"If you have Teddy you can add "
+"his new location now"
+msgstr ""
+"Адрес email подтвержден! Спасибо за "
+"регистрацию. Если Teddy у Вас, теперь"
+" Вы можете добавить его новое "
+"местонахождение"
+
+msgid ""
+"Sorry but you submitted an invalid "
+"verification code. Unsubscription failed"
+msgstr ""
+"Извините, но Вы ввели неверный код. "
+"Адрес email из рассылки удален не "
+"был"
+
+msgid "Email {} successfully unsubscribed"
+msgstr "Адрес email {} успешно удален рассылки"
 

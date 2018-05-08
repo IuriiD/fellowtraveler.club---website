@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% from '_formhelpers.html' import render_field %}
 
-{% block title %}Registration{% endblock %}
+{% block title %}{{ gettext('Registration') }}{% endblock %}
 
 {% block main_contents %}
     <hr>
 
     <div align="right">
-        Maybe just <a href="/login/">log in</a>?
+        {{ gettext('Maybe just <a href="%(url)s">log in</a>?', url='/login/') }}
     </div>
 
     <form role="form" action="/register/" method="POST">

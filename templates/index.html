@@ -25,7 +25,7 @@
 {% block main_contents %}
     <!-- Traveller's journey so far -->
     <div>
-        <h2><b>Map of {{ traveler }}'s journey so far</b></h2>
+        <h2><b>{{ gettext('Map of ') }}{{ traveler }}{{ gettext('\'s journey so far') }}</b></h2>
     </div>
 
     <!-- Journey map -->
@@ -40,7 +40,7 @@
 
     <br>
     <div>
-        <h2><b>Travel timeline</b></h2>
+        <h2><b>{{ gettext('Travel timeline') }}</b></h2>
     </div>
 
     {% if locations_history|length>0 %}
@@ -70,6 +70,11 @@
 
     <!-- Adding a new location -->
     {% if session['LoggedIn'] %}
+        <a name="updatelocation"></a>
+        <div>
+            <h2><b>{{ gettext('Add new location') }}</b></h2>
+        </div>
+
         <!-- Flashed messages for adding new location (under block header)-->
         <div>
             {% with errors = get_flashed_messages(category_filter=["addlocation"]) %}
@@ -79,13 +84,14 @@
                         {{ msg|safe }}
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                 {% endfor -%}
             {% endif %}
             {% endwith %}
         </div>
-        <a name="updatelocation"></a>
-        <b>{{ gettext('Where') }}{{ traveler }} {{gettext('is now or was on the photo? (required)') }}</b>
+
+        <b>{{ gettext('Where') }}{{ traveler }} {{ gettext('is now or was on the photo? (required)') }}</b>
         <div>
             <input id="pac-input" />
             <div id="map" height="400" width="700"></div>
@@ -112,6 +118,11 @@
         </form>
     {% else %}
         <a name="updatelocation"></a>
-        To add new {{ traveler }}'s location first please <b><a href="/login/">log in</a></b> or <b><a href="/register/">register</a></b>
+        {{ gettext('To add new ') }}{{ traveler }}{{ gettext('\'s location first please <b><a href="/login/">log in</a></b> or <b><a href="/register/">register</a></b>') }}
+    {% endif %}
+
+    <!-- Scrolling down to update_location form in case form doesn't validate and index.html is rendered with parameter scrolldown=True -->
+    {% if scrolldown %}
+        <script> $(function(){ window.location.hash = "updatelocation"; }); </script>
     {% endif %}
 {% endblock %}

@@ -13,7 +13,7 @@ from passlib.hash import sha256_crypt
 from flask_jsglue import JSGlue
 from flask_googlemaps import GoogleMaps
 from flask_googlemaps import Map
-from flask_babel import Babel, gettext
+from flask_babel import Babel, gettext, lazy_gettext
 from functools import wraps
 import twitter
 import uuid
@@ -27,7 +27,8 @@ LANGUAGES = {
     'en': 'English',
     'ru': 'Русский',
     'de': 'Deutsch',
-    'fr': 'Français'
+    'fr': 'Français',
+    'uk': 'Українська'
 }
 
 #OURTRAVELLER = 'Teddy'
@@ -63,28 +64,28 @@ app.config.update(
 mail = Mail(app)
 
 class WhereisTeddyNow(FlaskForm):
-    author = StringField(gettext('Your name'), validators=[Length(-1, 50, gettext('Your name is a bit too long (50 characters max)'))])
-    comment = TextAreaField(gettext('Add a comment'), validators=[Length(-1, 280, gettext('Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters'))])
-    getupdatesbyemail = BooleanField(gettext('Get updates by email'))
-    secret_code = PasswordField(gettext('Secret code from the toy (required)'), validators=[DataRequired(gettext('Please enter the code which you can find on the toy')),
-                              Length(4, 4, gettext('Secret code must have 4 digits'))])
+    author = StringField(lazy_gettext('Your name'), validators=[Length(-1, 50, lazy_gettext('Your name is a bit too long (50 characters max)'))])
+    comment = TextAreaField(lazy_gettext('Add a comment'), validators=[Length(-1, 280, lazy_gettext('Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters'))])
+    getupdatesbyemail = BooleanField(lazy_gettext('Get updates by email'))
+    secret_code = PasswordField(lazy_gettext('Secret code from the toy (required)'), validators=[DataRequired(lazy_gettext('Please enter the code which you can find on the toy')),
+                              Length(4, 4, lazy_gettext('Secret code must have 4 digits'))])
     recaptcha = RecaptchaField()
-    submit = SubmitField(gettext('Submit'))
+    submit = SubmitField(lazy_gettext('Submit'))
 
 class RegistrationForm(FlaskForm):
-    email = StringField(gettext('Email Address'), validators=[Length(6, 50), DataRequired(), Email(gettext('Please enter a valid e-mail address'))])
-    password = PasswordField(gettext('New Password'), validators=[DataRequired(), EqualTo('confirm', message=gettext('Passwords must match'))])
-    confirm = PasswordField(gettext('Repeat Password'))
-    submit = SubmitField(gettext('Submit'))
+    email = StringField(lazy_gettext('Email Address'), validators=[Length(6, 50), DataRequired(), Email(lazy_gettext('Please enter a valid e-mail address'))])
+    password = PasswordField(lazy_gettext('New Password'), validators=[DataRequired(), EqualTo('confirm', message=lazy_gettext('Passwords must match'))])
+    confirm = PasswordField(lazy_gettext('Repeat Password'))
+    submit = SubmitField(lazy_gettext('Submit'))
 
 class LoginForm(FlaskForm):
-    email = StringField(gettext('Email Address'), validators=[Length(6, 50), DataRequired(), Email(gettext('Please enter a valid e-mail address'))])
-    password = PasswordField(gettext('Password'), validators=[DataRequired()])
-    submit = SubmitField(gettext('Submit'))
+    email = StringField(lazy_gettext('Email Address'), validators=[Length(6, 50), DataRequired(), Email(lazy_gettext('Please enter a valid e-mail address'))])
+    password = PasswordField(lazy_gettext('Password'), validators=[DataRequired()])
+    submit = SubmitField(lazy_gettext('Submit'))
 
 class HeaderEmailSubscription(FlaskForm):
-    email4updates = StringField(gettext('Get updates by email:'), validators=[Optional(), Email(gettext('Please enter a valid e-mail address'))])
-    emailsubmit = SubmitField(gettext('Subscribe'))
+    email4updates = StringField(lazy_gettext('Get updates by email:'), validators=[Optional(), Email(lazy_gettext('Please enter a valid e-mail address'))])
+    emailsubmit = SubmitField(lazy_gettext('Subscribe'))
 
 def login_required(f):
     @wraps(f)
@@ -92,7 +93,7 @@ def login_required(f):
         if 'LoggedIn' in session:
             return f(*args, **kwargs)
         else:
-            flash(gettext('You need to <a href="%(url)s">log in</a> first', url='/login/'),'header')
+            flash(lazy_gettext('You need to <a href="/login/">log in</a> first'),'header')
             return redirect(url_for('login'))
     return wrap
 
@@ -100,7 +101,7 @@ def notloggedin_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         if 'LoggedIn' in session:
-            flash(gettext('You need to <a href="%(url)s">log out</a> first', url='/logout/'), 'header')
+            flash(lazy_gettext('You need to <a href="/logout/">log out</a> first'), 'header')
             return redirect(url_for('index'))
         else:
             return f(*args, **kwargs)
@@ -120,10 +121,10 @@ def save_subscriber(email_entered):
 
         if email_already_submitted:
             if email_already_submitted['verified']:
-                flash(gettext("Email {} is already subscribed and verified".format(email_entered)), 'header')
+                flash(lazy_gettext("Email {} is already subscribed and verified".format(email_entered)), 'header')
                 return {"status": "error", "message": "Email {} is already subscribed and verified".format(email_entered)}
             else:
-                flash(gettext("Email {} is already subscribed but has not been verified yet".format(email_entered)), 'header')
+                flash(lazy_gettext("Email {} is already subscribed but has not been verified yet".format(email_entered)), 'header')
                 return {"status": "error",
                         "message": "Email {} is already subscribed but has not been verified yet".format(email_entered)}
 
@@ -155,11 +156,11 @@ def save_subscriber(email_entered):
                    "<a href='{1}' target='_blank'>{1}</a>").format(verification_link, unsubscription_link)
         mail.send(msg)
 
-        flash(gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
+        flash(lazy_gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
         return {"status": "success",
                 "message": "A verification link has been sent to your email address. Please click on it to verify your email"}
     except Exception as error:
-        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
         return {"status": "error",
                 "message": "Error happened ('{}')".format(error)}
 
@@ -187,7 +188,7 @@ def save_user_as_subscriber(email_entered):
                 "locale": user_locale
             }
             subscribers.update_one({'email': email_entered}, {'$set': update_subscription})
-            flash(gettext("Email {} is already subscribed for updates".format(email_entered)), 'header')
+            flash(lazy_gettext("Email {} is already subscribed for updates".format(email_entered)), 'header')
         else:
             # A registered user (with verified email) wants to get email updates
             new_subscriber = {
@@ -211,11 +212,11 @@ def save_user_as_subscriber(email_entered):
                    "<a href='{0}' target='_blank'>{0}</a>").format(unsubscription_link)
             mail.send(msg)
 
-            flash(gettext("Your email {} was subscribed to Teddy\'s location updates".format(email_entered)), 'header')
+            flash(lazy_gettext("Your email {} was subscribed to Teddy\'s location updates".format(email_entered)), 'header')
             return {"status": "success",
                 "message": "Your email {} was subscribed to Teddy\'s location updates".format(email_entered)}
     except Exception as error:
-        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
         return {"status": "error",
                 "message": "Error happened ('{}')".format(error)}
 
@@ -256,10 +257,10 @@ def register():
 
                 if email_already_submitted:
                     if email_already_submitted['email_verified']:
-                        flash(gettext("User with email {} is already registered. Please choose a different email address or <a href='/login'>log in</a>".format(email)), 'header')
+                        flash(lazy_gettext("User with email {} is already registered. Please choose a different email address or <a href='/login'>log in</a>".format(email)), 'header')
                         return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language)
                     else:
-                        flash(gettext(
+                        flash(lazy_gettext(
                             "User with email {} is already registered but email has not been verified yet".format(email)),
                               'header')
                         return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language)
@@ -276,14 +277,14 @@ def register():
                         }
                     )
 
-                    msg = Message("Fellowtraveler.club: email verification link",
+                    msg = Message(gettext("Fellowtraveler.club: email verification link"),
                                   sender="mailvulgaris@gmail.com", recipients=[email])
-                    msg.html = "Hi! Thanks for registering on <b><a href='https://fellowtraveler.club'>fellowtraveler.club</a></b>.<br><br>" \
+                    msg.html = gettext("Hi! Thanks for registering on <b><a href='https://fellowtraveler.club'>fellowtraveler.club</a></b>.<br><br>" \
                                "Please verify your email address by clicking on the following link:<br><b><a href='{0}' target='_blank'>{0}</a></b><br><br>" \
-                               "If it wasn't you please simply ignore this message".format(email_verification_link)
+                               "If it wasn't you please simply ignore this message").format(email_verification_link)
                     mail.send(msg)
 
-                    flash('Almost finished. To complete registration please click on the verification link that has been sent to your email', 'header')
+                    flash(lazy_gettext('Almost finished. To complete registration please click on the verification link that has been sent to your email'), 'header')
 
                     return redirect(url_for('index'))
             else:
@@ -326,20 +327,20 @@ def login():
                 status = users.find_one({'_id': docID}).get('email_verified')
                 if not status:
                     flash(
-                        'Such email is registered but hasn\'t been verified yet. '
-                        'If it\'s your email please verify it, otherwise choose different credentials to log in or <a href="/register/">register</a>',
+                        lazy_gettext('Such email is registered but hasn\'t been verified yet. '
+                        'If it\'s your email please verify it, otherwise choose different credentials to log in or <a href="/register/">register</a>'),
                         'header')
                     return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
             else:
                 flash(
-                    'Sorry, we do not recognize this email address. Please choose different credentials or <a href="/register/">register</a>',
+                    lazy_gettext('Sorry, we do not recognize this email address. Please choose different credentials or <a href="/register/">register</a>'),
                     'header')
                 return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
 
             # and then let's check for a password
             pwd_should_be = users.find_one({'_id': docID})['password']
             if sha256_crypt.verify(password, pwd_should_be):
-                flash('Login successfull!',
+                flash(lazy_gettext('Login successfull!'),
                       'header')
 
                 # Update session data
@@ -363,7 +364,7 @@ def login():
 
             # invalid password
             else:
-                flash('Wrong password', 'header')
+                flash(lazy_gettext('Wrong password'), 'header')
                 return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
 
         # the first (GET) request for a login form
@@ -379,7 +380,7 @@ def login():
 @app.route('/logout/')
 @login_required
 def logout():
-    flash('You have been logged out', 'header')
+    flash(lazy_gettext('You have been logged out'), 'header')
 
     # Clear session
     session.clear()
@@ -396,7 +397,7 @@ def logout():
 
 @app.route('/index/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST']) # later index page will aggragate info for several travellers
-@app.route('/teddy/', methods=['GET', 'POST'])
+#@app.route('/teddy/', methods=['GET', 'POST'])
 @csrf.exempt
 def index():
     OURTRAVELLER = 'Teddy'
@@ -424,7 +425,7 @@ def index():
             print('Index-Post')
 
             # Get travellers history
-            whereteddywas = ft_functions.get_location_history(OURTRAVELLER)
+            whereteddywas = ft_functions.get_location_history(OURTRAVELLER, PHOTO_DIR)
             locations_history = whereteddywas['locations_history']
 
             # Prepare a map
@@ -454,11 +455,12 @@ def index():
             # saved in session
             if 'geodata' not in session:
                 #print('Here1')
-                flash(gettext('Please enter {}\'s location (current or on the photo)'.format(OURTRAVELLER)),
+                flash(lazy_gettext('Please enter {}\'s location (current or on the photo)'.format(OURTRAVELLER)),
                         'addlocation')
                 print('No data in session!')
-                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
-                                       locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
+                return redirect(url_for('index', _anchor='updatelocation'))
+                #return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
+                #                       locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
 
             # Get user's input
             #print('Here2')
@@ -484,10 +486,11 @@ def index():
                             photos_list.append(path)
                         else:
                             # At least one of images is invalid. Messages are flashed from photo_check_save()
-                            return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
+                            return redirect(url_for('index', _anchor='updatelocation'))
+                            #return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
                 if len(photos)>4:
                     flash(
-                        gettext('{}\'s locations are reposted to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'.format(OURTRAVELLER)),
+                        lazy_gettext('{}\'s locations are reposted to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'.format(OURTRAVELLER)),
                         'addlocation')
 
                 # Save data to DB
@@ -499,8 +502,9 @@ def index():
                 collection_travellers = db.travellers
                 teddys_sc_should_be = collection_travellers.find_one({"name": OURTRAVELLER})['secret_code']
                 if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
-                    flash(gettext('Invalid secret code'), 'addlocation')
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
+                    flash(lazy_gettext('Invalid secret code'), 'addlocation')
+                    return redirect(url_for('index', _anchor='updatelocation'))
+                    #return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
                 else:
                     # Prepare dictionary with new location info
                     geodata = session['geodata']
@@ -534,16 +538,16 @@ def index():
                     if new_code_generated:
                         # Flash the new code and send it to user's email
                         email = session['Email']
-                        msg = Message("Fellowtraveler.club: new secret code - {}".format(new_code_generated),
+                        msg = Message(gettext("Fellowtraveler.club: new secret code - {}").format(new_code_generated),
                                       sender="mailvulgaris@gmail.com", recipients=[email])
-                        msg.html = "Hi!<br><br>" \
+                        msg.html = gettext("Hi!<br><br>" \
                                    "You added a new {0}'s location, thanks. Secret code is being regenerated after every location and for adding the next location it will be:<br><br>" \
                                    "<b><h1>{1}</h1></b><br><br>" \
                                    "It's recommended that you write it down to {0}'s notebook immediately (and obligatorily if you are going to pass {0} to somebody)<br><br>" \
                                    "In case of any problems please write to <a href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>"\
-                                   "Thank you for participating in <a href='https://fellowtraveler.club'>fellowtraveler.club</a>".format(OURTRAVELLER, new_code_generated)
+                                   "Thank you for participating in <a href='https://fellowtraveler.club'>fellowtraveler.club</a>").format(OURTRAVELLER, new_code_generated)
                         mail.send(msg)
-                        flash('New location added! NEW SECRET CODE for adding the next location is {} (was sent to your email {}). Please write the new secret code into {}\'s notebook'.format(new_code_generated, email, OURTRAVELLER), 'header')
+                        flash(lazy_gettext('New location added! NEW SECRET CODE for adding the next location is {} (was sent to your email {}). Please write the new secret code into {}\'s notebook').format(new_code_generated, email, OURTRAVELLER), 'header')
 
                     # Update journey summary
                     ft_functions.summarize_journey(OURTRAVELLER)
@@ -595,8 +599,7 @@ def index():
                 #print('Here3')
                 # Clear data from session
                 session.pop('geodata', None)
-
-                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
+                return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER, scrolldown=True)
 
         # GET request
         # Get travellers history (will be substituted with timeline embedded from Twitter )
@@ -605,9 +608,7 @@ def index():
         # Flashing disclaimer message
         disclaimer_shown = request.cookies.get('DisclaimerShown')
         if not disclaimer_shown:
-            flash(gettext(
-                'No, it\'s not a trick and supposed to be safe but please see <a href="">disclaimer</a>'),
-                  'header')
+            flash(lazy_gettext('No, it\'s not a trick and supposed to be safe but please see <a href="">disclaimer</a>'), 'header')
             # set a cookie so that disclaimer will be shown only once
             expire_date = datetime.datetime.now()
             expire_date = expire_date + datetime.timedelta(days=90)
@@ -617,7 +618,7 @@ def index():
             return response
 
         # Get travellers history (will be substituted with timeline embedded from Twitter )
-        whereteddywas = ft_functions.get_location_history(OURTRAVELLER)
+        whereteddywas = ft_functions.get_location_history(OURTRAVELLER, PHOTO_DIR)
         locations_history = whereteddywas['locations_history']
 
         # Prepare a map
@@ -651,7 +652,7 @@ def index():
 
         # Check for preferred language
         user_language = get_locale()
-        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER)
+        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELLER, scrolldown=False)
 
     except Exception as error:
         print("error: {}".format(error))
@@ -714,7 +715,7 @@ def direct_subscription():
     if request.method == "POST" and subscribe2updatesform.validate_on_submit():
         email_entered = subscribe2updatesform.email4updates.data
     else:
-        flash(gettext("Please enter a valid e-mail address"), 'header')
+        flash(lazy_gettext("Please enter a valid e-mail address"), 'header')
         return redirect(url_for('index'))
     result = save_subscriber(email_entered)
     return redirect(url_for('index'))
@@ -733,7 +734,7 @@ def verify_email(user_email, verification_code):
         email_already_submitted = subscribers.find_one(
             {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]})
         if not email_already_submitted:
-            flash(gettext("Email {} was not found".format(user_email)), 'header')
+            flash(lazy_gettext("Email {} was not found".format(user_email)), 'header')
             return redirect(url_for('index'))
 
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
@@ -745,20 +746,20 @@ def verify_email(user_email, verification_code):
         # Compare it with the code submitted
         if not sha256_crypt.verify(verification_code, verification_code_should_be):
             # If invalid code - inform user
-            flash(gettext('Sorry but you submitted an invalid verification code. Email address not verified'), 'header')
+            flash(lazy_gettext('Sorry but you submitted an invalid verification code. Email address not verified'), 'header')
             return redirect(url_for('index'))
         else:
             # If code Ok, check if email is not already verified
             if subscribers.find_one({'_id': docID})['verified'] == True:
-                flash(gettext('Email address {} already verified'.format(user_email)), 'header')
+                flash(lazy_gettext('Email address {} already verified'.format(user_email)), 'header')
                 return redirect(url_for('index'))
             else:
                 # update the document in DB and inform user
                 subscribers.update_one({'_id': docID}, {'$set': {'verified': True, 'unsubscribed': False}})
-                flash(gettext('Email verified! Thanks for subscribing to Teddy\'s location updates!'), 'header')
+                flash(lazy_gettext('Email verified! Thanks for subscribing to Teddy\'s location updates!'), 'header')
                 return redirect(url_for('index'))
     except Exception as error:
-        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
         return redirect(url_for('index'))
 
 @app.route("/verify_email/<user_email>/<email_verification_code>")
@@ -774,7 +775,7 @@ def verify_registration(user_email, email_verification_code):
         users = db.users
         email_already_submitted = users.find_one({"email": user_email})
         if not email_already_submitted:
-            flash(gettext("Email {} was not found".format(user_email)), 'header')
+            flash(lazy_gettext("Email {} was not found".format(user_email)), 'header')
             return redirect(url_for('index'))
 
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
@@ -786,18 +787,18 @@ def verify_registration(user_email, email_verification_code):
         # Compare it with the code submitted
         if not sha256_crypt.verify(email_verification_code, email_verification_code_should_be):
             # If invalid code - inform user
-            flash(gettext('Sorry but you submitted an invalid verification code. Email address not verified'), 'header')
+            flash(lazy_gettext('Sorry but you submitted an invalid verification code. Email address not verified'), 'header')
             return redirect(url_for('index'))
         else:
             # If code Ok, check if email is not already verified
             if users.find_one({'_id': docID})['email_verified'] == True:
-                flash(gettext('Email address {} already verified'.format(user_email)), 'header')
+                flash(lazy_gettext('Email address {} already verified'.format(user_email)), 'header')
                 return redirect(url_for('index'))
             else:
                 # update the document in DB and inform user
                 users.update_one({'_id': docID}, {'$set': {'email_verified': True}})
 
-                flash(gettext(
+                flash(lazy_gettext(
                     'Email verified! Thanks for registration. If you have Teddy you can add his new location now'),
                       'header')
 
@@ -816,7 +817,7 @@ def verify_registration(user_email, email_verification_code):
                     print('LoggedIn and Email cookies already exist')
                     return redirect(url_for('index'))
     except Exception as error:
-        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
         return redirect(url_for('index'))
 
 @app.route("/unsubscribe/<user_email>/<verification_code>")
@@ -830,7 +831,7 @@ def unsubscribe(user_email, verification_code):
         email_already_submitted = subscribers.find_one(
             {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]})
         if not email_already_submitted:
-            flash(gettext("Email {} was not found".format(user_email)), 'header')
+            flash(lazy_gettext("Email {} was not found".format(user_email)), 'header')
             return redirect(url_for('index'))
 
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
@@ -842,15 +843,15 @@ def unsubscribe(user_email, verification_code):
         # Compare it with the code submitted
         if not sha256_crypt.verify(verification_code, verification_code_should_be):
             # If invalid code - inform user
-            flash(gettext('Sorry but you submitted an invalid verification code. Unsubscription failed'), 'header')
+            flash(lazy_gettext('Sorry but you submitted an invalid verification code. Unsubscription failed'), 'header')
             return redirect(url_for('index'))
         else:
             # If code Ok, "soft"-delete the document
             subscribers.update_one({'_id': docID}, {'$set': {'unsubscribed': True}})
-            flash(gettext('Email {} successfully unsubscribed'.format(user_email)), 'header')
+            flash(lazy_gettext('Email {} successfully unsubscribed'.format(user_email)), 'header')
             return redirect(url_for('index'))
     except Exception as error:
-        flash(gettext("Error happened ('{}')".format(error)), 'header')
+        flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
         return redirect(url_for('index'))
 
 @app.errorhandler(404)
@@ -868,28 +869,6 @@ def file_too_large(error):
     # Check for preferred language
     user_language = get_locale()
     return render_template('413.html', subscribe2updatesform=subscribe2updatesform, language=user_language), 413
-
-@app.route('/webhook', methods=['POST'])
-@csrf.exempt
-def webhook():
-    # Get request parameters
-    req = request.get_json(silent=True, force=True)
-    action = req.get('result').get('action')
-
-    # TeddyGo - show timeline
-    if action == "teddygo_show_timeline":
-        location_iteration = ft_functions.show_location('Teddy', req)
-        ourspeech = location_iteration['payload']
-        output_context = location_iteration['updated_context']
-        res = ft_functions.make_speech(ourspeech, action, output_context)
-
-    else:
-        # If the request is not of our actions throw an error
-        res = {
-            'speech': 'Something wrong happened',
-            'displayText': 'Something wrong happened'
-        }
-    return make_response(jsonify(res))
 
 # Run Flask server
 if __name__ == '__main__':
