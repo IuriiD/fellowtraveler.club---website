@@ -565,9 +565,6 @@ msgstr "Пароль"
 msgid "Get updates by email:"
 msgstr "Получать обновления по почте:"
 
-msgid "You need to <a href=\"/logout/\">log out</a> first"
-msgstr "Сперва Вам необходимо <a href=\"/logout/\">выйти</a>"
-
 msgid "Email {} is already subscribed and verified"
 msgstr "Адрес email {} уже подписан на рассылку и подтвержден"
 

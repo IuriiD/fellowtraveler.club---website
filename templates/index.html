@@ -21,7 +21,83 @@
     {{ teddy_map.js }}
 {% endblock %}
 
-<!-- Block #3 - Main contents -->
+<!-- Block #3 - Head includes (other CSS & JS) -->
+{% block ourheader %}
+<!-- Header START -->
+    <!-- Table:
+     1. Row 1 = 2 columns 50%/50%:
+        1-1. Column 1: traveller's badge, contacts/email subscription form and update_location button,
+        1-2. Column 2: links to Login/Register or AddLocation/Logout, change language and chat window;
+     2. Row 2 = 1 column for flashing messages
+     -->
+    <div class="container">
+        <!-- 1. Row 1 (see above) -->
+        <div class="row">
+            <!-- 1-1. Row 1, left column -->
+            <div class="w-50">
+                <div>
+                    <img src="{{ PHOTO_DIR }}{{ traveler }}/service/{{ traveler }}.jpg" style="height: 256px; width: 384px">
+                </div>
+
+                <div>
+                    {{ gettext('Name') }}: <b>{{ traveler }}</b>
+                    <br>
+                    {% include '_speakwithmefollowme.html' %}
+                </div>
+
+                <div>
+                    {% include '_subscribeform.html' %}
+                </div>
+
+                <!-- Update location button -->
+                <br>
+                <div>
+                    <a href="/#updatelocation"><button type="button" class="alert btn-success" role="alert">{{ gettext('Update location') }}</button></a>
+                </div>
+            </div>
+
+            <!-- 1-2. Row 1, right column -->
+            <div class="w-50">
+                <!-- Login/Register or UpdateLocation/Logout links -->
+                <div class="container-fluid" align="right">
+                    {% if session['LoggedIn'] %}
+                        <b>{{ session['Email'] }}: </b><a href="/#updatelocation">{{ gettext('Update location') }}</a> | <a href="/logout/">{{ gettext('Logout') }}</a>
+                    {% else %}
+                        <a data-toggle="collapse" data-parent="#loginregister" href="#login" role="button" aria-expanded="true" aria-controls="login" onClick="window.location.hash='#updatelocation'">{{ gettext('Log in') }}</a> | <a data-toggle="collapse" data-parent="#loginregister" href="#register" role="button" aria-expanded="false" aria-controls="register" onClick="window.location.hash='#updatelocation'">{{ gettext('Register') }}</a>
+                    {% endif %}
+                </div>
+
+                <!-- Choose language block -->
+                <div class="container-fluid" align="right">
+                    {{ gettext('Change language') }}: {% if language != 'en' %}<a href="/language/en">{% endif %}En{% if language != 'en' %}</a>{% endif %} {% if language != 'de' %}<a href="/language/de">{% endif %}De{% if language != 'de' %}</a>{% endif %} {% if language != 'ru' %}<a href="/language/ru">{% endif %}Ru{% if language != 'ru' %}</a>{% endif %} {% if language != 'uk' %}<a href="/language/uk">{% endif %}Uk{% if language != 'uk' %}</a>{% endif %} {% if language != 'fr' %}<a href="/language/fr">{% endif %}Fr{% if language != 'fr' %}</a>{% endif %}
+                </div>
+
+                <!-- Webchat -->
+                <iframe width="384" height="500" src="https://console.dialogflow.com/api-client/demo/embedded/fellowtraveler">
+                </iframe>
+            </div>
+        </div>
+
+        <!-- 2. Row 2, disclaimer and precautions block -->
+        <div>
+            {% with errors = get_flashed_messages(category_filter=["header"]) %}
+            {% if errors %}
+                {%- for msg in errors %}
+                    <div class="alert alert-warning" role="alert">
+                        {{ msg|safe }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor -%}
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    <!-- Header END -->
+{% endblock %}
+
+<!-- Block #4 - Main contents -->
 {% block main_contents %}
     <!-- Traveller's journey so far -->
     <div>
@@ -41,6 +117,11 @@
     <br>
     <div>
         <h2><b>{{ gettext('Travel timeline') }}</b></h2>
+        <span align="right">
+            <a href="#top">
+                Go to top
+            </a>
+        </span>
     </div>
 
     {% if locations_history|length>0 %}
@@ -59,7 +140,7 @@
                         {{ gettext('Photos') }}:
                             {% for photo in location_data.photos %}
                                 <br>
-                                <img src='{{ PHOTO_DIR }}{{ photo }}' class="img-fluid rounded" style="max-width: 700px;">
+                                <img src='{{ PHOTO_DIR }}{{ traveler }}/{{ photo }}' class="img-fluid rounded" style="max-width: 700px;">
                             {% endfor %}
                     {% endif %}
                 </p>
@@ -69,12 +150,17 @@
     {% endif %}
 
     <!-- Adding a new location -->
-    {% if session['LoggedIn'] %}
-        <a name="updatelocation"></a>
-        <div>
-            <h2><b>{{ gettext('Add new location') }}</b></h2>
-        </div>
+    <a name="updatelocation"></a>
+    <div>
+        <h2><b>{{ gettext('Add new location') }}</b></h2>
+        <span align="right">
+            <a href="#top">
+                Go to top
+            </a>
+        </span>
+    </div>
 
+    {% if session['LoggedIn'] %}
         <!-- Flashed messages for adding new location (under block header)-->
         <div>
             {% with errors = get_flashed_messages(category_filter=["addlocation"]) %}
@@ -98,7 +184,7 @@
         </div>
 
         <br>
-        <form role="form" action="/" method="POST" enctype="multipart/form-data">
+        <form role="form" action="/{{ traveler }}/" method="POST" enctype="multipart/form-data">
             <dl>
                 {{ whereisteddynowform.csrf_token }}
                 {{ render_field(whereisteddynowform.author) }}
@@ -116,9 +202,52 @@
                 {{ whereisteddynowform.submit(class_="btn btn-primary") }}
             </dl>
         </form>
+
     {% else %}
-        <a name="updatelocation"></a>
-        {{ gettext('To add new ') }}{{ traveler }}{{ gettext('\'s location first please <b><a href="/login/">log in</a></b> or <b><a href="/register/">register</a></b>') }}
+        {# Login/register block #}
+        <div id="loginregister" data-children=".item">
+            <div class="item">
+                To add new {{ traveler }}'s location first please
+                <a data-toggle="collapse" data-parent="#loginregister" href="#login" role="button" aria-expanded="true" aria-controls="login">
+                    <strong>
+                        log in
+                    </strong>
+                </a>
+                or
+                <a data-toggle="collapse" data-parent="#loginregister" href="#register" role="button" aria-expanded="false" aria-controls="register">
+                    <strong>
+                        register
+                    </strong>
+                </a>
+                <div id="login" class="collapse" role="tabpanel">
+                    <p class="mb-3">
+                        <form role="form" action="/{{ traveler }}/login/" method="POST">
+                          <dl>
+                            {{ loginform.csrf_token }}
+                            {{ render_field(loginform.email) }}
+                            {{ render_field(loginform.password) }}
+                            {{ loginform.submit(class_="btn btn-primary") }} <!--a href="/password_reset/">Forgot password?</a-->
+                          </dl>
+                        </form>
+                    </p>
+                </div>
+            </div>
+            <div class="item">
+                <div id="register" class="collapse" role="tabpanel">
+                    <p class="mb-3">
+                        <form role="form" action="/{{ traveler }}/register/" method="POST">
+                          <dl>
+                            {{ registrationform.csrf_token }}
+                            {{ render_field(registrationform.email) }}
+                            {{ render_field(registrationform.password) }}
+                            {{ render_field(registrationform.confirm) }}
+                            {{ registrationform.submit(class_="btn btn-primary") }}
+                          </dl>
+                        </form>
+                    </p>
+                </div>
+            </div>
+        </div>
     {% endif %}
 
     <!-- Scrolling down to update_location form in case form doesn't validate and index.html is rendered with parameter scrolldown=True -->
