@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from flask import request, flash, url_for, redirect, session
+from flask import request, flash, url_for, redirect, session, make_response
 from werkzeug.utils import secure_filename
 from passlib.hash import sha256_crypt
 import requests
@@ -422,7 +422,6 @@ def get_locale():
 def save_subscriber(email_entered, OURTRAVELER):
     '''
         Gets email address, checks if it's not already in subscribers' DB, saves it, sends a verification email and informs user with flashes
-        Function not moved to function file not to move flask_mail setup block
     '''
     try:
         # Check if user's email is not already in DB
@@ -449,7 +448,8 @@ def save_subscriber(email_entered, OURTRAVELER):
             "locale": user_locale,
             "verified": False,
             "verification_code": sha256_crypt.encrypt(userid),
-            "unsubscribed": None
+            "unsubscribed": None,
+            'which_traveler': OURTRAVELER
         }
 
         verification_link = '{}/verify/{}/{}'.format(SITE_URL, email_entered, userid)
@@ -460,13 +460,18 @@ def save_subscriber(email_entered, OURTRAVELER):
         # Send user a confirmation email with unsubscription link
         topic = gettext("Fellowtraveler.club: email verification link")
         recipients = [email_entered]
+        if OURTRAVELER == 'All':
+            whos_location_updates = "our travelers'"
+        else:
+            whos_location_updates = "{}'s".format(OURTRAVELER)
+
         message = gettext("Hi!<br><br>" \
-                   "Thanks for subscribing to {}'s location updates!<br>" \
+                   "Thanks for subscribing to {} location updates!<br>" \
                    "They won't be too often (not more than once a week).<br><br>" \
                    "Please verify your email address by clicking on the following link:<br><b>" \
                    "<a href='{0}' target='_blank'>{0}</a></b><br><br>" \
                    "If for any reason later you will decide to unsubscribe, please click on the following link:<br>" \
-                   "<a href='{1}' target='_blank'>{1}</a>").format(OURTRAVELER, verification_link, unsubscription_link)
+                   "<a href='{1}' target='_blank'>{1}</a>").format(whos_location_updates, verification_link, unsubscription_link)
         send_mail(topic=topic, recipients=recipients, message=message)
 
         flash(lazy_gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
@@ -509,7 +514,8 @@ def save_user_as_subscriber(email_entered, OURTRAVELER):
                 "locale": user_locale,
                 "verified": True,
                 "verification_code": sha256_crypt.encrypt(userid),
-                "unsubscribed": None
+                "unsubscribed": None,
+                'which_traveler': OURTRAVELER
             }
 
             unsubscription_link = '{}/unsubscribe/{}/{}'.format(SITE_URL, email_entered, userid)

@@ -44,14 +44,10 @@
 
 
             <!-- Footer START -->
-            <br>
-            <hr>
-            <div>
-                {% include '_speakwithmefollowme.html' %}
-            </div>
-            <div>
-                {% include '_subscribeform.html' %}
-            </div>
+            <!-- Block #4 - Simple for error/404.html and 'contents' pages -->
+            {% block ourfooter %}
+            {% endblock %}
+
             <div>
                 <a href="">{{ gettext('Disclaimer') }}</a> | <a href="">{{ gettext('Help us with translation') }}</a> | <a href="">{{ gettext('Support project') }}</a>
             </div>

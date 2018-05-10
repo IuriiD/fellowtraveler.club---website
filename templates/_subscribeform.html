@@ -1,7 +1,7 @@
-<form role="form" action="/{{ traveler }}/subscribe/" method="POST">
+<form role="form" action="/subscribe/" method="POST">
     <dl>
         {{ subscribe2updatesform.csrf_token }}
         {{ render_field(subscribe2updatesform.email4updates) }}
-        {{ subscribe2updatesform.emailsubmit(class_="btn btn-primary") }}
+        {{ subscribe2updatesform.email_submit(class_="btn btn-primary") }}
     </dl>
 </form>

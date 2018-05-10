@@ -3,19 +3,41 @@
 
 {% block title %}{{ gettext('Log in') }}{% endblock %}
 
+{% block ourheader %}
+    <h1>Header</h1>
+
+    <div>
+        {% with errors = get_flashed_messages(category_filter=["header"]) %}
+        {% if errors %}
+            {%- for msg in errors %}
+                <div class="alert alert-warning" role="alert">
+                    {{ msg|safe }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor -%}
+        {% endif %}
+        {% endwith %}
+    </div>
+{% endblock %}
+
 {% block main_contents %}
     <hr>
 
     <div align="right">
-         <a href="/">{{ gettext('Main page') }}</a>?
+        Go to <a href="/"><b>{{ gettext('Main page') }}</b></a>
+        {% if session['which_traveler'] != 'All' %}
+            or <a href="/{{ session['which_traveler'] }}/"><b>{{ session['which_traveler'] }}</b></a>'s page
+        {% endif %}
     </div>
 
-    <form role="form" action="/login/" method="POST">
+    <form role="form" action="../login/" method="POST">
       <dl>
         {{ loginform.csrf_token }}
         {{ render_field(loginform.email) }}
         {{ render_field(loginform.password) }}
-        {{ loginform.submit(class_="btn btn-primary") }} <!--a href="/password_reset/">Forgot password?</a-->
+        {{ loginform.login_submit(class_="btn btn-primary") }} <!--a href="/password_reset/">Forgot password?</a-->
       </dl>
     </form>
 {% endblock %}

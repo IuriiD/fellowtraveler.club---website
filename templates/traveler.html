@@ -61,9 +61,9 @@
                 <!-- Login/Register or UpdateLocation/Logout links -->
                 <div class="container-fluid" align="right">
                     {% if session['LoggedIn'] %}
-                        <b>{{ session['Email'] }}: </b><a href="/#updatelocation">{{ gettext('Update location') }}</a> | <a href="/logout/">{{ gettext('Logout') }}</a>
+                        <b>{{ session['Email'] }}: </b><a href="/#updatelocation">{{ gettext('Update location') }}</a> | <a href="../service/logout/">{{ gettext('Logout') }}</a>
                     {% else %}
-                        <a data-toggle="collapse" data-parent="#loginregister" href="#login" role="button" aria-expanded="true" aria-controls="login" onClick="window.location.hash='#updatelocation'">{{ gettext('Log in') }}</a> | <a data-toggle="collapse" data-parent="#loginregister" href="#register" role="button" aria-expanded="false" aria-controls="register" onClick="window.location.hash='#updatelocation'">{{ gettext('Register') }}</a>
+                        <a href="../service/login/">{{ gettext('Log in') }}</a> | <a href="../service/register/">{{ gettext('Register') }}</a>
                     {% endif %}
                 </div>
 
@@ -199,59 +199,27 @@
                 {{ render_field(whereisteddynowform.secret_code) }}
                 {{ render_field(whereisteddynowform.recaptcha) }}
                 <br>
-                {{ whereisteddynowform.submit(class_="btn btn-primary") }}
+                {{ whereisteddynowform.location_submit(class_="btn btn-primary") }}
             </dl>
         </form>
 
     {% else %}
-        {# Login/register block #}
-        <div id="loginregister" data-children=".item">
-            <div class="item">
-                To add new {{ traveler }}'s location first please
-                <a data-toggle="collapse" data-parent="#loginregister" href="#login" role="button" aria-expanded="true" aria-controls="login">
-                    <strong>
-                        log in
-                    </strong>
-                </a>
-                or
-                <a data-toggle="collapse" data-parent="#loginregister" href="#register" role="button" aria-expanded="false" aria-controls="register">
-                    <strong>
-                        register
-                    </strong>
-                </a>
-                <div id="login" class="collapse" role="tabpanel">
-                    <p class="mb-3">
-                        <form role="form" action="/{{ traveler }}/login/" method="POST">
-                          <dl>
-                            {{ loginform.csrf_token }}
-                            {{ render_field(loginform.email) }}
-                            {{ render_field(loginform.password) }}
-                            {{ loginform.submit(class_="btn btn-primary") }} <!--a href="/password_reset/">Forgot password?</a-->
-                          </dl>
-                        </form>
-                    </p>
-                </div>
-            </div>
-            <div class="item">
-                <div id="register" class="collapse" role="tabpanel">
-                    <p class="mb-3">
-                        <form role="form" action="/{{ traveler }}/register/" method="POST">
-                          <dl>
-                            {{ registrationform.csrf_token }}
-                            {{ render_field(registrationform.email) }}
-                            {{ render_field(registrationform.password) }}
-                            {{ render_field(registrationform.confirm) }}
-                            {{ registrationform.submit(class_="btn btn-primary") }}
-                          </dl>
-                        </form>
-                    </p>
-                </div>
-            </div>
-        </div>
+        To add new {{ traveler }}'s location first please <a href="../service/login/"><b>log</b></a> in or <a href="../service/register/"><b>register</b></a>
     {% endif %}
 
     <!-- Scrolling down to update_location form in case form doesn't validate and index.html is rendered with parameter scrolldown=True -->
     {% if scrolldown %}
         <script> $(function(){ window.location.hash = "updatelocation"; }); </script>
     {% endif %}
+{% endblock %}
+
+{% block ourfooter %}
+    <br>
+    <hr>
+    <div>
+        {% include '_speakwithmefollowme.html' %}
+    </div>
+    <div>
+        {% include '_subscribeform.html' %}
+    </div>
 {% endblock %}

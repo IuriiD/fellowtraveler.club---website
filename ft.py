@@ -18,14 +18,23 @@ from functools import wraps
 import twitter
 import uuid
 
-from keys import FLASK_SECRET_KEY, RECAPTCHA_PRIVATE_KEY, RECAPTCHA_PUBLIC_KEY, GOOGLE_MAPS_API_KEY, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET, MAIL_PWD
+from keys import (FLASK_SECRET_KEY,
+                  RECAPTCHA_PRIVATE_KEY,
+                  RECAPTCHA_PUBLIC_KEY,
+                  GOOGLE_MAPS_API_KEY,
+                  TWITTER_CONSUMER_KEY,
+                  TWITTER_CONSUMER_SECRET,
+                  TWITTER_ACCESS_TOKEN_KEY,
+                  TWITTER_ACCESS_TOKEN_SECRET,
+                  MAIL_PWD)
 
 import ft_functions
 
 SITE_URL = 'https://fellowtraveler.club'
 FROM_EMAIL = 'mailvulgaris@gmail.com'
-BASIC_TRAVELER = 'Teddy'
-PHOTO_DIR = '../static/uploads/' # where photos from places visited are saved
+BASIC_TRAVELER = 'Teddy' # 'All'
+ALL_TAVELERS = ['Teddy']
+PHOTO_DIR = '/static/uploads/' # where photos from places visited are saved
 LANGUAGES = {
     'en': 'English',
     'ru': 'Русский',
@@ -71,22 +80,22 @@ class WhereisTeddyNow(FlaskForm):
     secret_code = PasswordField(lazy_gettext('Secret code from the toy (required)'), validators=[DataRequired(lazy_gettext('Please enter the code which you can find on the toy')),
                               Length(4, 4, lazy_gettext('Secret code must have 4 digits'))])
     recaptcha = RecaptchaField()
-    submit = SubmitField(lazy_gettext('Submit'))
+    location_submit = SubmitField(lazy_gettext('Submit'))
 
 class RegistrationForm(FlaskForm):
     email = StringField(lazy_gettext('Email Address'), validators=[Length(6, 50), DataRequired(), Email(lazy_gettext('Please enter a valid e-mail address'))])
     password = PasswordField(lazy_gettext('New Password'), validators=[DataRequired(), EqualTo('confirm', message=lazy_gettext('Passwords must match'))])
     confirm = PasswordField(lazy_gettext('Repeat Password'))
-    submit = SubmitField(lazy_gettext('Register'))
+    register_submit = SubmitField(lazy_gettext('Register'))
 
 class LoginForm(FlaskForm):
     email = StringField(lazy_gettext('Email Address'), validators=[Length(6, 50), DataRequired(), Email(lazy_gettext('Please enter a valid e-mail address'))])
     password = PasswordField(lazy_gettext('Password'), validators=[DataRequired()])
-    submit = SubmitField(lazy_gettext('Log in'))
+    login_submit = SubmitField(lazy_gettext('Log in'))
 
 class HeaderEmailSubscription(FlaskForm):
     email4updates = StringField(lazy_gettext('Get updates by email:'), validators=[Optional(), Email(lazy_gettext('Please enter a valid e-mail address'))])
-    emailsubmit = SubmitField(lazy_gettext('Subscribe'))
+    email_submit = SubmitField(lazy_gettext('Subscribe'))
 
 
 def login_required(f):
@@ -95,7 +104,7 @@ def login_required(f):
         if 'LoggedIn' in session:
             return f(*args, **kwargs)
         else:
-            flash(lazy_gettext('You need to <a href="/login/">log in</a> first'),'header')
+            flash(lazy_gettext('You need to <a href="../service/login/">log in</a> first'),'header')
             return redirect(url_for('login'))
     return wrap
 
@@ -104,8 +113,8 @@ def notloggedin_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         if 'LoggedIn' in session:
-            flash(lazy_gettext('You need to <a href="/logout/">log out</a> first'), 'header')
-            return redirect(url_for('index'))
+            flash(lazy_gettext('You need to <a href="../service/logout/">log out</a> first'), 'header')
+            return redirect(url_for('traveler'))
         else:
             return f(*args, **kwargs)
     return wrap
@@ -128,30 +137,27 @@ def send_mail(topic='', recipients=[], message='', sender=FROM_EMAIL):
 @babel.localeselector
 def get_locale():
     user_language = request.cookies.get('UserPreferredLanguage')
-    #print("user_language: {}".format(user_language))
-    #print("autodetect_language: {}".format(request.accept_languages.best_match(LANGUAGES.keys())))
     if user_language != None:
         return user_language
     else:
         return request.accept_languages.best_match(LANGUAGES.keys())
 
-@app.route('/<OURTRAVELER>/register/', methods=['GET', 'POST'])
+
+@app.route('/service/register/', methods=['GET', 'POST'])
 @notloggedin_required
 @csrf.exempt
-def register(OURTRAVELER):
+def register():
     try:
-        form = RegistrationForm()
-        subscribe2updatesform = HeaderEmailSubscription()
+        registrationform = RegistrationForm()
 
-        # Check for preferred language
-        user_language = get_locale()
+        # Check which traveler user was watching
+        which_traveler = ft_functions.get_traveler()
 
-        # registration data have been submitted (POST)
+        # Registration data have been submitted (POST)
         if request.method == 'POST':
-            if form.validate_on_submit():
-                email = form.email.data
-                password = sha256_crypt.encrypt(str(form.password.data))
-                #print('email: {}, pwd: {}'.format(email, form.password.data))
+            if registrationform.validate_on_submit():
+                email = registrationform.email.data
+                password = sha256_crypt.encrypt(str(registrationform.password.data))
 
                 client = MongoClient()
                 db = client.TeddyGo
@@ -159,28 +165,28 @@ def register(OURTRAVELER):
 
                 # Check if user with such email exists
                 email_already_submitted = users.find_one({"email": email})
-
                 if email_already_submitted:
                     if email_already_submitted['email_verified']:
-                        flash(lazy_gettext("User with email {} is already registered. Please choose a different email address or <a href='/login'>log in</a>".format(email)), 'header')
-                        #return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language, traveler=OURTRAVELER)
+                        flash(lazy_gettext("User with email {} is already registered. Please choose a different email address or <a href='../login/'>log in</a>".format(email)), 'header')
                         return redirect(url_for('register'))
                     else:
                         flash(lazy_gettext(
                             "User with email {} is already registered but email has not been verified yet".format(email)
                         ), 'header')
-                        #return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language, traveler=OURTRAVELER)
                         return redirect(url_for('register'))
+
+                # If a new user
                 else:
                     userid = str(uuid.uuid4())
-                    email_verification_link = '{}/verify_email/{}/{}'.format(SITE_URL, email, userid)
+                    email_verification_link = '{}/verify_user/{}/{}'.format(SITE_URL, email, userid)
 
                     users.insert_one(
                         {
                             'email': email,
                             'password': password,
                             'email_verified': False,
-                            "email_verification_code": sha256_crypt.encrypt(userid)
+                            "email_verification_code": sha256_crypt.encrypt(userid),
+                            'which_traveler': which_traveler
                         }
                     )
 
@@ -194,102 +200,114 @@ def register(OURTRAVELER):
 
                     flash(lazy_gettext('Almost finished. To complete registration please click on the verification link that has been sent to your email'), 'header')
 
-                    return redirect(url_for('index'))
+                    if which_traveler == 'All':
+                        next_redirect = '/'
+                    else:
+                        next_redirect = '/{}/'.format(which_traveler)
+                    return redirect(next_redirect)
             else:
                 print('Registration form input did not validate')
-                #return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language, traveler=OURTRAVELER)
-                return redirect(url_for('register'))
+                return render_template('register.html', registrationform=registrationform)
         # GET request for a registration form
         else:
-            print('Post failed')
-            return render_template('register.html', form=form, subscribe2updatesform=subscribe2updatesform, language=user_language, traveler=OURTRAVELER)
-
+            return render_template('register.html', registrationform=registrationform)
     except Exception as e:
         print('register() exception: {}'.format(e))
-        return redirect(url_for('index'))
+        if which_traveler == 'All':
+            return redirect(url_for('index'))
+        else:
+            return redirect(url_for('traveler'))
 
 
-@app.route('/<OURTRAVELER>/login/', methods=['GET', 'POST'])
+@app.route('/service/login/', methods=['GET', 'POST'])
 @notloggedin_required
 @csrf.exempt
-def login(OURTRAVELER):
+def login():
     try:
         loginform = LoginForm()
-        subscribe2updatesform = HeaderEmailSubscription()
 
-        # Check for preferred language
-        user_language = get_locale()
+        # Check which traveler user was watching
+        which_traveler = ft_functions.get_traveler()
 
-        # login data have been submitted (POST)
-        if request.method == 'POST' and loginform.validate_on_submit():
-            email = loginform.email.data
-            password = loginform.password.data
+        # Login data have been submitted (POST)
+        if request.method == 'POST':
+            print('Login() POST')
+            if loginform.validate_on_submit():
+                print('Login form validates')
+                email = loginform.email.data
+                password = loginform.password.data
 
-            client = MongoClient()
-            db = client.TeddyGo
-            users = db.users
+                client = MongoClient()
+                db = client.TeddyGo
+                users = db.users
 
-            # check if email exist in DB and is verified
-            docID = None
-            if users.find_one({'email': email}):
-                docID = users.find_one({'email': email}).get('_id')
-                status = users.find_one({'_id': docID}).get('email_verified')
-                if not status:
-                    flash(
-                        lazy_gettext('Such email is registered but hasn\'t been verified yet. '
-                        'If it\'s your email please verify it, otherwise choose different credentials to log in or <a href="/register/">register</a>'),
-                        'header')
-                    #return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
-                    return redirect(url_for('login'))
-            else:
-                flash(
-                    lazy_gettext('Sorry, we do not recognize this email address. Please choose different credentials or <a href="/register/">register</a>'),
-                    'header')
-                #return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
-                return redirect(url_for('login'))
-
-            # and then let's check for a password
-            pwd_should_be = users.find_one({'_id': docID})['password']
-            if sha256_crypt.verify(password, pwd_should_be):
-                flash(lazy_gettext('Login successfull!'),
-                      'header')
-
-                # Update session data
-                session['LoggedIn'] = 'yes'
-                session['Email'] = email
-
-                # Update coockies
-                logged_in = request.cookies.get('LoggedIn', None)
-                if not logged_in:
-                    expire_date = datetime.datetime.now()
-                    expire_date = expire_date + datetime.timedelta(days=30)
-                    redirect_to_index = redirect('/')
-                    response = app.make_response(redirect_to_index)
-                    response.set_cookie('LoggedIn', 'yes', expires=expire_date)
-                    response.set_cookie('Email', email, expires=expire_date)
-                    print('LoggedIn and Email cookies set')
-                    return response
+                # Check if email exist in DB and is verified, exit if not
+                docID = None
+                if users.find_one({'email': email}):
+                    docID = users.find_one({'email': email}).get('_id')
+                    status = users.find_one({'_id': docID}).get('email_verified')
+                    if not status:
+                        flash(
+                            lazy_gettext('Such email is registered but hasn\'t been verified yet. '
+                            'If it\'s your email please verify it, otherwise choose different credentials to log in or <a href="/register/">register</a>'),
+                            'header')
+                        return redirect(url_for('login'))
                 else:
-                    print('LoggedIn and Email cookies already exist')
-                    return redirect(url_for('index'))
+                    flash(
+                        lazy_gettext('Sorry, we do not recognize this email address. Please choose different credentials or <a href="/register/">register</a>'),
+                        'header')
+                    return redirect(url_for('login'))
 
-            # invalid password
+                # If Ok, check for a password
+                pwd_should_be = users.find_one({'_id': docID})['password']
+                if sha256_crypt.verify(password, pwd_should_be):
+                    flash(lazy_gettext('Login successfull!'), 'header')
+
+                    # Update session data
+                    session['LoggedIn'] = 'yes'
+                    session['Email'] = email
+
+                    if which_traveler == 'All':
+                        next_redirect = '/'
+                    else:
+                        next_redirect = '/{}/'.format(which_traveler)
+
+                    # Update coockies
+                    logged_in = request.cookies.get('LoggedIn', None)
+                    if not logged_in:
+                        expire_date = datetime.datetime.now()
+                        expire_date = expire_date + datetime.timedelta(days=30)
+                        redirect_to_index = redirect(next_redirect)
+                        response = app.make_response(redirect_to_index)
+                        response.set_cookie('LoggedIn', 'yes', expires=expire_date)
+                        response.set_cookie('Email', email, expires=expire_date)
+                        print('LoggedIn and Email cookies set')
+                        return response
+                    else:
+                        print('LoggedIn and Email cookies already exist')
+                        return redirect(next_redirect)
+
+                # Invalid password
+                else:
+                    flash(lazy_gettext('Wrong password'), 'header')
+                    return redirect(url_for('login'))
+
+            # Login form did not validate on submit
             else:
-                flash(lazy_gettext('Wrong password'), 'header')
-                #return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language)
-                return redirect(url_for('login'))
-
-        # the first (GET) request for a login form
-        #print()
-        #print('login.html')
-        return render_template('login.html', loginform=loginform, subscribe2updatesform=subscribe2updatesform, language=user_language, traveler=OURTRAVELER)
+                return render_template('login.html', loginform=loginform)
+        # GET request
+        else:
+            return render_template('login.html', loginform=loginform)
 
     except Exception as e:
-        print('register() exception: {}'.format(e))
-        return redirect(url_for('index'))
+        print('login() exception: {}'.format(e))
+        if which_traveler == 'All':
+            return redirect(url_for('index'))
+        else:
+            return redirect(url_for('traveler'))
 
 
-@app.route('/logout/')
+@app.route('/service/logout/')
 @login_required
 def logout():
     flash(lazy_gettext('You have been logged out'), 'header')
@@ -300,22 +318,26 @@ def logout():
 
     # and cookies
     expire_date = 0
-    redirect_to_traveler = redirect(url_for('index', OURTRAVELER=OURTRAVELER))
-    response = app.make_response(redirect_to_traveler)
+    if OURTRAVELER == 'All':
+        redirect_to = redirect(url_for('index'))
+    else:
+        redirect_to = redirect(url_for('traveler', OURTRAVELER=OURTRAVELER))
+    response = app.make_response(redirect_to)
     response.set_cookie('LoggedIn', 'yes', expires=expire_date)
     response.set_cookie('Email', 'dummy', expires=expire_date)
     return response
 
 
-@app.route('/index/', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST']) # later '/' page will aggragate info for several travelers
-def alltogether():
+def index():
+    # Temporary
     OURTRAVELER = ft_functions.get_traveler()
-    return redirect(url_for('index', OURTRAVELER=OURTRAVELER))
+    return redirect(url_for('traveler', OURTRAVELER=OURTRAVELER))
+
 
 @app.route('/<OURTRAVELER>/', methods=['GET', 'POST'])
 @csrf.exempt
-def index(OURTRAVELER='Teddy'):
+def traveler(OURTRAVELER='Teddy'):
 
     print('Traveler: {}'.format(OURTRAVELER))
     print('Index!')
@@ -323,236 +345,24 @@ def index(OURTRAVELER='Teddy'):
     try:
         whereisteddynowform = WhereisTeddyNow()
         subscribe2updatesform = HeaderEmailSubscription()
-        loginform = LoginForm()
-        registrationform = RegistrationForm()
 
         # Check cookies for if user was logged in and set appropriate values to session
         if request.cookies.get('LoggedIn', None):
-            #print('session["LoggedIn"] = "yes"')
             session['LoggedIn'] = 'yes'
         if request.cookies.get('Email', None):
-            #print("request.cookies.get('Email')")
             email = request.cookies.get('Email')
             session['Email'] = email.replace('"', '')
 
-        # Save our traveler's name to session (if not yet)
-        if not session.get(OURTRAVELER, None):
+        # Save our traveler's name to session
+        if OURTRAVELER in ALL_TAVELERS:
             session['which_traveler'] = OURTRAVELER
+        else:
+            session['which_traveler'] = BASIC_TRAVELER
 
-        # POST-request
-        if request.method == 'POST':
-            print('Index-Post')
+        # Check for preferred language
+        user_language = get_locale()
 
-            # 3 operations may be handled: a) adding new location, b) loggin in and c) registration
-            if whereisteddynowform.submit.data:
-                # Get travellers history
-                whereteddywas = ft_functions.get_location_history(OURTRAVELER, PHOTO_DIR)
-                locations_history = whereteddywas['locations_history']
-
-                # Prepare a map
-                teddy_map = Map(
-                    identifier="teddy_map",
-                    lat=whereteddywas['start_lat'],
-                    lng=whereteddywas['start_long'],
-                    zoom=8,
-                    language="en",
-                    style="height:480px;width:720px;margin:1;",
-                    markers=whereteddywas['mymarkers'],
-                    fit_markers_to_bounds = True
-                )
-
-                # Get journey summary
-                journey_summary = ''
-                travelled_so_far = ft_functions.get_journey_summary(OURTRAVELER)
-                if not travelled_so_far:
-                    journey_summary = ''
-                else:
-                    journey_summary = travelled_so_far['speech']
-
-                # Check for preferred language
-                user_language = get_locale()
-
-                # Check if user entered some location (required parameter) (data is passed from jQuery to Flask and
-                # saved in session
-                if 'geodata' not in session:
-                    #print('Here1')
-                    flash(lazy_gettext('Please enter {}\'s location (current or on the photo)'.format(OURTRAVELER)),
-                            'addlocation')
-                    print('No data in session!')
-                    return redirect(url_for('index', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
-                    #return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
-                    #                       locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELER)
-
-                # Get user's input
-                #print('Here2')
-                if whereisteddynowform.validate_on_submit():
-                    #print('Here4')
-                    # Get user's input
-                    author = whereisteddynowform.author.data
-                    if author == '':
-                        author = gettext("Anonymous")
-                    #location = whereisteddynowform.location.data
-                    comment = whereisteddynowform.comment.data
-                    secret_code = whereisteddynowform.secret_code.data
-                    receive_email_updates = whereisteddynowform.getupdatesbyemail.data
-
-                    # Get photos (4 at max)
-                    photos = request.files.getlist('photo')
-                    photos_list = []
-                    for n in range(len(photos)):
-                        if n<4:
-                            path = ft_functions.photo_check_save(photos[n], OURTRAVELER)
-                            if path != 'error':
-                                photos[n].save(PHOTO_DIR + OURTRAVELER + '/' + path)
-                                photos_list.append(path)
-                            else:
-                                # At least one of images is invalid. Messages are flashed from photo_check_save()
-                                return redirect(url_for('index', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
-                                #return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELER)
-                    if len(photos)>4:
-                        flash(
-                            lazy_gettext('{}\'s locations are reposted to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'.format(OURTRAVELER)),
-                            'addlocation')
-
-                    # Save data to DB
-                    # Connect to DB 'TeddyGo'
-                    client = MongoClient()
-                    db = client.TeddyGo
-
-                    # Check secret code in collection 'travellers'
-                    collection_travellers = db.travellers
-                    teddys_sc_should_be = collection_travellers.find_one({"name": OURTRAVELER})['secret_code']
-                    if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
-                        flash(lazy_gettext('Invalid secret code'), 'addlocation')
-                        return redirect(url_for('index', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
-                        #return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELER)
-                    else:
-                        # Prepare dictionary with new location info
-                        geodata = session['geodata']
-
-                        new_teddy_location = {
-                            'author': author,
-                            'channel': 'website',
-                            'user_id_on_channel': None, # for website entry
-                            'longitude': float(geodata.get('longitude')),
-                            'latitude': float(geodata.get('latitude')),
-                            'formatted_address': geodata.get('formatted_address'),
-                            'locality':  geodata.get('locality'),
-                            'administrative_area_level_1':  geodata.get('administrative_area_level_1'),
-                            'country':  geodata.get('country'),
-                            'place_id':  geodata.get('place_id'),
-                            'comment': comment,
-                            'photos': photos_list
-                        }
-
-                        # Connect to collection and insert document
-                        collection_teddy = db[OURTRAVELER]
-                        new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
-                        #print('new_teddy_location_id: {}'.format(new_teddy_location_id))
-
-                        # Get the new secret code
-                        new_code_generated = ft_functions.code_regenerate(OURTRAVELER)
-
-                        if receive_email_updates:
-                            ft_functions.save_user_as_subscriber(session['Email'], OURTRAVELER)
-
-                        if new_code_generated:
-                            # Flash the new code and send it to user's email
-                            email = session['Email']
-                            msg = Message(gettext("Fellowtraveler.club: new secret code - {}").format(new_code_generated),
-                                          sender="mailvulgaris@gmail.com", recipients=[email])
-                            msg.html = gettext("Hi!<br><br>" \
-                                       "You added a new {0}'s location, thanks. Secret code is being regenerated after every location and for adding the next location it will be:<br><br>" \
-                                       "<b><h1>{1}</h1></b><br><br>" \
-                                       "It's recommended that you write it down to {0}'s notebook immediately (and obligatorily if you are going to pass {0} to somebody)<br><br>" \
-                                       "In case of any problems please write to <a href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>"\
-                                       "Thank you for participating in <a href='https://fellowtraveler.club'>fellowtraveler.club</a>").format(OURTRAVELER, new_code_generated)
-                            mail.send(msg)
-                            flash(lazy_gettext('New location added! NEW SECRET CODE for adding the next location is {} (was sent to your email {}). Please write the new secret code into {}\'s notebook').format(new_code_generated, email, OURTRAVELER), 'header')
-
-                        # Update journey summary
-                        ft_functions.summarize_journey(OURTRAVELER)
-
-                        # Post to Twitter
-                        '''
-                        newstatus = 'Teddy with {} in {}'.format(new_teddy_location['author'], new_teddy_location['formatted_address'])
-                        if comment != '':
-                            newstatus += '. {} wrote: {}'.format(new_teddy_location['author'], new_teddy_location['comment'])
-                        status = twitter_api.PostUpdate(status=newstatus, media=new_teddy_location['photos'], latitude=new_teddy_location['latitude'],
-                                                        longitude=new_teddy_location['longitude'], display_coordinates=True)
-                        print(status.text)
-                        '''
-
-                        # Clear data from session
-                        session.pop('geodata', None)
-
-                        # Get travellers history
-                        whereteddywas = ft_functions.get_location_history(OURTRAVELER, PHOTO_DIR)
-                        locations_history = whereteddywas['locations_history']
-
-                        # Prepare a map
-                        teddy_map = Map(
-                            identifier="teddy_map",
-                            lat=whereteddywas['start_lat'],
-                            lng=whereteddywas['start_long'],
-                            zoom=8,
-                            language="en",
-                            style="height:480px;width:720px;margin:1;",
-                            markers=whereteddywas['mymarkers'],
-                            fit_markers_to_bounds=True
-                        )
-
-                        # Get journey summary
-                        journey_summary = ''
-                        travelled_so_far = ft_functions.get_journey_summary(OURTRAVELER)
-                        if not travelled_so_far:
-                            journey_summary = ''
-                        else:
-                            journey_summary = travelled_so_far['speech']
-
-                        # Check for preferred language
-                        user_language = get_locale()
-
-                        # If incorrect password
-                        #return redirect(url_for('index', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
-                        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
-                                               loginform=loginform, registrationform=registrationform,
-                                               locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary,
-                                               language=user_language, traveler=OURTRAVELER, PHOTO_DIR=PHOTO_DIR)
-                else:
-                    # If adding new location form didn't validate on submit
-                    #print('Here3')
-                    # Clear data from session
-                    session.pop('geodata', None)
-
-                    return render_template('index.html', whereisteddynowform=whereisteddynowform,
-                                           subscribe2updatesform=subscribe2updatesform, loginform=loginform,
-                                           registrationform=registrationform, locations_history=locations_history,
-                                           teddy_map=teddy_map, journey_summary=journey_summary, language=user_language,
-                                           traveler=OURTRAVELER, scrolldown=True, PHOTO_DIR=PHOTO_DIR)
-
-            if loginform.submit.data:
-                pass
-            if registrationform.submit.data:
-                pass
-
-        # GET request
-        # Get travellers history (will be substituted with timeline embedded from Twitter )
-        print('Index-Get')
-
-        # Flashing disclaimer message
-        disclaimer_shown = request.cookies.get('DisclaimerShown')
-        if not disclaimer_shown:
-            flash(lazy_gettext('No, it\'s not a trick and supposed to be safe but please see <a href="">disclaimer</a>'), 'header')
-            # set a cookie so that disclaimer will be shown only once
-            expire_date = datetime.datetime.now()
-            expire_date = expire_date + datetime.timedelta(days=90)
-            redirect_to_index = redirect('/')
-            response = app.make_response(redirect_to_index)
-            response.set_cookie('DisclaimerShown', 'yes', expires=expire_date)
-            return response
-
-        # Get travellers history (will be substituted with timeline embedded from Twitter )
+        # Get travellers history
         whereteddywas = ft_functions.get_location_history(OURTRAVELER, PHOTO_DIR)
         locations_history = whereteddywas['locations_history']
 
@@ -563,49 +373,205 @@ def index(OURTRAVELER='Teddy'):
             lng=whereteddywas['start_long'],
             zoom=8,
             language="en",
-            style="height:480px;width:700px;margin:1;",
+            style="height:480px;width:720px;margin:1;",
             markers=whereteddywas['mymarkers'],
             fit_markers_to_bounds=True
         )
-        print('teddy_map!')
 
         # Get journey summary
         journey_summary = ''
         travelled_so_far = ft_functions.get_journey_summary(OURTRAVELER)
-        #print('travelled_so_far: {}'.format(travelled_so_far))
         if not travelled_so_far:
             journey_summary = ''
-            #print('not travelled_so_far')
         else:
-            #print('travelled_so_far ;)')
-            if travelled_so_far['total_locations'] < 2:
-                journey_summary = ''
-                #print('travelled_so_far["total_locations"] < 2')
+            journey_summary = travelled_so_far['speech']
+
+        # POST-request
+        if request.method == 'POST':
+            print('Index-Post')
+
+            print('Submitting new location...')
+            # Check if user entered some location (required parameter) (data is passed from jQuery to Flask and
+            # saved in session
+            if 'geodata' not in session:
+                flash(lazy_gettext('Please enter {}\'s location (current or on the photo)'.format(OURTRAVELER)),
+                        'addlocation')
+                print('No data in session!')
+                return redirect(url_for('traveler', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
+
+            if whereisteddynowform.validate_on_submit():
+                # Get user's input
+                author = whereisteddynowform.author.data
+                if author == '':
+                    author = gettext("Anonymous")
+                comment = whereisteddynowform.comment.data
+                secret_code = whereisteddynowform.secret_code.data
+                receive_email_updates = whereisteddynowform.getupdatesbyemail.data
+
+                # Get photos (4 at max)
+                photos = request.files.getlist('photo')
+                photos_list = []
+                for n in range(len(photos)):
+                    if n<4:
+                        path = ft_functions.photo_check_save(photos[n], OURTRAVELER)
+                        if path != 'error':
+                            photos[n].save('.' + PHOTO_DIR + OURTRAVELER + '/' + path)
+                            photos_list.append(path)
+                        else:
+                            # At least one of images is invalid. Messages are flashed from photo_check_save()
+                            return redirect(url_for('traveler', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
+                            #return render_template('traveler.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELER)
+                if len(photos)>4:
+                    flash(
+                        lazy_gettext('{}\'s locations are reposted to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'.format(OURTRAVELER)),
+                        'addlocation')
+
+                # Save data to DB
+                # Connect to DB 'TeddyGo'
+                client = MongoClient()
+                db = client.TeddyGo
+
+                # Check secret code in collection 'travellers'
+                collection_travellers = db.travellers
+                teddys_sc_should_be = collection_travellers.find_one({"name": OURTRAVELER})['secret_code']
+                if not sha256_crypt.verify(secret_code, teddys_sc_should_be):
+                    flash(lazy_gettext('Invalid secret code'), 'addlocation')
+                    return redirect(url_for('traveler', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
+                else:
+                    # Prepare dictionary with new location info
+                    geodata = session['geodata']
+
+                    new_teddy_location = {
+                        'author': author,
+                        'channel': 'website',
+                        'user_id_on_channel': None, # for website entry
+                        'longitude': float(geodata.get('longitude')),
+                        'latitude': float(geodata.get('latitude')),
+                        'formatted_address': geodata.get('formatted_address'),
+                        'locality':  geodata.get('locality'),
+                        'administrative_area_level_1':  geodata.get('administrative_area_level_1'),
+                        'country':  geodata.get('country'),
+                        'place_id':  geodata.get('place_id'),
+                        'comment': comment,
+                        'photos': photos_list
+                    }
+
+                    # Connect to collection and insert document
+                    collection_teddy = db[OURTRAVELER]
+                    new_teddy_location_id = collection_teddy.insert_one(new_teddy_location).inserted_id
+
+                    # Get the new secret code
+                    new_code_generated = ft_functions.code_regenerate(OURTRAVELER)
+
+                    if receive_email_updates:
+                        ft_functions.save_user_as_subscriber(session['Email'], OURTRAVELER)
+
+                    if new_code_generated:
+                        # Flash the new code and send it to user's email
+                        email = session['Email']
+                        msg = Message(gettext("Fellowtraveler.club: new secret code - {}").format(new_code_generated),
+                                      sender="mailvulgaris@gmail.com", recipients=[email])
+                        msg.html = gettext("Hi!<br><br>" \
+                                   "You added a new {0}'s location, thanks. Secret code is being regenerated after every location and for adding the next location it will be:<br><br>" \
+                                   "<b><h1>{1}</h1></b><br><br>" \
+                                   "It's recommended that you write it down to {0}'s notebook immediately (and obligatorily if you are going to pass {0} to somebody)<br><br>" \
+                                   "In case of any problems please write to <a href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>"\
+                                   "Thank you for participating in <a href='https://fellowtraveler.club'>fellowtraveler.club</a>").format(OURTRAVELER, new_code_generated)
+                        mail.send(msg)
+                        flash(lazy_gettext('New location added! NEW SECRET CODE for adding the next location is {} (was sent to your email {}). Please write the new secret code into {}\'s notebook').format(new_code_generated, email, OURTRAVELER), 'header')
+
+                    # Update journey summary
+                    ft_functions.summarize_journey(OURTRAVELER)
+
+                    # Post to Twitter
+                    '''
+                    newstatus = 'Teddy with {} in {}'.format(new_teddy_location['author'], new_teddy_location['formatted_address'])
+                    if comment != '':
+                        newstatus += '. {} wrote: {}'.format(new_teddy_location['author'], new_teddy_location['comment'])
+                    status = twitter_api.PostUpdate(status=newstatus, media=new_teddy_location['photos'], latitude=new_teddy_location['latitude'],
+                                                    longitude=new_teddy_location['longitude'], display_coordinates=True)
+                    print(status.text)
+                    '''
+
+                    # Clear data from session
+                    session.pop('geodata', None)
+
+                    # Get travellers history
+                    whereteddywas = ft_functions.get_location_history(OURTRAVELER, PHOTO_DIR)
+                    locations_history = whereteddywas['locations_history']
+
+                    # Prepare a map
+                    teddy_map = Map(
+                        identifier="teddy_map",
+                        lat=whereteddywas['start_lat'],
+                        lng=whereteddywas['start_long'],
+                        zoom=8,
+                        language="en",
+                        style="height:480px;width:720px;margin:1;",
+                        markers=whereteddywas['mymarkers'],
+                        fit_markers_to_bounds=True
+                    )
+
+                    # Get journey summary
+                    journey_summary = ''
+                    travelled_so_far = ft_functions.get_journey_summary(OURTRAVELER)
+                    if not travelled_so_far:
+                        journey_summary = ''
+                    else:
+                        journey_summary = travelled_so_far['speech']
+
+                    # If incorrect password
+                    #return redirect(url_for('traveler', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
+                    return render_template('traveler.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform,
+                                           locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary,
+                                           language=user_language, traveler=OURTRAVELER, PHOTO_DIR=PHOTO_DIR)
             else:
-                #print('travelled_so_far["speech"]: {}'.format(travelled_so_far['speech']))
-                journey_summary = travelled_so_far['speech']
+                # If adding new location form didn't validate on submit
+                # Clear geodata from session
+                session.pop('geodata', None)
 
-        # Check for preferred language
-        user_language = get_locale()
-        return render_template('index.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, loginform=loginform, registrationform=registrationform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, traveler=OURTRAVELER, scrolldown=False, PHOTO_DIR=PHOTO_DIR)
+                return render_template('traveler.html', whereisteddynowform=whereisteddynowform,
+                                       subscribe2updatesform=subscribe2updatesform, locations_history=locations_history,
+                                       teddy_map=teddy_map, journey_summary=journey_summary, language=user_language,
+                                       traveler=OURTRAVELER, scrolldown=True, PHOTO_DIR=PHOTO_DIR)
+        # GET request
+        else:
+            # Get travellers history
+            print('Index-Get')
 
-    except Exception as error:
-        print("error: {}".format(error))
+            # Flash a disclaimer message and remember this in a cookie
+            disclaimer_shown = request.cookies.get('DisclaimerShown')
+            if not disclaimer_shown:
+                flash(lazy_gettext('No, it\'s not a trick and supposed to be safe but please see <a href="">disclaimer</a>'), 'header')
+                # set a cookie so that disclaimer will be shown only once
+                expire_date = datetime.datetime.now()
+                expire_date = expire_date + datetime.timedelta(days=90)
+                redirect_to_index = redirect('/')
+                response = app.make_response(redirect_to_index)
+                response.set_cookie('DisclaimerShown', 'yes', expires=expire_date)
+                return response
+
+            return render_template('traveler.html', whereisteddynowform=whereisteddynowform,
+                                   subscribe2updatesform=subscribe2updatesform, locations_history=locations_history,
+                                   teddy_map=teddy_map, journey_summary=journey_summary, language=user_language,
+                                   traveler=OURTRAVELER, scrolldown=False, PHOTO_DIR=PHOTO_DIR)
+
+    except Exception as e:
+        print("error: {}".format(e))
         user_language = get_locale()
-        return render_template('error.html', error=error, language=user_language)
+        return render_template('error.html', error=e, language=user_language)
 
 @app.route("/get_geodata_from_gm", methods=["POST"])
 @csrf.exempt
 def get_geodata_from_gm():
-    print("get_geodata_from_gm!")
     if request.method == "POST":
         mygeodata = request.get_json()
         # Retrieve 1) formatted address, 2) latitude, 3) longitude, 4) ['locality', 'political'] (~town), 5) ['administrative_area_level_1', 'political'] (~region/state), 6) ['country', 'political'] (country) and 7) place ID
         if mygeodata[0]:
-            formatted_address = mygeodata[0].get('formatted_address')
+            formatted_address = mygeodata[0].get('formatted_address', '')
             latitude = mygeodata[0].get('geometry').get('location').get('lat', 0) # unlikely that it will be in 0lat 0 long (somewhere in Atlantic Ocean)
             longitude = mygeodata[0].get('geometry').get('location').get('lng', 0)
-            address_components = mygeodata[0].get('address_components')
+            address_components = mygeodata[0].get('address_components', [])
             locality, administrative_area_level_1, country, place_id = None, None, None, None
             for address_component in address_components:
                 types = address_component.get('types')
@@ -618,6 +584,7 @@ def get_geodata_from_gm():
                 elif 'country' in types:
                     country = short_name
             place_id = mygeodata[0].get('place_id')
+            print("Marker position on GMAPS ({}) was saved to session".format(mygeodata[0].get('formatted_address')))
 
         parsed_geodata = {
             'latitude': latitude,
@@ -628,7 +595,6 @@ def get_geodata_from_gm():
             'country': country,
             'place_id': place_id
         }
-        #print('Geodata: {}'.format(parsed_geodata))
         session['geodata'] = parsed_geodata
     return 'Geodata saved to session'
 
@@ -643,23 +609,32 @@ def user_language_to_coockie(lang_code):
     print('Preferred language, {}, was saved to coockie'.format(lang_code.upper()))
     return response
 
-@app.route("/<OURTRAVELER>/subscribe/", methods=["POST"])
+@app.route("/subscribe/", methods=["POST"])
 @csrf.exempt
-def direct_subscription(OURTRAVELER):
-    subscribe2updatesform = HeaderEmailSubscription()
-    if request.method == "POST" and subscribe2updatesform.validate_on_submit():
-        email_entered = subscribe2updatesform.email4updates.data
+def direct_subscription():
+    OURTRAVELER = ft_functions.get_traveler()
+    if OURTRAVELER == 'All':
+        next_redirect = 'index'
     else:
-        flash(lazy_gettext("Please enter a valid e-mail address"), 'header')
-        return redirect(url_for('index'))
-    result = ft_functions.save_subscriber(email_entered, OURTRAVELER)
-    return redirect(url_for('index'))
+        next_redirect = 'traveler'
+
+    subscribe2updatesform = HeaderEmailSubscription()
+
+    if request.method == "POST":
+        if subscribe2updatesform.validate_on_submit():
+            email_entered = subscribe2updatesform.email4updates.data
+        else:
+            flash(lazy_gettext("Please enter a valid e-mail address"), 'header')
+        ft_functions.save_subscriber(email_entered, OURTRAVELER)
+    return redirect(url_for(next_redirect))
+
 
 @app.route("/<OURTRAVELER>/verify/<user_email>/<verification_code>")
 @csrf.exempt
 def verify_email(OURTRAVELER, user_email, verification_code):
     '''
         Verification of new email for getting updates (DB TeddyGo >> subscribers)
+        Unregistered users may subscribe to email updates
     '''
     try:
         # Check if user's email exists in DB and is not unsubscribed
@@ -670,7 +645,7 @@ def verify_email(OURTRAVELER, user_email, verification_code):
             {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]})
         if not email_already_submitted:
             flash(lazy_gettext("Email {} was not found".format(user_email)), 'header')
-            return redirect(url_for('index'))
+            return redirect(url_for('traveler'))
 
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
         docID = subscribers.find_one(
@@ -682,28 +657,34 @@ def verify_email(OURTRAVELER, user_email, verification_code):
         if not sha256_crypt.verify(verification_code, verification_code_should_be):
             # If invalid code - inform user
             flash(lazy_gettext('Sorry but you submitted an invalid verification code. Email address not verified'), 'header')
-            return redirect(url_for('index'))
+            return redirect(url_for('traveler'))
         else:
             # If code Ok, check if email is not already verified
             if subscribers.find_one({'_id': docID})['verified'] == True:
                 flash(lazy_gettext('Email address {} already verified'.format(user_email)), 'header')
-                return redirect(url_for('index'))
+                return redirect(url_for('traveler'))
             else:
                 # update the document in DB and inform user
                 subscribers.update_one({'_id': docID}, {'$set': {'verified': True, 'unsubscribed': False}})
                 flash(lazy_gettext('Email verified! Thanks for subscribing to {}\'s location updates!'.format(OURTRAVELER)), 'header')
-                return redirect(url_for('index'))
+                return redirect(url_for('traveler'))
     except Exception as error:
         flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
-        return redirect(url_for('index'))
+        return redirect(url_for('traveler'))
 
-@app.route("/<OURTRAVELER>/verify_email/<user_email>/<email_verification_code>")
+@app.route("/<OURTRAVELER>/verify_user/<user_email>/<email_verification_code>")
 @csrf.exempt
 def verify_registration(OURTRAVELER, user_email, email_verification_code):
     '''
         Verification of new user's email (DB TeddyGo >> users)
     '''
     try:
+        what_traveler = ft_functions.get_traveler()
+        if what_traveler == 'All':
+            where_to_return = 'index'
+        else:
+            where_to_return = 'traveler'
+
         # Check if user's email exists in DB
         client = MongoClient()
         db = client.TeddyGo
@@ -711,7 +692,7 @@ def verify_registration(OURTRAVELER, user_email, email_verification_code):
         email_already_submitted = users.find_one({"email": user_email})
         if not email_already_submitted:
             flash(lazy_gettext("Email {} was not found".format(user_email)), 'header')
-            return redirect(url_for('index'))
+            return redirect(url_for(where_to_return))
 
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
         docID = users.find_one(
@@ -723,12 +704,12 @@ def verify_registration(OURTRAVELER, user_email, email_verification_code):
         if not sha256_crypt.verify(email_verification_code, email_verification_code_should_be):
             # If invalid code - inform user
             flash(lazy_gettext('Sorry but you submitted an invalid verification code. Email address not verified'), 'header')
-            return redirect(url_for('index'))
+            return redirect(url_for(where_to_return))
         else:
             # If code Ok, check if email is not already verified
             if users.find_one({'_id': docID})['email_verified'] == True:
                 flash(lazy_gettext('Email address {} already verified'.format(user_email)), 'header')
-                return redirect(url_for('index'))
+                return redirect(url_for(where_to_return))
             else:
                 # update the document in DB and inform user
                 users.update_one({'_id': docID}, {'$set': {'email_verified': True}})
@@ -750,15 +731,21 @@ def verify_registration(OURTRAVELER, user_email, email_verification_code):
                     return response
                 else:
                     print('LoggedIn and Email cookies already exist')
-                    return redirect(url_for('index'))
+                    return redirect(url_for(where_to_return))
     except Exception as error:
         flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
-        return redirect(url_for('index'))
+        return redirect(url_for(where_to_return))
 
 @app.route("/<OURTRAVELER>/unsubscribe/<user_email>/<verification_code>")
 @csrf.exempt
 def unsubscribe(OURTRAVELER, user_email, verification_code):
     try:
+        what_traveler = ft_functions.get_traveler()
+        if what_traveler == 'All':
+            where_to_return = 'index'
+        else:
+            where_to_return = 'traveler'
+
         # Check if user's email exists in DB
         client = MongoClient()
         db = client.TeddyGo
@@ -767,7 +754,7 @@ def unsubscribe(OURTRAVELER, user_email, verification_code):
             {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]})
         if not email_already_submitted:
             flash(lazy_gettext("Email {} was not found".format(user_email)), 'header')
-            return redirect(url_for('index'))
+            return redirect(url_for(where_to_return))
 
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
         docID = subscribers.find_one(
@@ -779,29 +766,27 @@ def unsubscribe(OURTRAVELER, user_email, verification_code):
         if not sha256_crypt.verify(verification_code, verification_code_should_be):
             # If invalid code - inform user
             flash(lazy_gettext('Sorry but you submitted an invalid verification code. Unsubscription failed'), 'header')
-            return redirect(url_for('index'))
+            return redirect(url_for(where_to_return))
         else:
             # If code Ok, "soft"-delete the document
             subscribers.update_one({'_id': docID}, {'$set': {'unsubscribed': True}})
             flash(lazy_gettext('Email {} successfully unsubscribed'.format(user_email)), 'header')
-            return redirect(url_for('index'))
+            return redirect(url_for(where_to_return))
     except Exception as error:
         flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
-        return redirect(url_for('index'))
+        return redirect(url_for(where_to_return))
 
 @app.errorhandler(404)
 @csrf.exempt
 def page_not_found(error):
     # Check for preferred language
-    user_language = get_locale()
-    return render_template('404.html', language=user_language), 404
+    return render_template('404.html'), 404
 
 @app.errorhandler(413)
 @csrf.exempt
 def file_too_large(error):
     # Check for preferred language
-    user_language = get_locale()
-    return render_template('413.html', language=user_language), 413
+    return render_template('413.html'), 413
 
 # Run Flask server
 if __name__ == '__main__':
