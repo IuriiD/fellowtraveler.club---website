@@ -423,6 +423,8 @@ def save_subscriber(email_entered, OURTRAVELER):
     '''
         Gets email address, checks if it's not already in subscribers' DB, saves it, sends a verification email and informs user with flashes
     '''
+    print('email_entered: {}'.format(email_entered))
+    print('OURTRAVELER passed: {}'.format(OURTRAVELER))
     try:
         # Check if user's email is not already in DB
         client = MongoClient()
@@ -454,8 +456,10 @@ def save_subscriber(email_entered, OURTRAVELER):
 
         verification_link = '{}/verify/{}/{}'.format(SITE_URL, email_entered, userid)
         unsubscription_link = '{}/unsubscribe/{}/{}'.format(SITE_URL, email_entered, userid)
+        print("verification_link: {}".format(verification_link))
 
         new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
+        print('new_subscriber_id: {}'.format(new_subscriber_id))
 
         # Send user a confirmation email with unsubscription link
         topic = gettext("Fellowtraveler.club: email verification link")
@@ -466,13 +470,14 @@ def save_subscriber(email_entered, OURTRAVELER):
             whos_location_updates = "{}'s".format(OURTRAVELER)
 
         message = gettext("Hi!<br><br>" \
-                   "Thanks for subscribing to {} location updates!<br>" \
+                   "Thanks for subscribing to {0} location updates!<br>" \
                    "They won't be too often (not more than once a week).<br><br>" \
                    "Please verify your email address by clicking on the following link:<br><b>" \
-                   "<a href='{0}' target='_blank'>{0}</a></b><br><br>" \
+                   "<a href='{1}' target='_blank'>{1}</a></b><br><br>" \
                    "If for any reason later you will decide to unsubscribe, please click on the following link:<br>" \
-                   "<a href='{1}' target='_blank'>{1}</a>").format(whos_location_updates, verification_link, unsubscription_link)
+                   "<a href='{2}' target='_blank'>{2}</a>").format(whos_location_updates, verification_link, unsubscription_link)
         send_mail(topic=topic, recipients=recipients, message=message)
+        print('message sent')
 
         flash(lazy_gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
         return {"status": "success",

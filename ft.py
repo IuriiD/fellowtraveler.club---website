@@ -613,30 +613,39 @@ def user_language_to_coockie(lang_code):
 @csrf.exempt
 def direct_subscription():
     OURTRAVELER = ft_functions.get_traveler()
-    if OURTRAVELER == 'All':
-        next_redirect = 'index'
-    else:
-        next_redirect = 'traveler'
+    print('OURTRAVELER: {}'.format(OURTRAVELER))
 
     subscribe2updatesform = HeaderEmailSubscription()
 
     if request.method == "POST":
         if subscribe2updatesform.validate_on_submit():
             email_entered = subscribe2updatesform.email4updates.data
+            ft_functions.save_subscriber(email_entered, OURTRAVELER)
         else:
             flash(lazy_gettext("Please enter a valid e-mail address"), 'header')
-        ft_functions.save_subscriber(email_entered, OURTRAVELER)
-    return redirect(url_for(next_redirect))
+
+    if OURTRAVELER == 'All':
+        return redirect('/')
+    else:
+        return redirect('/{}/'.format(OURTRAVELER))
 
 
-@app.route("/<OURTRAVELER>/verify/<user_email>/<verification_code>")
+@app.route("/verify/<user_email>/<verification_code>")
 @csrf.exempt
-def verify_email(OURTRAVELER, user_email, verification_code):
+def verify_email(user_email, verification_code):
     '''
         Verification of new email for getting updates (DB TeddyGo >> subscribers)
         Unregistered users may subscribe to email updates
     '''
+    next_redirect = '/'
     try:
+        what_traveler = ft_functions.get_traveler()
+        if what_traveler == 'All':
+            whos_updates = "our travelers\'"
+        else:
+            whos_updates = "{}'s".format(what_traveler)
+            next_redirect = '/{}/'.format(what_traveler)
+
         # Check if user's email exists in DB and is not unsubscribed
         client = MongoClient()
         db = client.TeddyGo
@@ -645,7 +654,7 @@ def verify_email(OURTRAVELER, user_email, verification_code):
             {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]})
         if not email_already_submitted:
             flash(lazy_gettext("Email {} was not found".format(user_email)), 'header')
-            return redirect(url_for('traveler'))
+            return redirect(next_redirect)
 
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
         docID = subscribers.find_one(
@@ -657,24 +666,24 @@ def verify_email(OURTRAVELER, user_email, verification_code):
         if not sha256_crypt.verify(verification_code, verification_code_should_be):
             # If invalid code - inform user
             flash(lazy_gettext('Sorry but you submitted an invalid verification code. Email address not verified'), 'header')
-            return redirect(url_for('traveler'))
+            return redirect(next_redirect)
         else:
             # If code Ok, check if email is not already verified
             if subscribers.find_one({'_id': docID})['verified'] == True:
                 flash(lazy_gettext('Email address {} already verified'.format(user_email)), 'header')
-                return redirect(url_for('traveler'))
+                return redirect(next_redirect)
             else:
                 # update the document in DB and inform user
                 subscribers.update_one({'_id': docID}, {'$set': {'verified': True, 'unsubscribed': False}})
-                flash(lazy_gettext('Email verified! Thanks for subscribing to {}\'s location updates!'.format(OURTRAVELER)), 'header')
-                return redirect(url_for('traveler'))
+                flash(lazy_gettext('Email verified! Thanks for subscribing to {} location updates!'.format(whos_updates)), 'header')
+                return redirect(next_redirect)
     except Exception as error:
         flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
-        return redirect(url_for('traveler'))
+        return redirect(next_redirect)
 
-@app.route("/<OURTRAVELER>/verify_user/<user_email>/<email_verification_code>")
+@app.route("/verify_user/<user_email>/<email_verification_code>")
 @csrf.exempt
-def verify_registration(OURTRAVELER, user_email, email_verification_code):
+def verify_registration(user_email, email_verification_code):
     '''
         Verification of new user's email (DB TeddyGo >> users)
     '''
@@ -736,15 +745,17 @@ def verify_registration(OURTRAVELER, user_email, email_verification_code):
         flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
         return redirect(url_for(where_to_return))
 
-@app.route("/<OURTRAVELER>/unsubscribe/<user_email>/<verification_code>")
+@app.route("/unsubscribe/<user_email>/<verification_code>")
 @csrf.exempt
-def unsubscribe(OURTRAVELER, user_email, verification_code):
+def unsubscribe(user_email, verification_code):
+    where_to_return = '/'
     try:
+        # Check which traveler user was watching
         what_traveler = ft_functions.get_traveler()
         if what_traveler == 'All':
-            where_to_return = 'index'
+            where_to_return = '/'
         else:
-            where_to_return = 'traveler'
+            where_to_return = '/{}/'.format(what_traveler)
 
         # Check if user's email exists in DB
         client = MongoClient()
@@ -754,27 +765,26 @@ def unsubscribe(OURTRAVELER, user_email, verification_code):
             {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]})
         if not email_already_submitted:
             flash(lazy_gettext("Email {} was not found".format(user_email)), 'header')
-            return redirect(url_for(where_to_return))
+            return redirect(where_to_return)
 
         # Find sha256_crypt-encrypted verification code in DB for a given user_email
         docID = subscribers.find_one(
             {"$and": [{"email": user_email}, {'unsubscribed': {'$ne': True}}]}).get('_id')
         verification_code_should_be = subscribers.find_one({'_id': docID})['verification_code']
 
-
         # Compare it with the code submitted
         if not sha256_crypt.verify(verification_code, verification_code_should_be):
             # If invalid code - inform user
             flash(lazy_gettext('Sorry but you submitted an invalid verification code. Unsubscription failed'), 'header')
-            return redirect(url_for(where_to_return))
+            return redirect(where_to_return)
         else:
             # If code Ok, "soft"-delete the document
             subscribers.update_one({'_id': docID}, {'$set': {'unsubscribed': True}})
             flash(lazy_gettext('Email {} successfully unsubscribed'.format(user_email)), 'header')
-            return redirect(url_for(where_to_return))
+            return redirect(where_to_return)
     except Exception as error:
         flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
-        return redirect(url_for(where_to_return))
+        return redirect(where_to_return)
 
 @app.errorhandler(404)
 @csrf.exempt
