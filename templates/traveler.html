@@ -69,7 +69,7 @@
 
                 <!-- Choose language block -->
                 <div class="container-fluid" align="right">
-                    {{ gettext('Change language') }}: {% if language != 'en' %}<a href="/language/en">{% endif %}En{% if language != 'en' %}</a>{% endif %} {% if language != 'de' %}<a href="/language/de">{% endif %}De{% if language != 'de' %}</a>{% endif %} {% if language != 'ru' %}<a href="/language/ru">{% endif %}Ru{% if language != 'ru' %}</a>{% endif %} {% if language != 'uk' %}<a href="/language/uk">{% endif %}Uk{% if language != 'uk' %}</a>{% endif %} {% if language != 'fr' %}<a href="/language/fr">{% endif %}Fr{% if language != 'fr' %}</a>{% endif %}
+                    {{ gettext('Change language') }}: {% if language != 'en' %}<a href="/language/en">{% endif %}En{% if language != 'en' %}</a>{% endif %} {% if language != 'de' %}<a href="/language/de" style="color: #6c757d">{% endif %}De{% if language != 'de' %}</a>{% endif %} {% if language != 'ru' %}<a href="/language/ru">{% endif %}Ru{% if language != 'ru' %}</a>{% endif %} {% if language != 'uk' %}<a href="/language/uk">{% endif %}Uk{% if language != 'uk' %}</a>{% endif %} {% if language != 'fr' %}<a href="/language/fr" style="color: #6c757d">{% endif %}Fr{% if language != 'fr' %}</a>{% endif %}
                 </div>
 
                 <!-- Webchat -->
@@ -119,7 +119,7 @@
         <h2><b>{{ gettext('Travel timeline') }}</b></h2>
         <span align="right">
             <a href="#top">
-                Go to top
+                {{ gettext('Go to top') }}
             </a>
         </span>
     </div>
@@ -155,7 +155,7 @@
         <h2><b>{{ gettext('Add new location') }}</b></h2>
         <span align="right">
             <a href="#top">
-                Go to top
+                {{ gettext('Go to top') }}
             </a>
         </span>
     </div>
@@ -204,7 +204,7 @@
         </form>
 
     {% else %}
-        To add new {{ traveler }}'s location first please <a href="../service/login/"><b>log</b></a> in or <a href="../service/register/"><b>register</b></a>
+        {{ gettext('To add new') }} {{ traveler }}{{ gettext('\'s location first please <a href="../service/login/"><b>log</b></a> in or <a href="../service/register/"><b>register</b></a>') }}
     {% endif %}
 
     <!-- Scrolling down to update_location form in case form doesn't validate and index.html is rendered with parameter scrolldown=True -->

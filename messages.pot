@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-05-08 08:14+0000\n"
+"POT-Creation-Date: 2018-05-11 11:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,33 +17,109 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
 
-#: ft.py:148 ft.py:280
+#: ft.py:77
+msgid "Your name"
+msgstr ""
+
+#: ft.py:77
+msgid "Your name is too long (50 characters max)"
+msgstr ""
+
+#: ft.py:78
+msgid "Add a comment"
+msgstr ""
+
+#: ft.py:78
+msgid ""
+"Sorry but comments are uploaded to Twitter and thus can't be longer than "
+"280 characters"
+msgstr ""
+
+#: ft.py:79
+msgid "Get updates by email"
+msgstr ""
+
+#: ft.py:80
+msgid "Secret code from the toy (required)"
+msgstr ""
+
+#: ft.py:80
+msgid "Please enter the code which you can find on the toy"
+msgstr ""
+
+#: ft.py:81
+msgid "Secret code must have 4 digits"
+msgstr ""
+
+#: ft.py:83
+msgid "Submit"
+msgstr ""
+
+#: ft.py:86 ft.py:92
+msgid "Email Address"
+msgstr ""
+
+#: ft.py:86 ft.py:92 ft.py:97 ft.py:616
+msgid "Please enter a valid e-mail address"
+msgstr ""
+
+#: ft.py:87
+msgid "New Password"
+msgstr ""
+
+#: ft.py:87
+msgid "Passwords must match"
+msgstr ""
+
+#: ft.py:88
+msgid "Repeat Password"
+msgstr ""
+
+#: ft.py:89 templates/traveler.html:66
+msgid "Register"
+msgstr ""
+
+#: ft.py:93
+msgid "Password"
+msgstr ""
+
+#: ft.py:94 templates/login.html:4 templates/traveler.html:66
+msgid "Log in"
+msgstr ""
+
+#: ft.py:97
+msgid "Get updates by email:"
+msgstr ""
+
+#: ft.py:98
+msgid "Subscribe"
+msgstr ""
+
+#: ft.py:107
+msgid "You need to <a href=\"../service/login/\">log in</a> first"
+msgstr ""
+
+#: ft.py:116
+msgid "You need to <a href=\"../service/logout/\">log out</a> first"
+msgstr ""
+
+#: ft.py:173
+msgid ""
+"User with email {} is already registered. Please choose a different email"
+" address or <a href='../login/'>log in</a>"
+msgstr ""
+
+#: ft.py:177
+msgid ""
+"User with email {} is already registered but email has not been verified "
+"yet"
+msgstr ""
+
+#: ft.py:197 ft_functions.py:631
 msgid "Fellowtraveler.club: email verification link"
 msgstr ""
 
-#: ft.py:150
-msgid ""
-"Hi!<br><br>Thanks for subscribing to Teddy's location updates!<br>They "
-"won't be too often (not more than once a week).<br><br>Please verify your"
-" email address by clicking on the following link:<br><b><a href='{0}' "
-"target='_blank'>{0}</a></b><br><br>If for any reason later you will "
-"decide to unsubscribe, please click on the following link:<br><a "
-"href='{1}' target='_blank'>{1}</a>"
-msgstr ""
-
-#: ft.py:206
-msgid "Fellowtraveler.club: you subscribed to email updates"
-msgstr ""
-
-#: ft.py:208
-msgid ""
-"Hi!<br><br>Thanks for subscribing to Teddy's location updates!<br>They "
-"won't be too often (not more than once a week).<br><br>If for any reason "
-"later you will decide to unsubscribe, please click on the following "
-"link:<br><a href='{0}' target='_blank'>{0}</a>"
-msgstr ""
-
-#: ft.py:282
+#: ft.py:199
 msgid ""
 "Hi! Thanks for registering on <b><a "
 "href='https://fellowtraveler.club'>fellowtraveler.club</a></b>.<br><br>Please"
@@ -52,15 +128,60 @@ msgid ""
 "simply ignore this message"
 msgstr ""
 
-#: ft.py:472
+#: ft.py:204
+msgid ""
+"Almost finished. To complete registration please click on the "
+"verification link that has been sent to your email"
+msgstr ""
+
+#: ft.py:247
+msgid ""
+"Such email is registered but hasn't been verified yet. If it's your email"
+" please verify it, otherwise choose different credentials to log in or <a"
+" href=\"../register/\">register</a>"
+msgstr ""
+
+#: ft.py:253
+msgid ""
+"Sorry, we do not recognize this email address. Please choose different "
+"credentials or <a href=\"../register/\">register</a>"
+msgstr ""
+
+#: ft.py:260 temp.py:48
+msgid "Login successfull!"
+msgstr ""
+
+#: ft.py:288 temp.py:76
+msgid "Wrong password"
+msgstr ""
+
+#: ft.py:309
+msgid "You have been logged out"
+msgstr ""
+
+#: ft.py:393
+msgid "Please enter {}'s location (current or on the photo)"
+msgstr ""
+
+#: ft.py:401
 msgid "Anonymous"
 msgstr ""
 
-#: ft.py:541
+#: ft.py:420
+msgid ""
+"{}'s locations are reposted to Twitter and thus can't have more than 4 "
+"images each. Only the first 4 photos were uploaded"
+msgstr ""
+
+#: ft.py:432
+msgid "Invalid secret code"
+msgstr ""
+
+#: ft.py:466
 msgid "Fellowtraveler.club: new secret code - {}"
 msgstr ""
 
-#: ft.py:543
+#: ft.py:468
 msgid ""
 "Hi!<br><br>You added a new {0}'s location, thanks. Secret code is being "
 "regenerated after every location and for adding the next location it will"
@@ -72,13 +193,1143 @@ msgid ""
 "href='https://fellowtraveler.club'>fellowtraveler.club</a>"
 msgstr ""
 
+#: ft.py:472
+msgid ""
+"New location added! NEW SECRET CODE for adding the next location is {} "
+"(was sent to your email {}). Please write the new secret code into {}'s "
+"notebook"
+msgstr ""
+
+#: ft.py:536
+msgid ""
+"No, it's not a trick and supposed to be safe but please see <a "
+"href=\"\">disclaimer</a>"
+msgstr ""
+
+#: ft.py:647 ft.py:694 ft.py:758
+msgid "Email {} was not found"
+msgstr ""
+
+#: ft.py:659 ft.py:706
+msgid ""
+"Sorry but you submitted an invalid verification code. Email address not "
+"verified"
+msgstr ""
+
+#: ft.py:664 ft.py:711
+msgid "Email address {} already verified"
+msgstr ""
+
+#: ft.py:669
+msgid "Email verified! Thanks for subscribing to {} location updates!"
+msgstr ""
+
+#: ft.py:672 ft.py:736 ft.py:777 ft_functions.py:646 ft_functions.py:701
+msgid "Error happened ('{}')"
+msgstr ""
+
+#: ft.py:717
+msgid ""
+"Email verified! Thanks for registration. If you've got a fellow traveler "
+"you can add his/her new location now"
+msgstr ""
+
+#: ft.py:769
+msgid ""
+"Sorry but you submitted an invalid verification code. Unsubscription "
+"failed"
+msgstr ""
+
+#: ft.py:774
+msgid "Email {} successfully unsubscribed"
+msgstr ""
+
+#: ft_functions.py:92
+msgid ""
+"File {} has invalid image extension (not \".jpg\", \".jpeg\", \".png\", "
+"\".gif\" or \".bmp\") or invalid image format"
+msgstr ""
+
+#: ft_functions.py:134
+msgid "By <b>{}</b>"
+msgstr ""
+
+#: ft_functions.py:163
+msgid "Afghanistan"
+msgstr ""
+
+#: ft_functions.py:163
+msgid "Åland Islands"
+msgstr ""
+
+#: ft_functions.py:164
+msgid "Albania"
+msgstr ""
+
+#: ft_functions.py:164
+msgid "Algeria"
+msgstr ""
+
+#: ft_functions.py:165
+msgid "American Samoa"
+msgstr ""
+
+#: ft_functions.py:165
+msgid "Andorra"
+msgstr ""
+
+#: ft_functions.py:166
+msgid "Angola"
+msgstr ""
+
+#: ft_functions.py:166
+msgid "Anguilla"
+msgstr ""
+
+#: ft_functions.py:167
+msgid "Antarctica"
+msgstr ""
+
+#: ft_functions.py:167
+msgid "Antigua and Barbuda"
+msgstr ""
+
+#: ft_functions.py:168
+msgid "Argentina"
+msgstr ""
+
+#: ft_functions.py:168
+msgid "Armenia"
+msgstr ""
+
+#: ft_functions.py:169
+msgid "Aruba"
+msgstr ""
+
+#: ft_functions.py:169
+msgid "Australia"
+msgstr ""
+
+#: ft_functions.py:170
+msgid "Austria"
+msgstr ""
+
+#: ft_functions.py:170
+msgid "Azerbaijan"
+msgstr ""
+
+#: ft_functions.py:171
+msgid "Bahamas"
+msgstr ""
+
+#: ft_functions.py:171
+msgid "Bahrain"
+msgstr ""
+
+#: ft_functions.py:172
+msgid "Bangladesh"
+msgstr ""
+
+#: ft_functions.py:172
+msgid "Barbados"
+msgstr ""
+
+#: ft_functions.py:173
+msgid "Belarus"
+msgstr ""
+
+#: ft_functions.py:173
+msgid "Belgium"
+msgstr ""
+
+#: ft_functions.py:174
+msgid "Belize"
+msgstr ""
+
+#: ft_functions.py:174
+msgid "Benin"
+msgstr ""
+
+#: ft_functions.py:175
+msgid "Bermuda"
+msgstr ""
+
+#: ft_functions.py:175
+msgid "Bhutan"
+msgstr ""
+
+#: ft_functions.py:176
+msgid "Bolivia, Plurinational State of"
+msgstr ""
+
+#: ft_functions.py:177
+msgid "Bonaire, Sint Eustatius and Saba"
+msgstr ""
+
+#: ft_functions.py:178
+msgid "Bosnia and Herzegovina"
+msgstr ""
+
+#: ft_functions.py:178
+msgid "Botswana"
+msgstr ""
+
+#: ft_functions.py:179
+msgid "Bouvet Island"
+msgstr ""
+
+#: ft_functions.py:179
+msgid "Brazil"
+msgstr ""
+
+#: ft_functions.py:180
+msgid "British Indian Ocean Territory"
+msgstr ""
+
+#: ft_functions.py:181
+msgid "Brunei Darussalam"
+msgstr ""
+
+#: ft_functions.py:181
+msgid "Bulgaria"
+msgstr ""
+
+#: ft_functions.py:182
+msgid "Burkina Faso"
+msgstr ""
+
+#: ft_functions.py:182
+msgid "Burundi"
+msgstr ""
+
+#: ft_functions.py:183
+msgid "Cambodia"
+msgstr ""
+
+#: ft_functions.py:183
+msgid "Cameroon"
+msgstr ""
+
+#: ft_functions.py:184
+msgid "Canada"
+msgstr ""
+
+#: ft_functions.py:184
+msgid "Cape Verde"
+msgstr ""
+
+#: ft_functions.py:185
+msgid "Cayman Islands"
+msgstr ""
+
+#: ft_functions.py:186
+msgid "Central African Republic"
+msgstr ""
+
+#: ft_functions.py:187
+msgid "Chad"
+msgstr ""
+
+#: ft_functions.py:188
+msgid "Chile"
+msgstr ""
+
+#: ft_functions.py:188
+msgid "China"
+msgstr ""
+
+#: ft_functions.py:189
+msgid "Christmas Island"
+msgstr ""
+
+#: ft_functions.py:190
+msgid "Cocos (Keeling) Islands"
+msgstr ""
+
+#: ft_functions.py:191
+msgid "Colombia"
+msgstr ""
+
+#: ft_functions.py:192
+msgid "Comoros"
+msgstr ""
+
+#: ft_functions.py:192
+msgid "Congo"
+msgstr ""
+
+#: ft_functions.py:193
+msgid "Congo, the Democratic Republic of the"
+msgstr ""
+
+#: ft_functions.py:194
+msgid "Cook Islands"
+msgstr ""
+
+#: ft_functions.py:195
+msgid "Costa Rica"
+msgstr ""
+
+#: ft_functions.py:196
+msgid "Côte d'Ivoire"
+msgstr ""
+
+#: ft_functions.py:197
+msgid "Croatia"
+msgstr ""
+
+#: ft_functions.py:198
+msgid "Cuba"
+msgstr ""
+
+#: ft_functions.py:198
+msgid "Curaçao"
+msgstr ""
+
+#: ft_functions.py:199
+msgid "Cyprus"
+msgstr ""
+
+#: ft_functions.py:200
+msgid "Czech Republic"
+msgstr ""
+
+#: ft_functions.py:201
+msgid "Denmark"
+msgstr ""
+
+#: ft_functions.py:201
+msgid "Djibouti"
+msgstr ""
+
+#: ft_functions.py:202
+msgid "Dominica"
+msgstr ""
+
+#: ft_functions.py:203
+msgid "Dominican Republic"
+msgstr ""
+
+#: ft_functions.py:204
+msgid "Ecuador"
+msgstr ""
+
+#: ft_functions.py:204
+msgid "Egypt"
+msgstr ""
+
+#: ft_functions.py:205
+msgid "El Salvador"
+msgstr ""
+
+#: ft_functions.py:206
+msgid "Equatorial Guinea"
+msgstr ""
+
+#: ft_functions.py:207
+msgid "Eritrea"
+msgstr ""
+
+#: ft_functions.py:207
+msgid "Estonia"
+msgstr ""
+
+#: ft_functions.py:208
+msgid "Ethiopia"
+msgstr ""
+
+#: ft_functions.py:209
+msgid "Falkland Islands (Malvinas)"
+msgstr ""
+
+#: ft_functions.py:210
+msgid "Faroe Islands"
+msgstr ""
+
+#: ft_functions.py:210
+msgid "Fiji"
+msgstr ""
+
+#: ft_functions.py:211
+msgid "Finland"
+msgstr ""
+
+#: ft_functions.py:211
+msgid "France"
+msgstr ""
+
+#: ft_functions.py:212
+msgid "French Guiana"
+msgstr ""
+
+#: ft_functions.py:213
+msgid "French Polynesia"
+msgstr ""
+
+#: ft_functions.py:214
+msgid "French Southern Territories"
+msgstr ""
+
+#: ft_functions.py:215
+msgid "Gabon"
+msgstr ""
+
+#: ft_functions.py:216
+msgid "Gambia"
+msgstr ""
+
+#: ft_functions.py:216
+msgid "Georgia"
+msgstr ""
+
+#: ft_functions.py:217
+msgid "Germany"
+msgstr ""
+
+#: ft_functions.py:217
+msgid "Ghana"
+msgstr ""
+
+#: ft_functions.py:218
+msgid "Gibraltar"
+msgstr ""
+
+#: ft_functions.py:218
+msgid "Greece"
+msgstr ""
+
+#: ft_functions.py:219
+msgid "Greenland"
+msgstr ""
+
+#: ft_functions.py:219
+msgid "Grenada"
+msgstr ""
+
+#: ft_functions.py:220
+msgid "Guadeloupe"
+msgstr ""
+
+#: ft_functions.py:220
+msgid "Guam"
+msgstr ""
+
+#: ft_functions.py:221
+msgid "Guatemala"
+msgstr ""
+
+#: ft_functions.py:221
+msgid "Guernsey"
+msgstr ""
+
+#: ft_functions.py:222
+msgid "Guinea"
+msgstr ""
+
+#: ft_functions.py:222
+msgid "Guinea-Bissau"
+msgstr ""
+
+#: ft_functions.py:223
+msgid "Guyana"
+msgstr ""
+
+#: ft_functions.py:223
+msgid "Haiti"
+msgstr ""
+
+#: ft_functions.py:224
+msgid "Heard Island and McDonald Islands"
+msgstr ""
+
+#: ft_functions.py:225
+msgid "Holy See (Vatican City State)"
+msgstr ""
+
 #: ft_functions.py:226
+msgid "Honduras"
+msgstr ""
+
+#: ft_functions.py:227
+msgid "Hong Kong"
+msgstr ""
+
+#: ft_functions.py:227
+msgid "Hungary"
+msgstr ""
+
+#: ft_functions.py:228
+msgid "Iceland"
+msgstr ""
+
+#: ft_functions.py:228
+msgid "India"
+msgstr ""
+
+#: ft_functions.py:229
+msgid "Indonesia"
+msgstr ""
+
+#: ft_functions.py:230
+msgid "Iran, Islamic Republic of"
+msgstr ""
+
+#: ft_functions.py:231
+msgid "Iraq"
+msgstr ""
+
+#: ft_functions.py:231
+msgid "Ireland"
+msgstr ""
+
+#: ft_functions.py:232
+msgid "Isle of Man"
+msgstr ""
+
+#: ft_functions.py:232
+msgid "Israel"
+msgstr ""
+
+#: ft_functions.py:233
+msgid "Italy"
+msgstr ""
+
+#: ft_functions.py:233
+msgid "Jamaica"
+msgstr ""
+
+#: ft_functions.py:234
+msgid "Japan"
+msgstr ""
+
+#: ft_functions.py:234
+msgid "Jersey"
+msgstr ""
+
+#: ft_functions.py:235
+msgid "Jordan"
+msgstr ""
+
+#: ft_functions.py:235
+msgid "Kazakhstan"
+msgstr ""
+
+#: ft_functions.py:236
+msgid "Kenya"
+msgstr ""
+
+#: ft_functions.py:236
+msgid "Kiribati"
+msgstr ""
+
+#: ft_functions.py:237
+msgid "Korea, Democratic People's Republic of"
+msgstr ""
+
+#: ft_functions.py:238
+msgid "Korea, Republic of"
+msgstr ""
+
+#: ft_functions.py:239
+msgid "Kuwait"
+msgstr ""
+
+#: ft_functions.py:240
+msgid "Kyrgyzstan"
+msgstr ""
+
+#: ft_functions.py:241
+msgid "Lao People's Democratic Republic"
+msgstr ""
+
+#: ft_functions.py:242
+msgid "Latvia"
+msgstr ""
+
+#: ft_functions.py:242
+msgid "Lebanon"
+msgstr ""
+
+#: ft_functions.py:243
+msgid "Lesotho"
+msgstr ""
+
+#: ft_functions.py:243
+msgid "Liberia"
+msgstr ""
+
+#: ft_functions.py:244
+msgid "Libya"
+msgstr ""
+
+#: ft_functions.py:244
+msgid "Liechtenstein"
+msgstr ""
+
+#: ft_functions.py:245
+msgid "Lithuania"
+msgstr ""
+
+#: ft_functions.py:245
+msgid "Luxembourg"
+msgstr ""
+
+#: ft_functions.py:246
+msgid "Macao"
+msgstr ""
+
+#: ft_functions.py:247
+msgid "Macedonia, the Former Yugoslav Republic of"
+msgstr ""
+
+#: ft_functions.py:248
+msgid "Madagascar"
+msgstr ""
+
+#: ft_functions.py:248
+msgid "Malawi"
+msgstr ""
+
+#: ft_functions.py:249
+msgid "Malaysia"
+msgstr ""
+
+#: ft_functions.py:249
+msgid "Maldives"
+msgstr ""
+
+#: ft_functions.py:250
+msgid "Mali"
+msgstr ""
+
+#: ft_functions.py:250
+msgid "Malta"
+msgstr ""
+
+#: ft_functions.py:251
+msgid "Marshall Islands"
+msgstr ""
+
+#: ft_functions.py:252
+msgid "Martinique"
+msgstr ""
+
+#: ft_functions.py:253
+msgid "Mauritania"
+msgstr ""
+
+#: ft_functions.py:253
+msgid "Mauritius"
+msgstr ""
+
+#: ft_functions.py:254
+msgid "Mayotte"
+msgstr ""
+
+#: ft_functions.py:254
+msgid "Mexico"
+msgstr ""
+
+#: ft_functions.py:255
+msgid "Micronesia, Federated States of"
+msgstr ""
+
+#: ft_functions.py:256
+msgid "Moldova, Republic of"
+msgstr ""
+
+#: ft_functions.py:257
+msgid "Monaco"
+msgstr ""
+
+#: ft_functions.py:258
+msgid "Mongolia"
+msgstr ""
+
+#: ft_functions.py:258
+msgid "Montenegro"
+msgstr ""
+
+#: ft_functions.py:259
+msgid "Montserrat"
+msgstr ""
+
+#: ft_functions.py:259
+msgid "Morocco"
+msgstr ""
+
+#: ft_functions.py:260
+msgid "Mozambique"
+msgstr ""
+
+#: ft_functions.py:260
+msgid "Myanmar"
+msgstr ""
+
+#: ft_functions.py:261
+msgid "Namibia"
+msgstr ""
+
+#: ft_functions.py:261
+msgid "Nauru"
+msgstr ""
+
+#: ft_functions.py:262
+msgid "Nepal"
+msgstr ""
+
+#: ft_functions.py:262
+msgid "Netherlands"
+msgstr ""
+
+#: ft_functions.py:263
+msgid "New Caledonia"
+msgstr ""
+
+#: ft_functions.py:264
+msgid "New Zealand"
+msgstr ""
+
+#: ft_functions.py:265
+msgid "Nicaragua"
+msgstr ""
+
+#: ft_functions.py:265
+msgid "Niger"
+msgstr ""
+
+#: ft_functions.py:266
+msgid "Nigeria"
+msgstr ""
+
+#: ft_functions.py:266
+msgid "Niue"
+msgstr ""
+
+#: ft_functions.py:267
+msgid "Norfolk Island"
+msgstr ""
+
+#: ft_functions.py:268
+msgid "Northern Mariana Islands"
+msgstr ""
+
+#: ft_functions.py:269
+msgid "Norway"
+msgstr ""
+
+#: ft_functions.py:270
+msgid "Oman"
+msgstr ""
+
+#: ft_functions.py:270
+msgid "Pakistan"
+msgstr ""
+
+#: ft_functions.py:271
+msgid "Palau"
+msgstr ""
+
+#: ft_functions.py:272
+msgid "Palestine, State of"
+msgstr ""
+
+#: ft_functions.py:273
+msgid "Panama"
+msgstr ""
+
+#: ft_functions.py:274
+msgid "Papua New Guinea"
+msgstr ""
+
+#: ft_functions.py:275
+msgid "Paraguay"
+msgstr ""
+
+#: ft_functions.py:275
+msgid "Peru"
+msgstr ""
+
+#: ft_functions.py:276
+msgid "Philippines"
+msgstr ""
+
+#: ft_functions.py:276
+msgid "Pitcairn"
+msgstr ""
+
+#: ft_functions.py:277
+msgid "Poland"
+msgstr ""
+
+#: ft_functions.py:277
+msgid "Portugal"
+msgstr ""
+
+#: ft_functions.py:278
+msgid "Puerto Rico"
+msgstr ""
+
+#: ft_functions.py:278
+msgid "Qatar"
+msgstr ""
+
+#: ft_functions.py:279
+msgid "Réunion"
+msgstr ""
+
+#: ft_functions.py:279
+msgid "Romania"
+msgstr ""
+
+#: ft_functions.py:280
+msgid "Russian Federation"
+msgstr ""
+
+#: ft_functions.py:281
+msgid "Rwanda"
+msgstr ""
+
+#: ft_functions.py:282
+msgid "Saint Barthélemy"
+msgstr ""
+
+#: ft_functions.py:283
+msgid "Saint Helena, Ascension and Tristan da Cunha"
+msgstr ""
+
+#: ft_functions.py:284
+msgid "Saint Kitts and Nevis"
+msgstr ""
+
+#: ft_functions.py:285
+msgid "Saint Lucia"
+msgstr ""
+
+#: ft_functions.py:286
+msgid "Saint Martin (French part)"
+msgstr ""
+
+#: ft_functions.py:287
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+
+#: ft_functions.py:288
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+
+#: ft_functions.py:289
+msgid "Samoa"
+msgstr ""
+
+#: ft_functions.py:290
+msgid "San Marino"
+msgstr ""
+
+#: ft_functions.py:291
+msgid "Sao Tome and Principe"
+msgstr ""
+
+#: ft_functions.py:292
+msgid "Saudi Arabia"
+msgstr ""
+
+#: ft_functions.py:292
+msgid "Senegal"
+msgstr ""
+
+#: ft_functions.py:293
+msgid "Serbia"
+msgstr ""
+
+#: ft_functions.py:293
+msgid "Seychelles"
+msgstr ""
+
+#: ft_functions.py:294
+msgid "Sierra Leone"
+msgstr ""
+
+#: ft_functions.py:295
+msgid "Singapore"
+msgstr ""
+
+#: ft_functions.py:296
+msgid "Sint Maarten (Dutch part)"
+msgstr ""
+
+#: ft_functions.py:297
+msgid "Slovakia"
+msgstr ""
+
+#: ft_functions.py:298
+msgid "Slovenia"
+msgstr ""
+
+#: ft_functions.py:299
+msgid "Solomon Islands"
+msgstr ""
+
+#: ft_functions.py:300
+msgid "Somalia"
+msgstr ""
+
+#: ft_functions.py:300
+msgid "South Africa"
+msgstr ""
+
+#: ft_functions.py:301
+msgid "South Georgia and the South Sandwich Islands"
+msgstr ""
+
+#: ft_functions.py:302
+msgid "South Sudan"
+msgstr ""
+
+#: ft_functions.py:302
+msgid "Spain"
+msgstr ""
+
+#: ft_functions.py:303
+msgid "Sri Lanka"
+msgstr ""
+
+#: ft_functions.py:303
+msgid "Sudan"
+msgstr ""
+
+#: ft_functions.py:304
+msgid "Suriname"
+msgstr ""
+
+#: ft_functions.py:305
+msgid "Svalbard and Jan Mayen"
+msgstr ""
+
+#: ft_functions.py:306
+msgid "Swaziland"
+msgstr ""
+
+#: ft_functions.py:306
+msgid "Sweden"
+msgstr ""
+
+#: ft_functions.py:307
+msgid "Switzerland"
+msgstr ""
+
+#: ft_functions.py:308
+msgid "Syrian Arab Republic"
+msgstr ""
+
+#: ft_functions.py:309
+msgid "Taiwan, Province of China"
+msgstr ""
+
+#: ft_functions.py:310
+msgid "Tajikistan"
+msgstr ""
+
+#: ft_functions.py:311
+msgid "Tanzania, United Republic of"
+msgstr ""
+
+#: ft_functions.py:312
+msgid "Thailand"
+msgstr ""
+
+#: ft_functions.py:313
+msgid "Timor-Leste"
+msgstr ""
+
+#: ft_functions.py:313
+msgid "Togo"
+msgstr ""
+
+#: ft_functions.py:314
+msgid "Tokelau"
+msgstr ""
+
+#: ft_functions.py:314
+msgid "Tonga"
+msgstr ""
+
+#: ft_functions.py:315
+msgid "Trinidad and Tobago"
+msgstr ""
+
+#: ft_functions.py:316
+msgid "Tunisia"
+msgstr ""
+
+#: ft_functions.py:317
+msgid "Turkey"
+msgstr ""
+
+#: ft_functions.py:317
+msgid "Turkmenistan"
+msgstr ""
+
+#: ft_functions.py:318
+msgid "Turks and Caicos Islands"
+msgstr ""
+
+#: ft_functions.py:319
+msgid "Tuvalu"
+msgstr ""
+
+#: ft_functions.py:320
+msgid "Uganda"
+msgstr ""
+
+#: ft_functions.py:320
+msgid "Ukraine"
+msgstr ""
+
+#: ft_functions.py:321
+msgid "United Arab Emirates"
+msgstr ""
+
+#: ft_functions.py:322
+msgid "United Kingdom"
+msgstr ""
+
+#: ft_functions.py:323
+msgid "United States"
+msgstr ""
+
+#: ft_functions.py:324
+msgid "United States Minor Outlying Islands"
+msgstr ""
+
+#: ft_functions.py:325
+msgid "Uruguay"
+msgstr ""
+
+#: ft_functions.py:325
+msgid "Uzbekistan"
+msgstr ""
+
+#: ft_functions.py:326
+msgid "Vanuatu"
+msgstr ""
+
+#: ft_functions.py:327
+msgid "Venezuela, Bolivarian Republic of"
+msgstr ""
+
+#: ft_functions.py:328
+msgid "Viet Nam"
+msgstr ""
+
+#: ft_functions.py:329
+msgid "Virgin Islands, British"
+msgstr ""
+
+#: ft_functions.py:330
+msgid "Virgin Islands, U.S."
+msgstr ""
+
+#: ft_functions.py:331
+msgid "Wallis and Futuna"
+msgstr ""
+
+#: ft_functions.py:332
+msgid "Western Sahara"
+msgstr ""
+
+#: ft_functions.py:332
+msgid "Yemen"
+msgstr ""
+
+#: ft_functions.py:333
+msgid "Zambia"
+msgstr ""
+
+#: ft_functions.py:333
+msgid "Zimbabwe"
+msgstr ""
+
+#: ft_functions.py:408
+msgid "country"
+msgstr ""
+
+#: ft_functions.py:410
+msgid "countries"
+msgstr ""
+
+#: ft_functions.py:412
+msgid "day"
+msgstr ""
+
+#: ft_functions.py:414
+msgid "days"
+msgstr ""
+
+#: ft_functions.py:416
 msgid ""
 "So far I've checked in <b>{}</b> places located in <b>{}</b> {} ({}) and "
 "have been traveling for <b>{}</b> {}.\n"
 "\n"
 "I covered about <b>{}</b> km it total and currently I'm nearly <b>{}</b> "
 "km from home"
+msgstr ""
+
+#: ft_functions.py:603
+msgid "Email {} is already subscribed and verified"
+msgstr ""
+
+#: ft_functions.py:606
+msgid "Email {} is already subscribed but has not been verified yet"
+msgstr ""
+
+#: ft_functions.py:638
+msgid ""
+"Hi!<br><br>Thanks for subscribing to {0} location updates!<br>They won't "
+"be too often (not more than once a week).<br><br>Please verify your email"
+" address by clicking on the following link:<br><b><a href='{1}' "
+"target='_blank'>{1}</a></b><br><br>If for any reason later you will "
+"decide to unsubscribe, please click on the following link:<br><a "
+"href='{2}' target='_blank'>{2}</a>"
+msgstr ""
+
+#: ft_functions.py:642
+msgid ""
+"A verification link has been sent to your email address. Please click on "
+"it to verify your email"
+msgstr ""
+
+#: ft_functions.py:675
+msgid "Email {} is already subscribed for updates"
+msgstr ""
+
+#: ft_functions.py:692
+msgid "Fellowtraveler.club: you subscribed to email updates"
+msgstr ""
+
+#: ft_functions.py:694
+msgid ""
+"Hi!<br><br>Thanks for subscribing to {}'s location updates!<br>They won't"
+" be too often (not more than once a week).<br><br>If for any reason later"
+" you will decide to unsubscribe, please click on the following "
+"link:<br><a href='{0}' target='_blank'>{0}</a>"
+msgstr ""
+
+#: ft_functions.py:697
+msgid "Your email {} was subscribed to Teddy's location updates"
+msgstr ""
+
+#: temp.py:33
+msgid ""
+"Such email is registered but hasn't been verified yet. If it's your email"
+" please verify it, otherwise choose different credentials to log in or <a"
+" href=\"/register/\">register</a>"
+msgstr ""
+
+#: temp.py:40
+msgid ""
+"Sorry, we do not recognize this email address. Please choose different "
+"credentials or <a href=\"/register/\">register</a>"
 msgstr ""
 
 #: ft_env/lib/python3.4/site-packages/flask_wtf/file.py:51
@@ -275,11 +1526,11 @@ msgstr ""
 msgid "Not a valid date value"
 msgstr ""
 
-#: templates/413.html:5
+#: templates/413.html:4
 msgid "Looks like your file is too big"
 msgstr ""
 
-#: templates/413.html:10
+#: templates/413.html:13
 msgid "Looks like your file is too big (5Mb/photo is maximum)"
 msgstr ""
 
@@ -291,121 +1542,31 @@ msgstr ""
 msgid "Follow me"
 msgstr ""
 
-#: templates/error.html:5
+#: templates/error.html:4
 msgid "Ouups... error happened"
 msgstr ""
 
-#: templates/error.html:10
+#: templates/error.html:13
 msgid "Ouups... the following exception was got:"
 msgstr ""
 
-#: templates/error.html:14
+#: templates/error.html:17
 msgid "Return to the <a href=\"/\">main page</a>?"
 msgstr ""
 
-#: templates/index.html:6
-msgid "Hi! My name is"
-msgstr ""
-
-#: templates/index.html:6
-msgid "and I have a dream"
-msgstr ""
-
-#: templates/index.html:28
-msgid "Map of "
-msgstr ""
-
-#: templates/index.html:28
-msgid "'s journey so far"
-msgstr ""
-
-#: templates/index.html:43
-msgid "Travel timeline"
-msgstr ""
-
-#: templates/index.html:50
-msgid "Place #"
-msgstr ""
-
-#: templates/index.html:52
-msgid "Author"
-msgstr ""
-
-#: templates/index.html:54
-msgid "Time"
-msgstr ""
-
-#: templates/index.html:56
-msgid "Location"
-msgstr ""
-
-#: templates/index.html:59
-msgid "Photos"
-msgstr ""
-
-#: templates/index.html:75
-msgid "Add new location"
-msgstr ""
-
-#: templates/index.html:94
-msgid "Where"
-msgstr ""
-
-#: templates/index.html:94
-msgid "is now or was on the photo? (required)"
-msgstr ""
-
-#: templates/index.html:106
-msgid "Upload up to 4 photos/place"
-msgstr ""
-
-#: templates/index.html:121
-msgid "To add new "
-msgstr ""
-
-#: templates/index.html:121
-msgid ""
-"'s location first please <b><a href=\"/login/\">log in</a></b> or <b><a "
-"href=\"/register/\">register</a></b>"
-msgstr ""
-
-#: templates/layout.html:49
-msgid "Name"
-msgstr ""
-
-#: templates/layout.html:61 templates/layout.html:70
-msgid "Update location"
-msgstr ""
-
-#: templates/layout.html:70
-msgid "Logout"
-msgstr ""
-
-#: templates/layout.html:72 templates/login.html:4
-msgid "Log in"
-msgstr ""
-
-#: templates/layout.html:72
-msgid "Register"
-msgstr ""
-
-#: templates/layout.html:78
-msgid "Change language"
-msgstr ""
-
-#: templates/layout.html:123
+#: templates/layout.html:52
 msgid "Disclaimer"
 msgstr ""
 
-#: templates/layout.html:123
+#: templates/layout.html:52
 msgid "Help us with translation"
 msgstr ""
 
-#: templates/layout.html:123
+#: templates/layout.html:52
 msgid "Support project"
 msgstr ""
 
-#: templates/login.html:10
+#: templates/login.html:29 templates/register.html:31
 msgid "Main page"
 msgstr ""
 
@@ -413,8 +1574,80 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: templates/register.html:10
+#: templates/register.html:29
 #, python-format
 msgid "Maybe just <a href=\"%(url)s\">log in</a>?"
+msgstr ""
+
+#: templates/traveler.html:6
+msgid "Hi! My name is"
+msgstr ""
+
+#: templates/traveler.html:6
+msgid "and I have a dream"
+msgstr ""
+
+#: templates/traveler.html:43
+msgid "Name"
+msgstr ""
+
+#: templates/traveler.html:55 templates/traveler.html:64
+msgid "Update location"
+msgstr ""
+
+#: templates/traveler.html:64
+msgid "Logout"
+msgstr ""
+
+#: templates/traveler.html:72
+msgid "Change language"
+msgstr ""
+
+#: templates/traveler.html:104
+msgid "Map of "
+msgstr ""
+
+#: templates/traveler.html:104
+msgid "'s journey so far"
+msgstr ""
+
+#: templates/traveler.html:119
+msgid "Travel timeline"
+msgstr ""
+
+#: templates/traveler.html:131
+msgid "Place #"
+msgstr ""
+
+#: templates/traveler.html:133
+msgid "Author"
+msgstr ""
+
+#: templates/traveler.html:135
+msgid "Time"
+msgstr ""
+
+#: templates/traveler.html:137
+msgid "Location"
+msgstr ""
+
+#: templates/traveler.html:140
+msgid "Photos"
+msgstr ""
+
+#: templates/traveler.html:155
+msgid "Add new location"
+msgstr ""
+
+#: templates/traveler.html:180
+msgid "Where"
+msgstr ""
+
+#: templates/traveler.html:180
+msgid "is now or was on the photo? (required)"
+msgstr ""
+
+#: templates/traveler.html:192
+msgid "Upload up to 4 photos/place"
 msgstr ""
 

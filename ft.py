@@ -74,7 +74,7 @@ mail = Mail(app)
 
 
 class WhereisTeddyNow(FlaskForm):
-    author = StringField(lazy_gettext('Your name'), validators=[Length(-1, 50, lazy_gettext('Your name is a bit too long (50 characters max)'))])
+    author = StringField(lazy_gettext('Your name'), validators=[Length(-1, 50, lazy_gettext('Your name is too long (50 characters max)'))])
     comment = TextAreaField(lazy_gettext('Add a comment'), validators=[Length(-1, 280, lazy_gettext('Sorry but comments are uploaded to Twitter and thus can\'t be longer than 280 characters'))])
     getupdatesbyemail = BooleanField(lazy_gettext('Get updates by email'))
     secret_code = PasswordField(lazy_gettext('Secret code from the toy (required)'), validators=[DataRequired(lazy_gettext('Please enter the code which you can find on the toy')),
@@ -147,11 +147,14 @@ def get_locale():
 @notloggedin_required
 @csrf.exempt
 def register():
+    next_redirect = '/'
     try:
         registrationform = RegistrationForm()
 
         # Check which traveler user was watching
         which_traveler = ft_functions.get_traveler()
+        if which_traveler != 'All':
+            next_redirect = '/{}/'.format(which_traveler)
 
         # Registration data have been submitted (POST)
         if request.method == 'POST':
@@ -167,12 +170,11 @@ def register():
                 email_already_submitted = users.find_one({"email": email})
                 if email_already_submitted:
                     if email_already_submitted['email_verified']:
-                        flash(lazy_gettext("User with email {} is already registered. Please choose a different email address or <a href='../login/'>log in</a>".format(email)), 'header')
+                        flash(lazy_gettext("User with email {} is already registered. Please choose a different email address or <a href='../login/'>log in</a>").format(email), 'header')
                         return redirect(url_for('register'))
                     else:
                         flash(lazy_gettext(
-                            "User with email {} is already registered but email has not been verified yet".format(email)
-                        ), 'header')
+                            "User with email {} is already registered but email has not been verified yet").format(email), 'header')
                         return redirect(url_for('register'))
 
                 # If a new user
@@ -200,10 +202,6 @@ def register():
 
                     flash(lazy_gettext('Almost finished. To complete registration please click on the verification link that has been sent to your email'), 'header')
 
-                    if which_traveler == 'All':
-                        next_redirect = '/'
-                    else:
-                        next_redirect = '/{}/'.format(which_traveler)
                     return redirect(next_redirect)
             else:
                 print('Registration form input did not validate')
@@ -213,10 +211,7 @@ def register():
             return render_template('register.html', registrationform=registrationform)
     except Exception as e:
         print('register() exception: {}'.format(e))
-        if which_traveler == 'All':
-            return redirect(url_for('index'))
-        else:
-            return redirect(url_for('traveler'))
+        return redirect(next_redirect)
 
 
 @app.route('/service/login/', methods=['GET', 'POST'])
@@ -249,12 +244,12 @@ def login():
                     if not status:
                         flash(
                             lazy_gettext('Such email is registered but hasn\'t been verified yet. '
-                            'If it\'s your email please verify it, otherwise choose different credentials to log in or <a href="/register/">register</a>'),
+                            'If it\'s your email please verify it, otherwise choose different credentials to log in or <a href="../register/">register</a>'),
                             'header')
                         return redirect(url_for('login'))
                 else:
                     flash(
-                        lazy_gettext('Sorry, we do not recognize this email address. Please choose different credentials or <a href="/register/">register</a>'),
+                        lazy_gettext('Sorry, we do not recognize this email address. Please choose different credentials or <a href="../register/">register</a>'),
                         'header')
                     return redirect(url_for('login'))
 
@@ -394,9 +389,8 @@ def traveler(OURTRAVELER='Teddy'):
             # Check if user entered some location (required parameter) (data is passed from jQuery to Flask and
             # saved in session
             if 'geodata' not in session:
-                flash(lazy_gettext('Please enter {}\'s location (current or on the photo)'.format(OURTRAVELER)),
+                flash(lazy_gettext('Please enter {}\'s location (current or on the photo)').format(OURTRAVELER),
                         'addlocation')
-                print('No data in session!')
                 return redirect(url_for('traveler', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
 
             if whereisteddynowform.validate_on_submit():
@@ -420,7 +414,6 @@ def traveler(OURTRAVELER='Teddy'):
                         else:
                             # At least one of images is invalid. Messages are flashed from photo_check_save()
                             return redirect(url_for('traveler', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))
-                            #return render_template('traveler.html', whereisteddynowform=whereisteddynowform, subscribe2updatesform=subscribe2updatesform, locations_history=locations_history, teddy_map=teddy_map, journey_summary=journey_summary, language=user_language, PHOTO_DIR=PHOTO_DIR, traveler=OURTRAVELER)
                 if len(photos)>4:
                     flash(
                         lazy_gettext('{}\'s locations are reposted to Twitter and thus can\'t have more than 4 images each. Only the first 4 photos were uploaded'.format(OURTRAVELER)),
@@ -471,12 +464,9 @@ def traveler(OURTRAVELER='Teddy'):
                         email = session['Email']
                         msg = Message(gettext("Fellowtraveler.club: new secret code - {}").format(new_code_generated),
                                       sender="mailvulgaris@gmail.com", recipients=[email])
-                        msg.html = gettext("Hi!<br><br>" \
-                                   "You added a new {0}'s location, thanks. Secret code is being regenerated after every location and for adding the next location it will be:<br><br>" \
-                                   "<b><h1>{1}</h1></b><br><br>" \
-                                   "It's recommended that you write it down to {0}'s notebook immediately (and obligatorily if you are going to pass {0} to somebody)<br><br>" \
-                                   "In case of any problems please write to <a href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>"\
-                                   "Thank you for participating in <a href='https://fellowtraveler.club'>fellowtraveler.club</a>").format(OURTRAVELER, new_code_generated)
+                        msg.html = gettext(
+                            "Hi!<br><br>You added a new {0}'s location, thanks. Secret code is being regenerated after every location and for adding the next location it will be:<br><br><b><h1>{1}</h1></b><br><br>It's recommended that you write it down to {0}'s notebook immediately (and obligatorily if you are going to pass {0} to somebody)<br><br>In case of any problems please write to <a href='mailto:iurii.dziuban@gmail.com'>iurii.dziuban@gmail.com</a><br><br>Thank you for participating in <a href='https://fellowtraveler.club'>fellowtraveler.club</a>").format(
+                            OURTRAVELER, new_code_generated)
                         mail.send(msg)
                         flash(lazy_gettext('New location added! NEW SECRET CODE for adding the next location is {} (was sent to your email {}). Please write the new secret code into {}\'s notebook').format(new_code_generated, email, OURTRAVELER), 'header')
 
@@ -724,7 +714,7 @@ def verify_registration(user_email, email_verification_code):
                 users.update_one({'_id': docID}, {'$set': {'email_verified': True}})
 
                 flash(lazy_gettext(
-                    'Email verified! Thanks for registration. If you have {} you can add his new location now'.format(OURTRAVELER)),
+                    'Email verified! Thanks for registration. If you\'ve got a fellow traveler you can add his/her new location now'),
                       'header')
 
                 # Update coockies

@@ -26,11 +26,11 @@
     <hr>
 
     <div align="right">
-        {{ gettext('Maybe just <a href="%(url)s">log in</a>?', url='../login/') }}
+        {{ gettext('Maybe just <a href="%(url)s"><b>log in</b></a>?', url='../login/') }}
         <br>
-        Go to <a href="/"><b>{{ gettext('Main page') }}</b></a>
+        {{ gettext('Go to') }} <a href="/"><b>{{ gettext('Main page') }}</b></a>
         {% if session['which_traveler'] != 'All' %}
-            or <a href="/{{ session['which_traveler'] }}/"><b>{{ session['which_traveler'] }}</b></a>'s page
+            {{ gettext('or') }} <a href="{{ session['which_traveler'] }}"><b>{{ session['which_traveler'] }}</b></a>
         {% endif %}
     </div>
 

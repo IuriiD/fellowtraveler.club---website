@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Ouups... page not found
+   gettext('Ouups... Page not found')
 {% endblock %}
 
 {% block ourheader %}
@@ -10,7 +10,7 @@
 
 {% block main_contents %}
         <h1 class="display-2">
-            Ouups... Page not found
+            {{ gettext('Ouups... Page not found') }}
         </h1>
-        <br>Return to the <a href="/">main page</a>?
+        <br>{{ gettext('Return to the <a href="/">main page</a>?')  }}
 {% endblock %}

@@ -40,41 +40,46 @@ LANGUAGES = {
     'uk': 'Українська'
 }
 
-#OURTRAVELER = 'Teddy'
-#PHOTO_DIR = 'static/uploads/{}/'.format(OURTRAVELER) # where photos from places visited are saved
-#SERVICE_IMG_DIR = 'static/uploads/{}/service/'.format(OURTRAVELER) # where 'general info' images are saved (summary map, secret code example etc)
 SITE_URL = 'https://fellowtraveler.club'
 BASIC_TRAVELER = 'Teddy'
+ALL_TRAVELERS = ['Teddy']
 
-# Validating image extension
 def valid_url_extension(url, extension_list=VALID_IMAGE_EXTENSIONS):
     '''
+    Validating image extension
     A simple method to make sure the URL the user has supplied has
     an image-like file at the tail of the path
     '''
     return any([url.endswith(e) for e in extension_list])
 
-# Validating image mimetype
+
 def valid_url_mimetype(url, mimetype_list=VALID_IMAGE_MIMETYPES):
-    # http://stackoverflow.com/a/10543969/396300
+    '''
+    Validating image mimetype
+    http://stackoverflow.com/a/10543969/396300
+    '''
     mimetype, encoding = mimetypes.guess_type(url)
-    #print('mimetype: {}'.format(mimetype))
     if mimetype:
         return any([mimetype.startswith(m) for m in mimetype_list])
     else:
         return False
 
-# Validating that the image exists on the server
+
 def image_exists(url):
+    '''
+    Validating that the image exists on the server
+    '''
     try:
         r = requests.get(url)
     except:
         return False
     return r.status_code == 200
 
-# Check image validity using valid_url_extension() and valid_url_mimetype() and return new file name or flash an error
+
 def photo_check_save(photo_file, OURTRAVELER):
-    #print('photo_file: {}'.format(photo_file))
+    '''
+    Check image validity using valid_url_extension() and valid_url_mimetype() and return new file name or flash an error
+    '''
     photo_filename = secure_filename(photo_file.filename)
     if valid_url_extension(photo_filename) and valid_url_mimetype(photo_filename):
         file_name_wo_extension = 'fellowtravelerclub-{}'.format(OURTRAVELER)
@@ -82,18 +87,21 @@ def photo_check_save(photo_file, OURTRAVELER):
         current_datetime = datetime.datetime.now().strftime("%d%m%y%H%M%S")
         random_int = randint(100, 999)
         path4db = file_name_wo_extension + '-' + current_datetime + str(random_int) + file_extension
-        #path = PHOTO_DIR + path4db
         return path4db
     else:
         flash(lazy_gettext('File {} has invalid image extension (not ".jpg", ".jpeg", ".png", ".gif" or ".bmp") or invalid image format').format(photo_filename),
             'addlocation')
         return 'error'
 
-# Return locations history for a given traveller (will be substituted with Twitter's timeline)
+
 def get_location_history(traveller, PHOTO_DIR):
+    '''
+    Return locations history for a given traveller (will be substituted with Twitter's timeline)
+    '''
     client = MongoClient()
     db = client.TeddyGo
     teddys_locations = db[traveller].find().sort([('_id', -1)])
+
     # Prepare a list of info blocks about traveller's locations and data to create a map
     locations_history = []
     mymarkers = []
@@ -113,7 +121,7 @@ def get_location_history(traveller, PHOTO_DIR):
             'comment': comment,
             'photos': photos
         }
-        #print("location_data: {}".format(location_data))
+
         locations_history.append(location_data)
 
         if start_lat == None:
@@ -123,7 +131,7 @@ def get_location_history(traveller, PHOTO_DIR):
         if len(photos) > 0:
             infobox += '<img src="{}/{}/{}" style="max-height: 70px; max-width:120px"/>'.format(PHOTO_DIR, traveller, photos[0])
         infobox += '<br>'
-        infobox += 'By <b>{}</b>'.format(author)
+        infobox += gettext('By <b>{}</b>').format(author)
         if comment != '':
             infobox += '<br>'
             infobox += '<i>{}</i>'.format(comment)
@@ -139,6 +147,7 @@ def get_location_history(traveller, PHOTO_DIR):
         marker_number -= 1
     return {'locations_history': locations_history, 'start_lat': start_lat, 'start_long': start_long, 'mymarkers': mymarkers}
 
+
 def summarize_journey(traveller):
     '''
         For a given traveller (for eg., "Teddy") function retrieves documents from our mongoDB (TeddyGo >> Teddy)
@@ -151,7 +160,254 @@ def summarize_journey(traveller):
         6) list of countries visited
         Data are saved to document TeddyGo >> travellers >> <Traveller>
     '''
-    countries_name_codes = [{"Code": "AF", "Name": "Afghanistan"},{"Code": "AX", "Name": "\u00c5land Islands"},{"Code": "AL", "Name": "Albania"},{"Code": "DZ", "Name": "Algeria"},{"Code": "AS", "Name": "American Samoa"},{"Code": "AD", "Name": "Andorra"},{"Code": "AO", "Name": "Angola"},{"Code": "AI", "Name": "Anguilla"},{"Code": "AQ", "Name": "Antarctica"},{"Code": "AG", "Name": "Antigua and Barbuda"},{"Code": "AR", "Name": "Argentina"},{"Code": "AM", "Name": "Armenia"},{"Code": "AW", "Name": "Aruba"},{"Code": "AU", "Name": "Australia"},{"Code": "AT", "Name": "Austria"},{"Code": "AZ", "Name": "Azerbaijan"},{"Code": "BS", "Name": "Bahamas"},{"Code": "BH", "Name": "Bahrain"},{"Code": "BD", "Name": "Bangladesh"},{"Code": "BB", "Name": "Barbados"},{"Code": "BY", "Name": "Belarus"},{"Code": "BE", "Name": "Belgium"},{"Code": "BZ", "Name": "Belize"},{"Code": "BJ", "Name": "Benin"},{"Code": "BM", "Name": "Bermuda"},{"Code": "BT", "Name": "Bhutan"},{"Code": "BO", "Name": "Bolivia, Plurinational State of"},{"Code": "BQ", "Name": "Bonaire, Sint Eustatius and Saba"},{"Code": "BA", "Name": "Bosnia and Herzegovina"},{"Code": "BW", "Name": "Botswana"},{"Code": "BV", "Name": "Bouvet Island"},{"Code": "BR", "Name": "Brazil"},{"Code": "IO", "Name": "British Indian Ocean Territory"},{"Code": "BN", "Name": "Brunei Darussalam"},{"Code": "BG", "Name": "Bulgaria"},{"Code": "BF", "Name": "Burkina Faso"},{"Code": "BI", "Name": "Burundi"},{"Code": "KH", "Name": "Cambodia"},{"Code": "CM", "Name": "Cameroon"},{"Code": "CA", "Name": "Canada"},{"Code": "CV", "Name": "Cape Verde"},{"Code": "KY", "Name": "Cayman Islands"},{"Code": "CF", "Name": "Central African Republic"},{"Code": "TD", "Name": "Chad"},{"Code": "CL", "Name": "Chile"},{"Code": "CN", "Name": "China"},{"Code": "CX", "Name": "Christmas Island"},{"Code": "CC", "Name": "Cocos (Keeling) Islands"},{"Code": "CO", "Name": "Colombia"},{"Code": "KM", "Name": "Comoros"},{"Code": "CG", "Name": "Congo"},{"Code": "CD", "Name": "Congo, the Democratic Republic of the"},{"Code": "CK", "Name": "Cook Islands"},{"Code": "CR", "Name": "Costa Rica"},{"Code": "CI", "Name": "C\u00f4te d'Ivoire"},{"Code": "HR", "Name": "Croatia"},{"Code": "CU", "Name": "Cuba"},{"Code": "CW", "Name": "Cura\u00e7ao"},{"Code": "CY", "Name": "Cyprus"},{"Code": "CZ", "Name": "Czech Republic"},{"Code": "DK", "Name": "Denmark"},{"Code": "DJ", "Name": "Djibouti"},{"Code": "DM", "Name": "Dominica"},{"Code": "DO", "Name": "Dominican Republic"},{"Code": "EC", "Name": "Ecuador"},{"Code": "EG", "Name": "Egypt"},{"Code": "SV", "Name": "El Salvador"},{"Code": "GQ", "Name": "Equatorial Guinea"},{"Code": "ER", "Name": "Eritrea"},{"Code": "EE", "Name": "Estonia"},{"Code": "ET", "Name": "Ethiopia"},{"Code": "FK", "Name": "Falkland Islands (Malvinas)"},{"Code": "FO", "Name": "Faroe Islands"},{"Code": "FJ", "Name": "Fiji"},{"Code": "FI", "Name": "Finland"},{"Code": "FR", "Name": "France"},{"Code": "GF", "Name": "French Guiana"},{"Code": "PF", "Name": "French Polynesia"},{"Code": "TF", "Name": "French Southern Territories"},{"Code": "GA", "Name": "Gabon"},{"Code": "GM", "Name": "Gambia"},{"Code": "GE", "Name": "Georgia"},{"Code": "DE", "Name": "Germany"},{"Code": "GH", "Name": "Ghana"},{"Code": "GI", "Name": "Gibraltar"},{"Code": "GR", "Name": "Greece"},{"Code": "GL", "Name": "Greenland"},{"Code": "GD", "Name": "Grenada"},{"Code": "GP", "Name": "Guadeloupe"},{"Code": "GU", "Name": "Guam"},{"Code": "GT", "Name": "Guatemala"},{"Code": "GG", "Name": "Guernsey"},{"Code": "GN", "Name": "Guinea"},{"Code": "GW", "Name": "Guinea-Bissau"},{"Code": "GY", "Name": "Guyana"},{"Code": "HT", "Name": "Haiti"},{"Code": "HM", "Name": "Heard Island and McDonald Islands"},{"Code": "VA", "Name": "Holy See (Vatican City State)"},{"Code": "HN", "Name": "Honduras"},{"Code": "HK", "Name": "Hong Kong"},{"Code": "HU", "Name": "Hungary"},{"Code": "IS", "Name": "Iceland"},{"Code": "IN", "Name": "India"},{"Code": "ID", "Name": "Indonesia"},{"Code": "IR", "Name": "Iran, Islamic Republic of"},{"Code": "IQ", "Name": "Iraq"},{"Code": "IE", "Name": "Ireland"},{"Code": "IM", "Name": "Isle of Man"},{"Code": "IL", "Name": "Israel"},{"Code": "IT", "Name": "Italy"},{"Code": "JM", "Name": "Jamaica"},{"Code": "JP", "Name": "Japan"},{"Code": "JE", "Name": "Jersey"},{"Code": "JO", "Name": "Jordan"},{"Code": "KZ", "Name": "Kazakhstan"},{"Code": "KE", "Name": "Kenya"},{"Code": "KI", "Name": "Kiribati"},{"Code": "KP", "Name": "Korea, Democratic People's Republic of"},{"Code": "KR", "Name": "Korea, Republic of"},{"Code": "KW", "Name": "Kuwait"},{"Code": "KG", "Name": "Kyrgyzstan"},{"Code": "LA", "Name": "Lao People's Democratic Republic"},{"Code": "LV", "Name": "Latvia"},{"Code": "LB", "Name": "Lebanon"},{"Code": "LS", "Name": "Lesotho"},{"Code": "LR", "Name": "Liberia"},{"Code": "LY", "Name": "Libya"},{"Code": "LI", "Name": "Liechtenstein"},{"Code": "LT", "Name": "Lithuania"},{"Code": "LU", "Name": "Luxembourg"},{"Code": "MO", "Name": "Macao"},{"Code": "MK", "Name": "Macedonia, the Former Yugoslav Republic of"},{"Code": "MG", "Name": "Madagascar"},{"Code": "MW", "Name": "Malawi"},{"Code": "MY", "Name": "Malaysia"},{"Code": "MV", "Name": "Maldives"},{"Code": "ML", "Name": "Mali"},{"Code": "MT", "Name": "Malta"},{"Code": "MH", "Name": "Marshall Islands"},{"Code": "MQ", "Name": "Martinique"},{"Code": "MR", "Name": "Mauritania"},{"Code": "MU", "Name": "Mauritius"},{"Code": "YT", "Name": "Mayotte"},{"Code": "MX", "Name": "Mexico"},{"Code": "FM", "Name": "Micronesia, Federated States of"},{"Code": "MD", "Name": "Moldova, Republic of"},{"Code": "MC", "Name": "Monaco"},{"Code": "MN", "Name": "Mongolia"},{"Code": "ME", "Name": "Montenegro"},{"Code": "MS", "Name": "Montserrat"},{"Code": "MA", "Name": "Morocco"},{"Code": "MZ", "Name": "Mozambique"},{"Code": "MM", "Name": "Myanmar"},{"Code": "NA", "Name": "Namibia"},{"Code": "NR", "Name": "Nauru"},{"Code": "NP", "Name": "Nepal"},{"Code": "NL", "Name": "Netherlands"},{"Code": "NC", "Name": "New Caledonia"},{"Code": "NZ", "Name": "New Zealand"},{"Code": "NI", "Name": "Nicaragua"},{"Code": "NE", "Name": "Niger"},{"Code": "NG", "Name": "Nigeria"},{"Code": "NU", "Name": "Niue"},{"Code": "NF", "Name": "Norfolk Island"},{"Code": "MP", "Name": "Northern Mariana Islands"},{"Code": "NO", "Name": "Norway"},{"Code": "OM", "Name": "Oman"},{"Code": "PK", "Name": "Pakistan"},{"Code": "PW", "Name": "Palau"},{"Code": "PS", "Name": "Palestine, State of"},{"Code": "PA", "Name": "Panama"},{"Code": "PG", "Name": "Papua New Guinea"},{"Code": "PY", "Name": "Paraguay"},{"Code": "PE", "Name": "Peru"},{"Code": "PH", "Name": "Philippines"},{"Code": "PN", "Name": "Pitcairn"},{"Code": "PL", "Name": "Poland"},{"Code": "PT", "Name": "Portugal"},{"Code": "PR", "Name": "Puerto Rico"},{"Code": "QA", "Name": "Qatar"},{"Code": "RE", "Name": "R\u00e9union"},{"Code": "RO", "Name": "Romania"},{"Code": "RU", "Name": "Russian Federation"},{"Code": "RW", "Name": "Rwanda"},{"Code": "BL", "Name": "Saint Barth\u00e9lemy"},{"Code": "SH", "Name": "Saint Helena, Ascension and Tristan da Cunha"},{"Code": "KN", "Name": "Saint Kitts and Nevis"},{"Code": "LC", "Name": "Saint Lucia"},{"Code": "MF", "Name": "Saint Martin (French part)"},{"Code": "PM", "Name": "Saint Pierre and Miquelon"},{"Code": "VC", "Name": "Saint Vincent and the Grenadines"},{"Code": "WS", "Name": "Samoa"},{"Code": "SM", "Name": "San Marino"},{"Code": "ST", "Name": "Sao Tome and Principe"},{"Code": "SA", "Name": "Saudi Arabia"},{"Code": "SN", "Name": "Senegal"},{"Code": "RS", "Name": "Serbia"},{"Code": "SC", "Name": "Seychelles"},{"Code": "SL", "Name": "Sierra Leone"},{"Code": "SG", "Name": "Singapore"},{"Code": "SX", "Name": "Sint Maarten (Dutch part)"},{"Code": "SK", "Name": "Slovakia"},{"Code": "SI", "Name": "Slovenia"},{"Code": "SB", "Name": "Solomon Islands"},{"Code": "SO", "Name": "Somalia"},{"Code": "ZA", "Name": "South Africa"},{"Code": "GS", "Name": "South Georgia and the South Sandwich Islands"},{"Code": "SS", "Name": "South Sudan"},{"Code": "ES", "Name": "Spain"},{"Code": "LK", "Name": "Sri Lanka"},{"Code": "SD", "Name": "Sudan"},{"Code": "SR", "Name": "Suriname"},{"Code": "SJ", "Name": "Svalbard and Jan Mayen"},{"Code": "SZ", "Name": "Swaziland"},{"Code": "SE", "Name": "Sweden"},{"Code": "CH", "Name": "Switzerland"},{"Code": "SY", "Name": "Syrian Arab Republic"},{"Code": "TW", "Name": "Taiwan, Province of China"},{"Code": "TJ", "Name": "Tajikistan"},{"Code": "TZ", "Name": "Tanzania, United Republic of"},{"Code": "TH", "Name": "Thailand"},{"Code": "TL", "Name": "Timor-Leste"},{"Code": "TG", "Name": "Togo"},{"Code": "TK", "Name": "Tokelau"},{"Code": "TO", "Name": "Tonga"},{"Code": "TT", "Name": "Trinidad and Tobago"},{"Code": "TN", "Name": "Tunisia"},{"Code": "TR", "Name": "Turkey"},{"Code": "TM", "Name": "Turkmenistan"},{"Code": "TC", "Name": "Turks and Caicos Islands"},{"Code": "TV", "Name": "Tuvalu"},{"Code": "UG", "Name": "Uganda"},{"Code": "UA", "Name": "Ukraine"},{"Code": "AE", "Name": "United Arab Emirates"},{"Code": "GB", "Name": "United Kingdom"},{"Code": "US", "Name": "United States"},{"Code": "UM", "Name": "United States Minor Outlying Islands"},{"Code": "UY", "Name": "Uruguay"},{"Code": "UZ", "Name": "Uzbekistan"},{"Code": "VU", "Name": "Vanuatu"},{"Code": "VE", "Name": "Venezuela, Bolivarian Republic of"},{"Code": "VN", "Name": "Viet Nam"},{"Code": "VG", "Name": "Virgin Islands, British"},{"Code": "VI", "Name": "Virgin Islands, U.S."},{"Code": "WF", "Name": "Wallis and Futuna"},{"Code": "EH", "Name": "Western Sahara"},{"Code": "YE", "Name": "Yemen"},{"Code": "ZM", "Name": "Zambia"},{"Code": "ZW", "Name": "Zimbabwe"}]
+    countries_name_codes = [{"Code": "AF", "Name": lazy_gettext("Afghanistan")},
+                            {"Code": "AX", "Name": lazy_gettext("\u00c5land Islands")},
+                            {"Code": "AL", "Name": lazy_gettext("Albania")},
+                            {"Code": "DZ", "Name": lazy_gettext("Algeria")},
+                            {"Code": "AS", "Name": lazy_gettext("American Samoa")},
+                            {"Code": "AD", "Name": lazy_gettext("Andorra")},
+                            {"Code": "AO", "Name": lazy_gettext("Angola")},
+                            {"Code": "AI", "Name": lazy_gettext("Anguilla")},
+                            {"Code": "AQ", "Name": lazy_gettext("Antarctica")},
+                            {"Code": "AG", "Name": lazy_gettext("Antigua and Barbuda")},
+                            {"Code": "AR", "Name": lazy_gettext("Argentina")},
+                            {"Code": "AM", "Name": lazy_gettext("Armenia")},
+                            {"Code": "AW", "Name": lazy_gettext("Aruba")},
+                            {"Code": "AU", "Name": lazy_gettext("Australia")},
+                            {"Code": "AT", "Name": lazy_gettext("Austria")},
+                            {"Code": "AZ", "Name": lazy_gettext("Azerbaijan")},
+                            {"Code": "BS", "Name": lazy_gettext("Bahamas")},
+                            {"Code": "BH", "Name": lazy_gettext("Bahrain")},
+                            {"Code": "BD", "Name": lazy_gettext("Bangladesh")},
+                            {"Code": "BB", "Name": lazy_gettext("Barbados")},
+                            {"Code": "BY", "Name": lazy_gettext("Belarus")},
+                            {"Code": "BE", "Name": lazy_gettext("Belgium")},
+                            {"Code": "BZ", "Name": lazy_gettext("Belize")},
+                            {"Code": "BJ", "Name": lazy_gettext("Benin")},
+                            {"Code": "BM", "Name": lazy_gettext("Bermuda")},
+                            {"Code": "BT", "Name": lazy_gettext("Bhutan")},
+                            {"Code": "BO", "Name": lazy_gettext("Bolivia, Plurinational State of")},
+                            {"Code": "BQ", "Name": lazy_gettext("Bonaire, Sint Eustatius and Saba")},
+                            {"Code": "BA", "Name": lazy_gettext("Bosnia and Herzegovina")},
+                            {"Code": "BW", "Name": lazy_gettext("Botswana")},
+                            {"Code": "BV", "Name": lazy_gettext("Bouvet Island")},
+                            {"Code": "BR", "Name": lazy_gettext("Brazil")},
+                            {"Code": "IO", "Name": lazy_gettext("British Indian Ocean Territory")},
+                            {"Code": "BN", "Name": lazy_gettext("Brunei Darussalam")},
+                            {"Code": "BG", "Name": lazy_gettext("Bulgaria")},
+                            {"Code": "BF", "Name": lazy_gettext("Burkina Faso")},
+                            {"Code": "BI", "Name": lazy_gettext("Burundi")},
+                            {"Code": "KH", "Name": lazy_gettext("Cambodia")},
+                            {"Code": "CM", "Name": lazy_gettext("Cameroon")},
+                            {"Code": "CA", "Name": lazy_gettext("Canada")},
+                            {"Code": "CV", "Name": lazy_gettext("Cape Verde")},
+                            {"Code": "KY", "Name": lazy_gettext("Cayman Islands")},
+                            {"Code": "CF", "Name": lazy_gettext("Central African Republic")},
+                            {"Code": "TD", "Name": lazy_gettext("Chad")},
+                            {"Code": "CL", "Name": lazy_gettext("Chile")},
+                            {"Code": "CN", "Name": lazy_gettext("China")},
+                            {"Code": "CX", "Name": lazy_gettext("Christmas Island")},
+                            {"Code": "CC", "Name": lazy_gettext("Cocos (Keeling) Islands")},
+                            {"Code": "CO", "Name": lazy_gettext("Colombia")},
+                            {"Code": "KM", "Name": lazy_gettext("Comoros")},
+                            {"Code": "CG", "Name": lazy_gettext("Congo")},
+                            {"Code": "CD", "Name": lazy_gettext("Congo, the Democratic Republic of the")},
+                            {"Code": "CK", "Name": lazy_gettext("Cook Islands")},
+                            {"Code": "CR", "Name": lazy_gettext("Costa Rica")},
+                            {"Code": "CI", "Name": lazy_gettext("C\u00f4te d'Ivoire")},
+                            {"Code": "HR", "Name": lazy_gettext("Croatia")},
+                            {"Code": "CU", "Name": lazy_gettext("Cuba")},
+                            {"Code": "CW", "Name": lazy_gettext("Cura\u00e7ao")},
+                            {"Code": "CY", "Name": lazy_gettext("Cyprus")},
+                            {"Code": "CZ", "Name": lazy_gettext("Czech Republic")},
+                            {"Code": "DK", "Name": lazy_gettext("Denmark")},
+                            {"Code": "DJ", "Name": lazy_gettext("Djibouti")},
+                            {"Code": "DM", "Name": lazy_gettext("Dominica")},
+                            {"Code": "DO", "Name": lazy_gettext("Dominican Republic")},
+                            {"Code": "EC", "Name": lazy_gettext("Ecuador")},
+                            {"Code": "EG", "Name": lazy_gettext("Egypt")},
+                            {"Code": "SV", "Name": lazy_gettext("El Salvador")},
+                            {"Code": "GQ", "Name": lazy_gettext("Equatorial Guinea")},
+                            {"Code": "ER", "Name": lazy_gettext("Eritrea")},
+                            {"Code": "EE", "Name": lazy_gettext("Estonia")},
+                            {"Code": "ET", "Name": lazy_gettext("Ethiopia")},
+                            {"Code": "FK", "Name": lazy_gettext("Falkland Islands (Malvinas)")},
+                            {"Code": "FO", "Name": lazy_gettext("Faroe Islands")},
+                            {"Code": "FJ", "Name": lazy_gettext("Fiji")},
+                            {"Code": "FI", "Name": lazy_gettext("Finland")},
+                            {"Code": "FR", "Name": lazy_gettext("France")},
+                            {"Code": "GF", "Name": lazy_gettext("French Guiana")},
+                            {"Code": "PF", "Name": lazy_gettext("French Polynesia")},
+                            {"Code": "TF", "Name": lazy_gettext("French Southern Territories")},
+                            {"Code": "GA", "Name": lazy_gettext("Gabon")},
+                            {"Code": "GM", "Name": lazy_gettext("Gambia")},
+                            {"Code": "GE", "Name": lazy_gettext("Georgia")},
+                            {"Code": "DE", "Name": lazy_gettext("Germany")},
+                            {"Code": "GH", "Name": lazy_gettext("Ghana")},
+                            {"Code": "GI", "Name": lazy_gettext("Gibraltar")},
+                            {"Code": "GR", "Name": lazy_gettext("Greece")},
+                            {"Code": "GL", "Name": lazy_gettext("Greenland")},
+                            {"Code": "GD", "Name": lazy_gettext("Grenada")},
+                            {"Code": "GP", "Name": lazy_gettext("Guadeloupe")},
+                            {"Code": "GU", "Name": lazy_gettext("Guam")},
+                            {"Code": "GT", "Name": lazy_gettext("Guatemala")},
+                            {"Code": "GG", "Name": lazy_gettext("Guernsey")},
+                            {"Code": "GN", "Name": lazy_gettext("Guinea")},
+                            {"Code": "GW", "Name": lazy_gettext("Guinea-Bissau")},
+                            {"Code": "GY", "Name": lazy_gettext("Guyana")},
+                            {"Code": "HT", "Name": lazy_gettext("Haiti")},
+                            {"Code": "HM", "Name": lazy_gettext("Heard Island and McDonald Islands")},
+                            {"Code": "VA", "Name": lazy_gettext("Holy See (Vatican City State)")},
+                            {"Code": "HN", "Name": lazy_gettext("Honduras")},
+                            {"Code": "HK", "Name": lazy_gettext("Hong Kong")},
+                            {"Code": "HU", "Name": lazy_gettext("Hungary")},
+                            {"Code": "IS", "Name": lazy_gettext("Iceland")},
+                            {"Code": "IN", "Name": lazy_gettext("India")},
+                            {"Code": "ID", "Name": lazy_gettext("Indonesia")},
+                            {"Code": "IR", "Name": lazy_gettext("Iran, Islamic Republic of")},
+                            {"Code": "IQ", "Name": lazy_gettext("Iraq")},
+                            {"Code": "IE", "Name": lazy_gettext("Ireland")},
+                            {"Code": "IM", "Name": lazy_gettext("Isle of Man")},
+                            {"Code": "IL", "Name": lazy_gettext("Israel")},
+                            {"Code": "IT", "Name": lazy_gettext("Italy")},
+                            {"Code": "JM", "Name": lazy_gettext("Jamaica")},
+                            {"Code": "JP", "Name": lazy_gettext("Japan")},
+                            {"Code": "JE", "Name": lazy_gettext("Jersey")},
+                            {"Code": "JO", "Name": lazy_gettext("Jordan")},
+                            {"Code": "KZ", "Name": lazy_gettext("Kazakhstan")},
+                            {"Code": "KE", "Name": lazy_gettext("Kenya")},
+                            {"Code": "KI", "Name": lazy_gettext("Kiribati")},
+                            {"Code": "KP", "Name": lazy_gettext("Korea, Democratic People's Republic of")},
+                            {"Code": "KR", "Name": lazy_gettext("Korea, Republic of")},
+                            {"Code": "KW", "Name": lazy_gettext("Kuwait")},
+                            {"Code": "KG", "Name": lazy_gettext("Kyrgyzstan")},
+                            {"Code": "LA", "Name": lazy_gettext("Lao People's Democratic Republic")},
+                            {"Code": "LV", "Name": lazy_gettext("Latvia")},
+                            {"Code": "LB", "Name": lazy_gettext("Lebanon")},
+                            {"Code": "LS", "Name": lazy_gettext("Lesotho")},
+                            {"Code": "LR", "Name": lazy_gettext("Liberia")},
+                            {"Code": "LY", "Name": lazy_gettext("Libya")},
+                            {"Code": "LI", "Name": lazy_gettext("Liechtenstein")},
+                            {"Code": "LT", "Name": lazy_gettext("Lithuania")},
+                            {"Code": "LU", "Name": lazy_gettext("Luxembourg")},
+                            {"Code": "MO", "Name": lazy_gettext("Macao")},
+                            {"Code": "MK", "Name": lazy_gettext("Macedonia, the Former Yugoslav Republic of")},
+                            {"Code": "MG", "Name": lazy_gettext("Madagascar")},
+                            {"Code": "MW", "Name": lazy_gettext("Malawi")},
+                            {"Code": "MY", "Name": lazy_gettext("Malaysia")},
+                            {"Code": "MV", "Name": lazy_gettext("Maldives")},
+                            {"Code": "ML", "Name": lazy_gettext("Mali")}, {"Code": "MT", "Name": lazy_gettext("Malta")},
+                            {"Code": "MH", "Name": lazy_gettext("Marshall Islands")},
+                            {"Code": "MQ", "Name": lazy_gettext("Martinique")},
+                            {"Code": "MR", "Name": lazy_gettext("Mauritania")},
+                            {"Code": "MU", "Name": lazy_gettext("Mauritius")},
+                            {"Code": "YT", "Name": lazy_gettext("Mayotte")},
+                            {"Code": "MX", "Name": lazy_gettext("Mexico")},
+                            {"Code": "FM", "Name": lazy_gettext("Micronesia, Federated States of")},
+                            {"Code": "MD", "Name": lazy_gettext("Moldova, Republic of")},
+                            {"Code": "MC", "Name": lazy_gettext("Monaco")},
+                            {"Code": "MN", "Name": lazy_gettext("Mongolia")},
+                            {"Code": "ME", "Name": lazy_gettext("Montenegro")},
+                            {"Code": "MS", "Name": lazy_gettext("Montserrat")},
+                            {"Code": "MA", "Name": lazy_gettext("Morocco")},
+                            {"Code": "MZ", "Name": lazy_gettext("Mozambique")},
+                            {"Code": "MM", "Name": lazy_gettext("Myanmar")},
+                            {"Code": "NA", "Name": lazy_gettext("Namibia")},
+                            {"Code": "NR", "Name": lazy_gettext("Nauru")},
+                            {"Code": "NP", "Name": lazy_gettext("Nepal")},
+                            {"Code": "NL", "Name": lazy_gettext("Netherlands")},
+                            {"Code": "NC", "Name": lazy_gettext("New Caledonia")},
+                            {"Code": "NZ", "Name": lazy_gettext("New Zealand")},
+                            {"Code": "NI", "Name": lazy_gettext("Nicaragua")},
+                            {"Code": "NE", "Name": lazy_gettext("Niger")},
+                            {"Code": "NG", "Name": lazy_gettext("Nigeria")},
+                            {"Code": "NU", "Name": lazy_gettext("Niue")},
+                            {"Code": "NF", "Name": lazy_gettext("Norfolk Island")},
+                            {"Code": "MP", "Name": lazy_gettext("Northern Mariana Islands")},
+                            {"Code": "NO", "Name": lazy_gettext("Norway")},
+                            {"Code": "OM", "Name": lazy_gettext("Oman")},
+                            {"Code": "PK", "Name": lazy_gettext("Pakistan")},
+                            {"Code": "PW", "Name": lazy_gettext("Palau")},
+                            {"Code": "PS", "Name": lazy_gettext("Palestine, State of")},
+                            {"Code": "PA", "Name": lazy_gettext("Panama")},
+                            {"Code": "PG", "Name": lazy_gettext("Papua New Guinea")},
+                            {"Code": "PY", "Name": lazy_gettext("Paraguay")},
+                            {"Code": "PE", "Name": lazy_gettext("Peru")},
+                            {"Code": "PH", "Name": lazy_gettext("Philippines")},
+                            {"Code": "PN", "Name": lazy_gettext("Pitcairn")},
+                            {"Code": "PL", "Name": lazy_gettext("Poland")},
+                            {"Code": "PT", "Name": lazy_gettext("Portugal")},
+                            {"Code": "PR", "Name": lazy_gettext("Puerto Rico")},
+                            {"Code": "QA", "Name": lazy_gettext("Qatar")},
+                            {"Code": "RE", "Name": lazy_gettext("R\u00e9union")},
+                            {"Code": "RO", "Name": lazy_gettext("Romania")},
+                            {"Code": "RU", "Name": lazy_gettext("Russian Federation")},
+                            {"Code": "RW", "Name": lazy_gettext("Rwanda")},
+                            {"Code": "BL", "Name": lazy_gettext("Saint Barth\u00e9lemy")},
+                            {"Code": "SH", "Name": lazy_gettext("Saint Helena, Ascension and Tristan da Cunha")},
+                            {"Code": "KN", "Name": lazy_gettext("Saint Kitts and Nevis")},
+                            {"Code": "LC", "Name": lazy_gettext("Saint Lucia")},
+                            {"Code": "MF", "Name": lazy_gettext("Saint Martin (French part)")},
+                            {"Code": "PM", "Name": lazy_gettext("Saint Pierre and Miquelon")},
+                            {"Code": "VC", "Name": lazy_gettext("Saint Vincent and the Grenadines")},
+                            {"Code": "WS", "Name": lazy_gettext("Samoa")},
+                            {"Code": "SM", "Name": lazy_gettext("San Marino")},
+                            {"Code": "ST", "Name": lazy_gettext("Sao Tome and Principe")},
+                            {"Code": "SA", "Name": lazy_gettext("Saudi Arabia")},
+                            {"Code": "SN", "Name": lazy_gettext("Senegal")},
+                            {"Code": "RS", "Name": lazy_gettext("Serbia")},
+                            {"Code": "SC", "Name": lazy_gettext("Seychelles")},
+                            {"Code": "SL", "Name": lazy_gettext("Sierra Leone")},
+                            {"Code": "SG", "Name": lazy_gettext("Singapore")},
+                            {"Code": "SX", "Name": lazy_gettext("Sint Maarten (Dutch part)")},
+                            {"Code": "SK", "Name": lazy_gettext("Slovakia")},
+                            {"Code": "SI", "Name": lazy_gettext("Slovenia")},
+                            {"Code": "SB", "Name": lazy_gettext("Solomon Islands")},
+                            {"Code": "SO", "Name": lazy_gettext("Somalia")},
+                            {"Code": "ZA", "Name": lazy_gettext("South Africa")},
+                            {"Code": "GS", "Name": lazy_gettext("South Georgia and the South Sandwich Islands")},
+                            {"Code": "SS", "Name": lazy_gettext("South Sudan")},
+                            {"Code": "ES", "Name": lazy_gettext("Spain")},
+                            {"Code": "LK", "Name": lazy_gettext("Sri Lanka")},
+                            {"Code": "SD", "Name": lazy_gettext("Sudan")},
+                            {"Code": "SR", "Name": lazy_gettext("Suriname")},
+                            {"Code": "SJ", "Name": lazy_gettext("Svalbard and Jan Mayen")},
+                            {"Code": "SZ", "Name": lazy_gettext("Swaziland")},
+                            {"Code": "SE", "Name": lazy_gettext("Sweden")},
+                            {"Code": "CH", "Name": lazy_gettext("Switzerland")},
+                            {"Code": "SY", "Name": lazy_gettext("Syrian Arab Republic")},
+                            {"Code": "TW", "Name": lazy_gettext("Taiwan, Province of China")},
+                            {"Code": "TJ", "Name": lazy_gettext("Tajikistan")},
+                            {"Code": "TZ", "Name": lazy_gettext("Tanzania, United Republic of")},
+                            {"Code": "TH", "Name": lazy_gettext("Thailand")},
+                            {"Code": "TL", "Name": lazy_gettext("Timor-Leste")},
+                            {"Code": "TG", "Name": lazy_gettext("Togo")},
+                            {"Code": "TK", "Name": lazy_gettext("Tokelau")},
+                            {"Code": "TO", "Name": lazy_gettext("Tonga")},
+                            {"Code": "TT", "Name": lazy_gettext("Trinidad and Tobago")},
+                            {"Code": "TN", "Name": lazy_gettext("Tunisia")},
+                            {"Code": "TR", "Name": lazy_gettext("Turkey")},
+                            {"Code": "TM", "Name": lazy_gettext("Turkmenistan")},
+                            {"Code": "TC", "Name": lazy_gettext("Turks and Caicos Islands")},
+                            {"Code": "TV", "Name": lazy_gettext("Tuvalu")},
+                            {"Code": "UG", "Name": lazy_gettext("Uganda")},
+                            {"Code": "UA", "Name": lazy_gettext("Ukraine")},
+                            {"Code": "AE", "Name": lazy_gettext("United Arab Emirates")},
+                            {"Code": "GB", "Name": lazy_gettext("United Kingdom")},
+                            {"Code": "US", "Name": lazy_gettext("United States")},
+                            {"Code": "UM", "Name": lazy_gettext("United States Minor Outlying Islands")},
+                            {"Code": "UY", "Name": lazy_gettext("Uruguay")},
+                            {"Code": "UZ", "Name": lazy_gettext("Uzbekistan")},
+                            {"Code": "VU", "Name": lazy_gettext("Vanuatu")},
+                            {"Code": "VE", "Name": lazy_gettext("Venezuela, Bolivarian Republic of")},
+                            {"Code": "VN", "Name": lazy_gettext("Viet Nam")},
+                            {"Code": "VG", "Name": lazy_gettext("Virgin Islands, British")},
+                            {"Code": "VI", "Name": lazy_gettext("Virgin Islands, U.S.")},
+                            {"Code": "WF", "Name": lazy_gettext("Wallis and Futuna")},
+                            {"Code": "EH", "Name": lazy_gettext("Western Sahara")},
+                            {"Code": "YE", "Name": lazy_gettext("Yemen")},
+                            {"Code": "ZM", "Name": lazy_gettext("Zambia")},
+                            {"Code": "ZW", "Name": lazy_gettext("Zimbabwe")}]
 
     client = MongoClient()
     db = client.TeddyGo
@@ -204,7 +460,6 @@ def summarize_journey(traveller):
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
 
-    #print('Journey summary: {}'.format(datatoupdate))
     return {'status': 'success', 'message': datatoupdate}
 
 
@@ -241,11 +496,10 @@ def get_journey_summary(traveller):
             return {'speech': speech, 'total_locations': total_locations}
         else:
             return {'speech': '', 'total_locations': 0}
-
-        return {'speech': speech, 'total_locations': total_locations}
     except Exception as e:
         print('get_journey_summary() exception: {}'.format(e))
         return False
+
 
 def time_passed(traveller):
     '''
@@ -258,6 +512,7 @@ def time_passed(traveller):
     current_datetime = datetime.datetime.now()
     difference = (current_datetime - start_date_service).days
     return difference
+
 
 def get_distance(origin, destination):
     '''
@@ -274,6 +529,7 @@ def get_distance(origin, destination):
     except Exception as e:
         print('get_distance() exception: {}'.format(e))
         return False
+
 
 def journey_distance_recalculate(traveller):
     '''
@@ -336,14 +592,11 @@ def distance_from_home(traveller):
             distance_from_home = get_distance(origin, destination)
             if not distance_from_home:
                 distance_from_home = 0
-
-        #db.travellers.update_one({'name': traveller}, {'$set': {'distance_from_home': distance_from_home}})
-        #print('From home: {}'.format(distance_from_home))
-        #print()
         return distance_from_home
     except Exception as e:
         print('distance_from_home() exception: {}'.format(e))
         return False
+
 
 def last_segment_distance_append(traveller):
     '''
@@ -361,13 +614,9 @@ def last_segment_distance_append(traveller):
             locations = db[traveller].find().sort([('_id', -1)]).limit(2)
             curr_location = locations[0]
             prev_location = locations[1]
-            #print()
-            #print('Current location: {}'.format(curr_location))
-            #print('Previous location: {}'.format(prev_location))
 
             # Total distance before current location was added ('total_distance' field in <Traveller> doc)
             last_distance = db.travellers.find_one({'name': traveller})['total_distance']
-            #print('Last distance was: {}'.format(last_distance))
 
             origin = [prev_location['latitude'], prev_location['longitude']]
             destination = [curr_location['latitude'], curr_location['longitude']]
@@ -376,16 +625,13 @@ def last_segment_distance_append(traveller):
 
             if not last_segment_distance:
                 last_segment_distance = 0
-            #print('last_segment_distance: {}'.format(last_segment_distance))
 
             new_distance = last_distance + last_segment_distance
-        #db.travellers.update_one({'name': traveller}, {'$set': {'total_distance': new_distance}})
-        #print('New total distance: {}'.format(new_distance))
-        #print()
         return new_distance
     except Exception as e:
         print('last_segment_distance_append() exception: {}'.format(e))
         return False
+
 
 def code_regenerate(traveller):
     '''
@@ -402,7 +648,6 @@ def code_regenerate(traveller):
         db.travellers.update_one({'name': traveller}, {'$set': {'secret_code': sha256_crypt.encrypt(new_code)}})
     except Exception as e:
         print('code_regenerate() exception when updating secret code in DB: {}'.format(e))
-        #send_email('Logger', 'code_regenerate() exception when updating secret code in DB: {}'.format(e))
         return False
 
     # Logging
@@ -410,21 +655,19 @@ def code_regenerate(traveller):
     print('New secret code for {}: {}'.format(traveller, new_code))
     return new_code
 
+
 def get_locale():
     user_language = request.cookies.get('UserPreferredLanguage')
-    #print("user_language: {}".format(user_language))
-    #print("autodetect_language: {}".format(request.accept_languages.best_match(LANGUAGES.keys())))
     if user_language != None:
         return user_language
     else:
         return request.accept_languages.best_match(LANGUAGES.keys())
 
+
 def save_subscriber(email_entered, OURTRAVELER):
     '''
         Gets email address, checks if it's not already in subscribers' DB, saves it, sends a verification email and informs user with flashes
     '''
-    print('email_entered: {}'.format(email_entered))
-    print('OURTRAVELER passed: {}'.format(OURTRAVELER))
     try:
         # Check if user's email is not already in DB
         client = MongoClient()
@@ -469,13 +712,7 @@ def save_subscriber(email_entered, OURTRAVELER):
         else:
             whos_location_updates = "{}'s".format(OURTRAVELER)
 
-        message = gettext("Hi!<br><br>" \
-                   "Thanks for subscribing to {0} location updates!<br>" \
-                   "They won't be too often (not more than once a week).<br><br>" \
-                   "Please verify your email address by clicking on the following link:<br><b>" \
-                   "<a href='{1}' target='_blank'>{1}</a></b><br><br>" \
-                   "If for any reason later you will decide to unsubscribe, please click on the following link:<br>" \
-                   "<a href='{2}' target='_blank'>{2}</a>").format(whos_location_updates, verification_link, unsubscription_link)
+        message = gettext("Hi!<br><br>Thanks for subscribing to {0} location updates!<br>They won't be too often (not more than once a week).<br><br>Please verify your email address by clicking on the following link:<br><b><a href='{1}' target='_blank'>{1}</a></b><br><br>If for any reason later you will decide to unsubscribe, please click on the following link:<br><a href='{2}' target='_blank'>{2}</a>").format(whos_location_updates, verification_link, unsubscription_link)
         send_mail(topic=topic, recipients=recipients, message=message)
         print('message sent')
 
@@ -486,6 +723,7 @@ def save_subscriber(email_entered, OURTRAVELER):
         flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
         return {"status": "error",
                 "message": "Error happened ('{}')".format(error)}
+
 
 def save_user_as_subscriber(email_entered, OURTRAVELER):
     '''
@@ -530,14 +768,10 @@ def save_user_as_subscriber(email_entered, OURTRAVELER):
             # Send user a confirmation email
             topic = gettext("Fellowtraveler.club: you subscribed to email updates")
             recipients = [email_entered]
-            message = gettext("Hi!<br><br>" \
-                   "Thanks for subscribing to {}'s location updates!<br>" \
-                   "They won't be too often (not more than once a week).<br><br>" \
-                   "If for any reason later you will decide to unsubscribe, please click on the following link:<br>" \
-                   "<a href='{0}' target='_blank'>{0}</a>").format(OURTRAVELER, unsubscription_link)
+            message = gettext("Hi!<br><br>Thanks for subscribing to {0}'s location updates!<br>They won't be too often (not more than once a week).<br><br>If for any reason later you will decide to unsubscribe, please click on the following link:<br><a href='{1}' target='_blank'>{1}</a>").format(OURTRAVELER, unsubscription_link)
             send_mail(topic=topic, recipients=recipients, message=message)
 
-            flash(lazy_gettext("Your email {} was subscribed to Teddy\'s location updates".format(email_entered)), 'header')
+            flash(lazy_gettext("Your email {} was subscribed to {}\'s location updates".format(email_entered, OURTRAVELER)), 'header')
             return {"status": "success",
                 "message": "Your email {} was subscribed to Teddy\'s location updates".format(email_entered)}
     except Exception as error:
@@ -551,5 +785,6 @@ def get_traveler():
         By default returns BASIC_TRAVELER
     '''
     OURTRAVELER = session.get('which_traveler', BASIC_TRAVELER)
-    print('\nOURTRAVELER: {}'.format(OURTRAVELER))
+    if OURTRAVELER not in ALL_TRAVELERS:
+        OURTRAVELER = BASIC_TRAVELER
     return OURTRAVELER
