@@ -230,10 +230,9 @@ msgstr ""
 
 #: ft.py:536
 msgid ""
-"No, it's not a trick and supposed to be safe but please see <a "
-"href=\"\">disclaimer</a>"
+"No, it's not a trick and supposed to be safe but please see <a href=\"/service/disclaimer/\">disclaimer</a>"
 msgstr ""
-"Ні, це не жарт і безпечно, але, будь ласка, ознайомтеся з <a href=\"\">Попередженням</a>"
+"Ні, це не жарт і безпечно, але, будь ласка, ознайомтеся з <a href=\"/service/disclaimer/\">Попередженням</a>"
 
 #: ft.py:647 ft.py:694 ft.py:758
 msgid "Email {} was not found"
@@ -1602,7 +1601,7 @@ msgstr "Може, просто <a href=\"%(url)s\"><b>увійдете</b></a>?"
 
 #: templates/traveler.html:6
 msgid "Hi! My name is"
-msgstr "Привіт! Меня звуть"
+msgstr "Привіт! Мене звуть"
 
 #: templates/traveler.html:6
 msgid "and I have a dream"
@@ -1681,8 +1680,8 @@ msgstr "Нагору"
 msgid "To add new"
 msgstr "Щоб додати нове місцезнаходження"
 
-msgid "\'s location first please <a href=\"../service/login/\"><b>log</b></a> in or <a href=\"../service/register/\"><b>register</b></a>"
-msgstr ", будь ласка, спочатку <a href=\"../service/login/\"><b>увійдіть</b></a> або <a href=\"../service/register/\"><b>зареєструйтесь</b></a>"
+msgid "'s location first please <a href='../service/login/'><b>log in</b></a> or <a href='../service/register/'><b>register</b></a>"
+msgstr ", будь ласка, спочатку <a href='../service/login/'><b>увійдіть</b></a> або <a href='../service/register/'><b>зареєструйтесь</b></a>"
 
 msgid "Go to"
 msgstr "Перейти:"
@@ -1692,4 +1691,6 @@ msgstr "або сторінка"
 
 msgid "\'s page"
 msgstr "."
+
+
 

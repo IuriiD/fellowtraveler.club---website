@@ -532,7 +532,7 @@ def traveler(OURTRAVELER='Teddy'):
             # Flash a disclaimer message and remember this in a cookie
             disclaimer_shown = request.cookies.get('DisclaimerShown')
             if not disclaimer_shown:
-                flash(lazy_gettext('No, it\'s not a trick and supposed to be safe but please see <a href="">disclaimer</a>'), 'header')
+                flash(lazy_gettext('No, it\'s not a trick and supposed to be safe but please see <a href="/service/disclaimer/">disclaimer</a>'), 'header')
                 # set a cookie so that disclaimer will be shown only once
                 expire_date = datetime.datetime.now()
                 expire_date = expire_date + datetime.timedelta(days=90)
@@ -775,6 +775,21 @@ def unsubscribe(user_email, verification_code):
     except Exception as error:
         flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
         return redirect(where_to_return)
+
+@app.route("/service/disclaimer/")
+@csrf.exempt
+def disclaimer():
+    return render_template('disclaimer.html')
+
+@app.route("/service/translate/")
+@csrf.exempt
+def translate():
+    return render_template('translate.html')
+
+@app.route("/service/support_project/")
+@csrf.exempt
+def support_project():
+    return render_template('support_project.html')
 
 @app.errorhandler(404)
 @csrf.exempt
