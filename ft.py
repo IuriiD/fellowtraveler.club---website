@@ -133,6 +133,121 @@ def send_mail(topic='', recipients=[], message='', sender=FROM_EMAIL):
         print('send_mail() exception: {}'.format(e))
         return False
 
+def save_user_as_subscriber(email_entered, OURTRAVELER):
+    '''
+        If a registered user (with already verified email) submits a new location with 'Get email updates' checkbox checked,
+        add his/her email to subscribers collection. No verification is needed. Flash corresponding message to user
+    '''
+    try:
+        # Check if user's email is not already in DB
+        # In rare cases user might subscribe 1st (and verify email or not) and then register to add locations
+        user_locale = get_locale()
+        userid = str(uuid.uuid4())
+
+        client = MongoClient()
+        db = client.TeddyGo
+        subscribers = db.subscribers
+        email_already_submitted = subscribers.find_one({"email": email_entered})
+
+        if email_already_submitted:
+            # Update it as verified (it has been verified during registration) and not unsubscribed
+            update_subscription = {
+                "verified": True,
+                "unsubscribed": False,
+                "locale": user_locale
+            }
+            subscribers.update_one({'email': email_entered}, {'$set': update_subscription})
+            flash(lazy_gettext("Email {} is already subscribed for updates".format(email_entered)), 'header')
+        else:
+            # A registered user (with verified email) wants to get email updates
+            new_subscriber = {
+                "email": email_entered,
+                "locale": user_locale,
+                "verified": True,
+                "verification_code": sha256_crypt.encrypt(userid),
+                "unsubscribed": None,
+                'which_traveler': OURTRAVELER
+            }
+
+            unsubscription_link = '{}/unsubscribe/{}/{}'.format(SITE_URL, email_entered, userid)
+
+            new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
+
+            # Send user a confirmation email
+            topic = gettext("Fellowtraveler.club: you subscribed to email updates")
+            recipients = [email_entered]
+            message = gettext("Hi!<br><br>Thanks for subscribing to {0}'s location updates!<br>They won't be too often (not more than once a week).<br><br>If for any reason later you will decide to unsubscribe, please click on the following link:<br><a href='{1}' target='_blank'>{1}</a>").format(OURTRAVELER, unsubscription_link)
+            send_mail(topic=topic, recipients=recipients, message=message)
+
+            flash(lazy_gettext("Your email {} was subscribed to {}\'s location updates".format(email_entered, OURTRAVELER)), 'header')
+            return {"status": "success",
+                "message": "Your email {} was subscribed to Teddy\'s location updates".format(email_entered)}
+    except Exception as error:
+        flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
+        return {"status": "error",
+                "message": "Error happened ('{}')".format(error)}
+
+
+def save_subscriber(email_entered, OURTRAVELER):
+    '''
+        Gets email address, checks if it's not already in subscribers' DB, saves it, sends a verification email and informs user with flashes
+    '''
+    try:
+        # Check if user's email is not already in DB
+        client = MongoClient()
+        db = client.TeddyGo
+        subscribers = db.subscribers
+        email_already_submitted = subscribers.find_one({"$and": [{"email": email_entered}, {'unsubscribed': {'$ne': True}}]})
+
+        if email_already_submitted:
+            if email_already_submitted['verified']:
+                flash(lazy_gettext("Email {} is already subscribed and verified".format(email_entered)), 'header')
+                return {"status": "error", "message": "Email {} is already subscribed and verified".format(email_entered)}
+            else:
+                flash(lazy_gettext("Email {} is already subscribed but has not been verified yet".format(email_entered)), 'header')
+                return {"status": "error",
+                        "message": "Email {} is already subscribed but has not been verified yet".format(email_entered)}
+
+        user_locale = get_locale()
+
+        userid = str(uuid.uuid4())
+
+        new_subscriber = {
+            "email": email_entered,
+            "locale": user_locale,
+            "verified": False,
+            "verification_code": sha256_crypt.encrypt(userid),
+            "unsubscribed": None,
+            'which_traveler': OURTRAVELER
+        }
+
+        verification_link = '{}/verify/{}/{}'.format(SITE_URL, email_entered, userid)
+        unsubscription_link = '{}/unsubscribe/{}/{}'.format(SITE_URL, email_entered, userid)
+        print("verification_link: {}".format(verification_link))
+
+        new_subscriber_id = subscribers.insert_one(new_subscriber).inserted_id
+        print('new_subscriber_id: {}'.format(new_subscriber_id))
+
+        # Send user a confirmation email with unsubscription link
+        topic = gettext("Fellowtraveler.club: email verification link")
+        recipients = [email_entered]
+        if OURTRAVELER == 'All':
+            whos_location_updates = "our travelers'"
+        else:
+            whos_location_updates = "{}'s".format(OURTRAVELER)
+
+        message = gettext("Hi!<br><br>Thanks for subscribing to {0} location updates!<br>They won't be too often (not more than once a week).<br><br>Please verify your email address by clicking on the following link:<br><b><a href='{1}' target='_blank'>{1}</a></b><br><br>If for any reason later you will decide to unsubscribe, please click on the following link:<br><a href='{2}' target='_blank'>{2}</a>").format(whos_location_updates, verification_link, unsubscription_link)
+        send_mail(topic=topic, recipients=recipients, message=message)
+        print('message sent')
+
+        flash(lazy_gettext("A verification link has been sent to your email address. Please click on it to verify your email"), 'header')
+        return {"status": "success",
+                "message": "A verification link has been sent to your email address. Please click on it to verify your email"}
+    except Exception as error:
+        flash(lazy_gettext("Error happened ('{}')".format(error)), 'header')
+        return {"status": "error",
+                "message": "Error happened ('{}')".format(error)}
+
 
 @babel.localeselector
 def get_locale():
@@ -457,7 +572,7 @@ def traveler(OURTRAVELER='Teddy'):
                     new_code_generated = ft_functions.code_regenerate(OURTRAVELER)
 
                     if receive_email_updates:
-                        ft_functions.save_user_as_subscriber(session['Email'], OURTRAVELER)
+                        save_user_as_subscriber(session['Email'], OURTRAVELER)
 
                     if new_code_generated:
                         # Flash the new code and send it to user's email
@@ -610,7 +725,7 @@ def direct_subscription():
     if request.method == "POST":
         if subscribe2updatesform.validate_on_submit():
             email_entered = subscribe2updatesform.email4updates.data
-            ft_functions.save_subscriber(email_entered, OURTRAVELER)
+            save_subscriber(email_entered, OURTRAVELER)
         else:
             flash(lazy_gettext("Please enter a valid e-mail address"), 'header')
 
