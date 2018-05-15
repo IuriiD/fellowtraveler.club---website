@@ -513,7 +513,6 @@ def traveler(OURTRAVELER='Teddy'):
                 day_or_days = gettext('days')
 
             countries_list = (', ').join(countries_visited)
-            print('countries_list: {}'.format(countries_list))
 
             journey_summary = gettext(
                 'So far I\'ve checked in <b>{}</b> places located in <b>{}</b> {} ({}) and have been traveling for <b>{}</b> {}.\n\n'
