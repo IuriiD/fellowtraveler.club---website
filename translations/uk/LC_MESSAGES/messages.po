@@ -321,7 +321,7 @@ msgstr "Антарктика"
 
 #: ft_functions.py:167
 msgid "Antigua and Barbuda"
-msgstr "Антигуа іБарбуда"
+msgstr "Антигуа і Барбуда"
 
 #: ft_functions.py:168
 msgid "Argentina"

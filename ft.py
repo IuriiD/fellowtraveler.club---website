@@ -494,7 +494,33 @@ def traveler(OURTRAVELER='Teddy'):
         if not travelled_so_far:
             journey_summary = ''
         else:
-            journey_summary = travelled_so_far['speech']
+            total_countries = travelled_so_far['total_countries']
+            total_locations = travelled_so_far['total_locations']
+            total_distance = travelled_so_far['total_distance']
+            journey_duration = travelled_so_far['journey_duration']
+            distance_from_home = travelled_so_far['distance_from_home']
+            countries_visited_codes = travelled_so_far['countries_visited']
+            countries_visited = ft_functions.translate_countries(countries_visited_codes, user_language)
+
+            if total_countries == 1:
+                countries_form = gettext('country')
+            else:
+                countries_form = gettext('countries')
+
+            if journey_duration == 1:
+                day_or_days = gettext('day')
+            else:
+                day_or_days = gettext('days')
+
+            countries_list = (', ').join(countries_visited)
+            print('countries_list: {}'.format(countries_list))
+
+            journey_summary = gettext(
+                'So far I\'ve checked in <b>{}</b> places located in <b>{}</b> {} ({}) and have been traveling for <b>{}</b> {}.\n\n'
+                'I covered about <b>{}</b> km it total and currently I\'m nearly <b>{}</b> km from home').format(
+                total_locations, total_countries, countries_form, countries_list, journey_duration,
+                day_or_days, total_distance,
+                distance_from_home)
 
         # POST-request
         if request.method == 'POST':
@@ -623,7 +649,32 @@ def traveler(OURTRAVELER='Teddy'):
                     if not travelled_so_far:
                         journey_summary = ''
                     else:
-                        journey_summary = travelled_so_far['speech']
+                        total_countries = travelled_so_far['total_countries']
+                        total_locations = travelled_so_far['total_locations']
+                        total_distance = travelled_so_far['total_distance']
+                        journey_duration = travelled_so_far['journey_duration']
+                        distance_from_home = travelled_so_far['distance_from_home']
+                        countries_visited_codes = travelled_so_far['countries_visited']
+                        countries_visited = ft_functions.translate_countries(countries_visited_codes, user_language)
+
+                        if total_countries == 1:
+                            countries_form = gettext('country')
+                        else:
+                            countries_form = gettext('countries')
+
+                        if journey_duration == 1:
+                            day_or_days = gettext('day')
+                        else:
+                            day_or_days = gettext('days')
+
+                        countries_list = (', ').join(countries_visited)
+
+                        journey_summary = gettext(
+                            'So far I\'ve checked in <b>{}</b> places located in <b>{}</b> {} ({}) and have been traveling for <b>{}</b> {}.\n\n'
+                            'I covered about <b>{}</b> km it total and currently I\'m nearly <b>{}</b> km from home').format(
+                            total_locations, total_countries, countries_form, countries_list, journey_duration,
+                            day_or_days, total_distance,
+                            distance_from_home)
 
                     # If incorrect password
                     #return redirect(url_for('traveler', OURTRAVELER=OURTRAVELER, _anchor='updatelocation'))

@@ -40,6 +40,9 @@ LANGUAGES = {
     'uk': 'Українська'
 }
 
+COUNTRIES_CODES_NAMES = [{'Code': 'AF', 'Name': {'ru': 'Афганистан', 'uk': 'Афганістан', 'en': 'Afghanistan'}}, {'Code': 'AX', 'Name': {'ru': 'Аландские острова', 'uk': 'Аландскі острови', 'en': 'Åland Islands'}}, {'Code': 'AL', 'Name': {'ru': 'Албания', 'uk': 'Албанія', 'en': 'Albania'}}, {'Code': 'DZ', 'Name': {'ru': 'Алжир', 'uk': 'Алжир', 'en': 'Algeria'}}, {'Code': 'AS', 'Name': {'ru': 'Американское Самоа', 'uk': 'Американське Самоа', 'en': 'American Samoa'}}, {'Code': 'AD', 'Name': {'ru': 'Андорра', 'uk': 'Андорра', 'en': 'Andorra'}}, {'Code': 'AO', 'Name': {'ru': 'Ангола', 'uk': 'Ангола', 'en': 'Angola'}}, {'Code': 'AI', 'Name': {'ru': 'Ангилья', 'uk': 'Ангілья', 'en': 'Anguilla'}}, {'Code': 'AQ', 'Name': {'ru': 'Антарктика', 'uk': 'Антарктика', 'en': 'Antarctica'}}, {'Code': 'AG', 'Name': {'ru': 'Антигуа и Барбуда', 'uk': 'Антигуа і Барбуда', 'en': 'Antigua and Barbuda'}}, {'Code': 'AR', 'Name': {'ru': 'Аргентина', 'uk': 'Аргентина', 'en': 'Argentina'}}, {'Code': 'AM', 'Name': {'ru': 'Армения', 'uk': 'Арменія', 'en': 'Armenia'}}, {'Code': 'AW', 'Name': {'ru': 'Аруба', 'uk': 'Аруба', 'en': 'Aruba'}}, {'Code': 'AU', 'Name': {'ru': 'Австралия', 'uk': 'Австралія', 'en': 'Australia'}}, {'Code': 'AT', 'Name': {'ru': 'Австрия', 'uk': 'Австрія', 'en': 'Austria'}}, {'Code': 'AZ', 'Name': {'ru': 'Азербайджан', 'uk': 'Азербайджан', 'en': 'Azerbaijan'}}, {'Code': 'BS', 'Name': {'ru': 'Багамы', 'uk': 'Багами', 'en': 'Bahamas'}}, {'Code': 'BH', 'Name': {'ru': 'Бахрейн', 'uk': 'Бахрейн', 'en': 'Bahrain'}}, {'Code': 'BD', 'Name': {'ru': 'Бангладеш', 'uk': 'Бангладеш', 'en': 'Bangladesh'}}, {'Code': 'BB', 'Name': {'ru': 'Барбадос', 'uk': 'Барбадос', 'en': 'Barbados'}}, {'Code': 'BY', 'Name': {'ru': 'Беларусь', 'uk': 'Білорусь', 'en': 'Belarus'}}, {'Code': 'BE', 'Name': {'ru': 'Бельгия', 'uk': 'Бельгія', 'en': 'Belgium'}}, {'Code': 'BZ', 'Name': {'ru': 'Белиз', 'uk': 'Беліз', 'en': 'Belize'}}, {'Code': 'BJ', 'Name': {'ru': 'Бенин', 'uk': 'Бенін', 'en': 'Benin'}}, {'Code': 'BM', 'Name': {'ru': 'Бермуды', 'uk': 'Бермуди', 'en': 'Bermuda'}}, {'Code': 'BT', 'Name': {'ru': 'Бутан', 'uk': 'Бутан', 'en': 'Bhutan'}}, {'Code': 'BO', 'Name': {'ru': 'Боливия', 'uk': 'Болівія', 'en': 'Bolivia, Plurinational State of'}}, {'Code': 'BQ', 'Name': {'ru': 'Бонайре, Синт-Эстатиус и Саба', 'uk': 'Бонайре, Синт-Естатіус і Саба', 'en': 'Bonaire, Sint Eustatius and Saba'}}, {'Code': 'BA', 'Name': {'ru': 'Босния и Герцеговина', 'uk': 'Боснія і Герцеговина', 'en': 'Bosnia and Herzegovina'}}, {'Code': 'BW', 'Name': {'ru': 'Ботсвана', 'uk': 'Ботсвана', 'en': 'Botswana'}}, {'Code': 'BV', 'Name': {'ru': 'Остров Буве', 'uk': 'Острів Буве', 'en': 'Bouvet Island'}}, {'Code': 'BR', 'Name': {'ru': 'Бразилия', 'uk': 'Бразилія', 'en': 'Brazil'}}, {'Code': 'IO', 'Name': {'ru': 'Британская территория в Индийском океане', 'uk': 'Британська територія в Індійскому океані', 'en': 'British Indian Ocean Territory'}}, {'Code': 'BN', 'Name': {'ru': 'Бруней Даруссалам', 'uk': 'Бруней Даруссалам', 'en': 'Brunei Darussalam'}}, {'Code': 'BG', 'Name': {'ru': 'Болгария', 'uk': 'Болгарія', 'en': 'Bulgaria'}}, {'Code': 'BF', 'Name': {'ru': 'Буркина-Фасо', 'uk': 'Буркина-Фасо', 'en': 'Burkina Faso'}}, {'Code': 'BI', 'Name': {'ru': 'Бурунди', 'uk': 'Бурунді', 'en': 'Burundi'}}, {'Code': 'KH', 'Name': {'ru': 'Камбоджа', 'uk': 'Камбоджа', 'en': 'Cambodia'}}, {'Code': 'CM', 'Name': {'ru': 'Камерун', 'uk': 'Камерун', 'en': 'Cameroon'}}, {'Code': 'CA', 'Name': {'ru': 'Канада', 'uk': 'Канада', 'en': 'Canada'}}, {'Code': 'CV', 'Name': {'ru': 'Кабо-Верде', 'uk': 'Кабо-Верде', 'en': 'Cape Verde'}}, {'Code': 'KY', 'Name': {'ru': 'Каймановы острова', 'uk': 'Кайманові острови', 'en': 'Cayman Islands'}}, {'Code': 'CF', 'Name': {'ru': 'Центральноафриканская Республика', 'uk': 'Центральноафриканська Республіка', 'en': 'Central African Republic'}}, {'Code': 'TD', 'Name': {'ru': 'Чад', 'uk': 'Чад', 'en': 'Chad'}}, {'Code': 'CL', 'Name': {'ru': 'Чили', 'uk': 'Чилі', 'en': 'Chile'}}, {'Code': 'CN', 'Name': {'ru': 'Китай', 'uk': 'Китай', 'en': 'China'}}, {'Code': 'CX', 'Name': {'ru': 'остров Рождества', 'uk': 'острів Різдва', 'en': 'Christmas Island'}}, {'Code': 'CC', 'Name': {'ru': 'Кокосовые острова', 'uk': 'Кокосові острови', 'en': 'Cocos (Keeling) Islands'}}, {'Code': 'CO', 'Name': {'ru': 'Колумбия', 'uk': 'Колумбія', 'en': 'Colombia'}}, {'Code': 'KM', 'Name': {'ru': 'Коморские Острова', 'uk': 'Коморскі Острови', 'en': 'Comoros'}}, {'Code': 'CG', 'Name': {'ru': 'Конго', 'uk': 'Конго', 'en': 'Congo'}}, {'Code': 'CD', 'Name': {'ru': 'Конго', 'uk': 'Конго', 'en': 'Congo, the Democratic Republic of the'}}, {'Code': 'CK', 'Name': {'ru': 'Острова Кука', 'uk': 'Острови Кука', 'en': 'Cook Islands'}}, {'Code': 'CR', 'Name': {'ru': 'Коста-Рика', 'uk': 'Коста-Ріка', 'en': 'Costa Rica'}}, {'Code': 'CI', 'Name': {'ru': 'Кот-д’Ивуар', 'uk': 'Кот-д’Івуар', 'en': "Côte d'Ivoire"}}, {'Code': 'HR', 'Name': {'ru': 'Хорватия', 'uk': 'Хорватія', 'en': 'Croatia'}}, {'Code': 'CU', 'Name': {'ru': 'Куба', 'uk': 'Куба', 'en': 'Cuba'}}, {'Code': 'CW', 'Name': {'ru': 'Кюрасао', 'uk': 'Кюрасао', 'en': 'Curaçao'}}, {'Code': 'CY', 'Name': {'ru': 'Кипр', 'uk': 'Кіпр', 'en': 'Cyprus'}}, {'Code': 'CZ', 'Name': {'ru': 'Чешская Республика', 'uk': 'Чеська Республіка', 'en': 'Czech Republic'}}, {'Code': 'DK', 'Name': {'ru': 'Дания', 'uk': 'Данія', 'en': 'Denmark'}}, {'Code': 'DJ', 'Name': {'ru': 'Джибути', 'uk': 'Джибуті', 'en': 'Djibouti'}}, {'Code': 'DM', 'Name': {'ru': 'Доминика', 'uk': 'Доміника', 'en': 'Dominica'}}, {'Code': 'DO', 'Name': {'ru': 'Доминиканская Республика', 'uk': 'Домініканська Республіка', 'en': 'Dominican Republic'}}, {'Code': 'EC', 'Name': {'ru': 'Эквадор', 'uk': 'Еквадор', 'en': 'Ecuador'}}, {'Code': 'EG', 'Name': {'ru': 'Египет', 'uk': 'Єгипет', 'en': 'Egypt'}}, {'Code': 'SV', 'Name': {'ru': 'Эль-Сальвадор', 'uk': 'Ель-Сальвадор', 'en': 'El Salvador'}}, {'Code': 'GQ', 'Name': {'ru': 'Экваториальная Гвинея', 'uk': 'Екваторіальна Гвінея', 'en': 'Equatorial Guinea'}}, {'Code': 'ER', 'Name': {'ru': 'Эритрея', 'uk': 'Еритрея', 'en': 'Eritrea'}}, {'Code': 'EE', 'Name': {'ru': 'Эстония', 'uk': 'Естонія', 'en': 'Estonia'}}, {'Code': 'ET', 'Name': {'ru': 'Эфиопия', 'uk': 'Ефіопія', 'en': 'Ethiopia'}}, {'Code': 'FK', 'Name': {'ru': 'Фолклендские острова', 'uk': 'Фолклендскі острови', 'en': 'Falkland Islands (Malvinas)'}}, {'Code': 'FO', 'Name': {'ru': 'Фарерские острова', 'uk': 'Фарерскі острови', 'en': 'Faroe Islands'}}, {'Code': 'FJ', 'Name': {'ru': 'Фиджи', 'uk': 'Фіджи', 'en': 'Fiji'}}, {'Code': 'FI', 'Name': {'ru': 'Финляндия', 'uk': 'Фінляндія', 'en': 'Finland'}}, {'Code': 'FR', 'Name': {'ru': 'Франция', 'uk': 'Франція', 'en': 'France'}}, {'Code': 'GF', 'Name': {'ru': 'Французская Гвиана', 'uk': 'Французька Гвіана', 'en': 'French Guiana'}}, {'Code': 'PF', 'Name': {'ru': 'Французская Полинезия', 'uk': 'Французька Полінезія', 'en': 'French Polynesia'}}, {'Code': 'TF', 'Name': {'ru': 'Французские Южные Территории', 'uk': 'Французькі Південні Території', 'en': 'French Southern Territories'}}, {'Code': 'GA', 'Name': {'ru': 'Габон', 'uk': 'Габон', 'en': 'Gabon'}}, {'Code': 'GM', 'Name': {'ru': 'Гамбия', 'uk': 'Гамбія', 'en': 'Gambia'}}, {'Code': 'GE', 'Name': {'ru': 'Грузия', 'uk': 'Грузія', 'en': 'Georgia'}}, {'Code': 'DE', 'Name': {'ru': 'Германия', 'uk': 'Германія', 'en': 'Germany'}}, {'Code': 'GH', 'Name': {'ru': 'Гана', 'uk': 'Гана', 'en': 'Ghana'}}, {'Code': 'GI', 'Name': {'ru': 'Гибралтар', 'uk': 'Гібралтар', 'en': 'Gibraltar'}}, {'Code': 'GR', 'Name': {'ru': 'Греция', 'uk': 'Греція', 'en': 'Greece'}}, {'Code': 'GL', 'Name': {'ru': 'Гренландия', 'uk': 'Гренландія', 'en': 'Greenland'}}, {'Code': 'GD', 'Name': {'ru': 'Гренада', 'uk': 'Гренада', 'en': 'Grenada'}}, {'Code': 'GP', 'Name': {'ru': 'Гваделупа', 'uk': 'Гваделупа', 'en': 'Guadeloupe'}}, {'Code': 'GU', 'Name': {'ru': 'Гуам', 'uk': 'Гуам', 'en': 'Guam'}}, {'Code': 'GT', 'Name': {'ru': 'Гватемала', 'uk': 'Гватемала', 'en': 'Guatemala'}}, {'Code': 'GG', 'Name': {'ru': 'Гернси', 'uk': 'Гернсі', 'en': 'Guernsey'}}, {'Code': 'GN', 'Name': {'ru': 'Гвинея', 'uk': 'Гвінея', 'en': 'Guinea'}}, {'Code': 'GW', 'Name': {'ru': 'Гвинея-Бисау', 'uk': 'Гвінея-Бісау', 'en': 'Guinea-Bissau'}}, {'Code': 'GY', 'Name': {'ru': 'Гайана', 'uk': 'Гайана', 'en': 'Guyana'}}, {'Code': 'HT', 'Name': {'ru': 'Гаити', 'uk': 'Гаїті', 'en': 'Haiti'}}, {'Code': 'HM', 'Name': {'ru': 'остров Херд и острова МакДональд', 'uk': 'острів Херд і острови МакДональд', 'en': 'Heard Island and McDonald Islands'}}, {'Code': 'VA', 'Name': {'ru': 'Святой Престол', 'uk': 'Святий Престол', 'en': 'Holy See (Vatican City State)'}}, {'Code': 'HN', 'Name': {'ru': 'Гондурас', 'uk': 'Гондурас', 'en': 'Honduras'}}, {'Code': 'HK', 'Name': {'ru': 'Гонконг', 'uk': 'Гонконг', 'en': 'Hong Kong'}}, {'Code': 'HU', 'Name': {'ru': 'Венгрия', 'uk': 'Угорщина', 'en': 'Hungary'}}, {'Code': 'IS', 'Name': {'ru': 'Исландия', 'uk': 'Ісландия', 'en': 'Iceland'}}, {'Code': 'IN', 'Name': {'ru': 'Индия', 'uk': 'Індия', 'en': 'India'}}, {'Code': 'ID', 'Name': {'ru': 'Индонезия', 'uk': 'Індонезія', 'en': 'Indonesia'}}, {'Code': 'IR', 'Name': {'ru': 'Иран', 'uk': 'Іран', 'en': 'Iran, Islamic Republic of'}}, {'Code': 'IQ', 'Name': {'ru': 'Ирак', 'uk': 'Ірак', 'en': 'Iraq'}}, {'Code': 'IE', 'Name': {'ru': 'Ирландия', 'uk': 'Ірландія', 'en': 'Ireland'}}, {'Code': 'IM', 'Name': {'ru': 'остров Мэн', 'uk': 'острів Мен', 'en': 'Isle of Man'}}, {'Code': 'IL', 'Name': {'ru': 'Израиль', 'uk': 'Ізраїль', 'en': 'Israel'}}, {'Code': 'IT', 'Name': {'ru': 'Италия', 'uk': 'Італія', 'en': 'Italy'}}, {'Code': 'JM', 'Name': {'ru': 'Ямайка', 'uk': 'Ямайка', 'en': 'Jamaica'}}, {'Code': 'JP', 'Name': {'ru': 'Япония', 'uk': 'Японія', 'en': 'Japan'}}, {'Code': 'JE', 'Name': {'ru': 'о. Джерси', 'uk': 'о. Джерсі', 'en': 'Jersey'}}, {'Code': 'JO', 'Name': {'ru': 'Иордания', 'uk': 'Йорданія', 'en': 'Jordan'}}, {'Code': 'KZ', 'Name': {'ru': 'Казахстан', 'uk': 'Казахстан', 'en': 'Kazakhstan'}}, {'Code': 'KE', 'Name': {'ru': 'Кения', 'uk': 'Кенія', 'en': 'Kenya'}}, {'Code': 'KI', 'Name': {'ru': 'Кирибати', 'uk': 'Кирібаті', 'en': 'Kiribati'}}, {'Code': 'KP', 'Name': {'ru': 'КНДР', 'uk': 'КНДР', 'en': "Korea, Democratic People's Republic of"}}, {'Code': 'KR', 'Name': {'ru': 'Республика Корея', 'uk': 'Республіка Корея', 'en': 'Korea, Republic of'}}, {'Code': 'KW', 'Name': {'ru': 'Кувейт', 'uk': 'Кувейт', 'en': 'Kuwait'}}, {'Code': 'KG', 'Name': {'ru': 'Киргизстан', 'uk': 'Киргизстан', 'en': 'Kyrgyzstan'}}, {'Code': 'LA', 'Name': {'ru': 'Лаосская Народно-Демократическая Республика', 'uk': 'Лаосская Народно-Демократическая Республика', 'en': "Lao People's Democratic Republic"}}, {'Code': 'LV', 'Name': {'ru': 'Латвия', 'uk': 'Латвия', 'en': 'Latvia'}}, {'Code': 'LB', 'Name': {'ru': 'Ливан', 'uk': 'Ливан', 'en': 'Lebanon'}}, {'Code': 'LS', 'Name': {'ru': 'Лесото', 'uk': 'Лесото', 'en': 'Lesotho'}}, {'Code': 'LR', 'Name': {'ru': 'Либерия', 'uk': 'Либерия', 'en': 'Liberia'}}, {'Code': 'LY', 'Name': {'ru': 'Ливия', 'uk': 'Ливия', 'en': 'Libya'}}, {'Code': 'LI', 'Name': {'ru': 'Лихтенштейн', 'uk': 'Лихтенштейн', 'en': 'Liechtenstein'}}, {'Code': 'LT', 'Name': {'ru': 'Литва', 'uk': 'Литва', 'en': 'Lithuania'}}, {'Code': 'LU', 'Name': {'ru': 'Люксембург', 'uk': 'Люксембург', 'en': 'Luxembourg'}}, {'Code': 'MO', 'Name': {'ru': 'Макао', 'uk': 'Макао', 'en': 'Macao'}}, {'Code': 'MK', 'Name': {'ru': 'Македония', 'uk': 'Македония', 'en': 'Macedonia, the Former Yugoslav Republic of'}}, {'Code': 'MG', 'Name': {'ru': 'Мадагаскар', 'uk': 'Мадагаскар', 'en': 'Madagascar'}}, {'Code': 'MW', 'Name': {'ru': 'Малави', 'uk': 'Малави', 'en': 'Malawi'}}, {'Code': 'MY', 'Name': {'ru': 'Малайзия', 'uk': 'Малайзия', 'en': 'Malaysia'}}, {'Code': 'MV', 'Name': {'ru': 'Мальдивы', 'uk': 'Мальдивы', 'en': 'Maldives'}}, {'Code': 'ML', 'Name': {'ru': 'Мали', 'uk': 'Мали', 'en': 'Mali'}}, {'Code': 'MT', 'Name': {'ru': 'Мальта', 'uk': 'Мальта', 'en': 'Malta'}}, {'Code': 'MH', 'Name': {'ru': 'Маршалловы острова', 'uk': 'Маршалловы острова', 'en': 'Marshall Islands'}}, {'Code': 'MQ', 'Name': {'ru': 'Мартиника', 'uk': 'Мартиника', 'en': 'Martinique'}}, {'Code': 'MR', 'Name': {'ru': 'Мавритания', 'uk': 'Мавритания', 'en': 'Mauritania'}}, {'Code': 'MU', 'Name': {'ru': 'Маврикий', 'uk': 'Маврикий', 'en': 'Mauritius'}}, {'Code': 'YT', 'Name': {'ru': 'Майотта', 'uk': 'Майотта', 'en': 'Mayotte'}}, {'Code': 'MX', 'Name': {'ru': 'Мексика', 'uk': 'Мексика', 'en': 'Mexico'}}, {'Code': 'FM', 'Name': {'ru': 'Микронезия', 'uk': 'Микронезия', 'en': 'Micronesia, Federated States of'}}, {'Code': 'MD', 'Name': {'ru': 'Молдова', 'uk': 'Молдова', 'en': 'Moldova, Republic of'}}, {'Code': 'MC', 'Name': {'ru': 'Монако', 'uk': 'Монако', 'en': 'Monaco'}}, {'Code': 'MN', 'Name': {'ru': 'Монголия', 'uk': 'Монголия', 'en': 'Mongolia'}}, {'Code': 'ME', 'Name': {'ru': 'Черногория', 'uk': 'Черногория', 'en': 'Montenegro'}}, {'Code': 'MS', 'Name': {'ru': 'о. Монтсеррат', 'uk': 'о. Монтсеррат', 'en': 'Montserrat'}}, {'Code': 'MA', 'Name': {'ru': 'Марокко', 'uk': 'Марокко', 'en': 'Morocco'}}, {'Code': 'MZ', 'Name': {'ru': 'Мозамбик', 'uk': 'Мозамбик', 'en': 'Mozambique'}}, {'Code': 'MM', 'Name': {'ru': 'Мьянма', 'uk': 'Мьянма', 'en': 'Myanmar'}}, {'Code': 'NA', 'Name': {'ru': 'Намибия', 'uk': 'Намибия', 'en': 'Namibia'}}, {'Code': 'NR', 'Name': {'ru': 'Науру', 'uk': 'Науру', 'en': 'Nauru'}}, {'Code': 'NP', 'Name': {'ru': 'Непал', 'uk': 'Непал', 'en': 'Nepal'}}, {'Code': 'NL', 'Name': {'ru': 'Нидерланды', 'uk': 'Нидерланды', 'en': 'Netherlands'}}, {'Code': 'NC', 'Name': {'ru': 'Новая Каледония', 'uk': 'Новая Каледония', 'en': 'New Caledonia'}}, {'Code': 'NZ', 'Name': {'ru': 'Новая Зеландия', 'uk': 'Новая Зеландия', 'en': 'New Zealand'}}, {'Code': 'NI', 'Name': {'ru': 'Никарагуа', 'uk': 'Никарагуа', 'en': 'Nicaragua'}}, {'Code': 'NE', 'Name': {'ru': 'Нигер', 'uk': 'Нигер', 'en': 'Niger'}}, {'Code': 'NG', 'Name': {'ru': 'Нигерия', 'uk': 'Нигерия', 'en': 'Nigeria'}}, {'Code': 'NU', 'Name': {'ru': 'Ниуэ', 'uk': 'Ниуэ', 'en': 'Niue'}}, {'Code': 'NF', 'Name': {'ru': 'о. Норфолк', 'uk': 'о. Норфолк', 'en': 'Norfolk Island'}}, {'Code': 'MP', 'Name': {'ru': 'Северные Марианские острова', 'uk': 'Северные Марианские острова', 'en': 'Northern Mariana Islands'}}, {'Code': 'NO', 'Name': {'ru': 'Норвегия', 'uk': 'Норвегия', 'en': 'Norway'}}, {'Code': 'OM', 'Name': {'ru': 'Оман', 'uk': 'Оман', 'en': 'Oman'}}, {'Code': 'PK', 'Name': {'ru': 'Пакистан', 'uk': 'Пакистан', 'en': 'Pakistan'}}, {'Code': 'PW', 'Name': {'ru': 'Палау', 'uk': 'Палау', 'en': 'Palau'}}, {'Code': 'PS', 'Name': {'ru': 'Палестина', 'uk': 'Палестина', 'en': 'Palestine, State of'}}, {'Code': 'PA', 'Name': {'ru': 'Панама', 'uk': 'Панама', 'en': 'Panama'}}, {'Code': 'PG', 'Name': {'ru': 'Папуа-Новая Гвинея', 'uk': 'Папуа-Новая Гвинея', 'en': 'Papua New Guinea'}}, {'Code': 'PY', 'Name': {'ru': 'Парагвай', 'uk': 'Парагвай', 'en': 'Paraguay'}}, {'Code': 'PE', 'Name': {'ru': 'Перу', 'uk': 'Перу', 'en': 'Peru'}}, {'Code': 'PH', 'Name': {'ru': 'Филиппины', 'uk': 'Филиппины', 'en': 'Philippines'}}, {'Code': 'PN', 'Name': {'ru': 'Питкэрн', 'uk': 'Питкэрн', 'en': 'Pitcairn'}}, {'Code': 'PL', 'Name': {'ru': 'Польша', 'uk': 'Польща', 'en': 'Poland'}}, {'Code': 'PT', 'Name': {'ru': 'Португалия', 'uk': 'Португалія', 'en': 'Portugal'}}, {'Code': 'PR', 'Name': {'ru': 'Пуэрто-Рико', 'uk': 'Пуэрто-Рико', 'en': 'Puerto Rico'}}, {'Code': 'QA', 'Name': {'ru': 'Катар', 'uk': 'Катар', 'en': 'Qatar'}}, {'Code': 'RE', 'Name': {'ru': 'о. Реюньон ', 'uk': 'о. Реюньон ', 'en': 'Réunion'}}, {'Code': 'RO', 'Name': {'ru': 'Румыния', 'uk': 'Румыния', 'en': 'Romania'}}, {'Code': 'RU', 'Name': {'ru': 'Российская Федерация', 'uk': 'Российская Федерация', 'en': 'Russian Federation'}}, {'Code': 'RW', 'Name': {'ru': 'Руанда', 'uk': 'Руанда', 'en': 'Rwanda'}}, {'Code': 'BL', 'Name': {'ru': 'Сен-Бартелеми', 'uk': 'Сен-Бартелеми', 'en': 'Saint Barthélemy'}}, {'Code': 'SH', 'Name': {'ru': 'о. Святой Елены', 'uk': 'о. Святой Елены', 'en': 'Saint Helena, Ascension and Tristan da Cunha'}}, {'Code': 'KN', 'Name': {'ru': 'Сент-Китс и Невис', 'uk': 'Сент-Китс и Невис', 'en': 'Saint Kitts and Nevis'}}, {'Code': 'LC', 'Name': {'ru': 'Сент-Люсия', 'uk': 'Сент-Люсия', 'en': 'Saint Lucia'}}, {'Code': 'MF', 'Name': {'ru': 'Сен-Мартен', 'uk': 'Сен-Мартен', 'en': 'Saint Martin (French part)'}}, {'Code': 'PM', 'Name': {'ru': 'Сен-Пьер и Микелон', 'uk': 'Сен-Пьер и Микелон', 'en': 'Saint Pierre and Miquelon'}}, {'Code': 'VC', 'Name': {'ru': 'Сент-Винсент и Гренадины', 'uk': 'Сент-Винсент и Гренадины', 'en': 'Saint Vincent and the Grenadines'}}, {'Code': 'WS', 'Name': {'ru': 'Самоа', 'uk': 'Самоа', 'en': 'Samoa'}}, {'Code': 'SM', 'Name': {'ru': 'Сан Марино', 'uk': 'San Marino', 'en': 'San Marino'}}, {'Code': 'ST', 'Name': {'ru': 'Сан-Томе и Принсипи', 'uk': 'Сан-Томе и Принсипи', 'en': 'Sao Tome and Principe'}}, {'Code': 'SA', 'Name': {'ru': 'Саудовская Аравия', 'uk': 'Саудовская Аравия', 'en': 'Saudi Arabia'}}, {'Code': 'SN', 'Name': {'ru': 'Сенегал', 'uk': 'Сенегал', 'en': 'Senegal'}}, {'Code': 'RS', 'Name': {'ru': 'Сербия', 'uk': 'Сербия', 'en': 'Serbia'}}, {'Code': 'SC', 'Name': {'ru': 'Сейшеллы', 'uk': 'Сейшеллы', 'en': 'Seychelles'}}, {'Code': 'SL', 'Name': {'ru': '\tСьерра-Леоне', 'uk': '\tСьерра-Леоне', 'en': 'Sierra Leone'}}, {'Code': 'SG', 'Name': {'ru': 'Сингапур', 'uk': 'Сингапур', 'en': 'Singapore'}}, {'Code': 'SX', 'Name': {'ru': 'Синт-Мартен', 'uk': 'Синт-Мартен', 'en': 'Sint Maarten (Dutch part)'}}, {'Code': 'SK', 'Name': {'ru': 'Словакия', 'uk': 'Словакия', 'en': 'Slovakia'}}, {'Code': 'SI', 'Name': {'ru': 'Словения', 'uk': 'Словенія', 'en': 'Slovenia'}}, {'Code': 'SB', 'Name': {'ru': 'Соломоновы Острова', 'uk': 'Соломоновы Острова', 'en': 'Solomon Islands'}}, {'Code': 'SO', 'Name': {'ru': 'Сомали', 'uk': 'Сомали', 'en': 'Somalia'}}, {'Code': 'ZA', 'Name': {'ru': 'ЮАР', 'uk': 'ЮАР', 'en': 'South Africa'}}, {'Code': 'GS', 'Name': {'ru': 'Южная Георгия и Южные Сандвичевы острова', 'uk': 'Южная Георгия и Южные Сандвичевы острова', 'en': 'South Georgia and the South Sandwich Islands'}}, {'Code': 'SS', 'Name': {'ru': 'Южный Судан', 'uk': 'Южный Судан', 'en': 'South Sudan'}}, {'Code': 'ES', 'Name': {'ru': 'Испания', 'uk': 'Испания', 'en': 'Spain'}}, {'Code': 'LK', 'Name': {'ru': 'Шри-Ланка', 'uk': 'Шри-Ланка', 'en': 'Sri Lanka'}}, {'Code': 'SD', 'Name': {'ru': 'Судан', 'uk': 'Судан', 'en': 'Sudan'}}, {'Code': 'SR', 'Name': {'ru': 'Суринам', 'uk': 'Суринам', 'en': 'Suriname'}}, {'Code': 'SJ', 'Name': {'ru': 'Шпицберген и Ян-Майен', 'uk': 'Шпицберген и Ян-Майен', 'en': 'Svalbard and Jan Mayen'}}, {'Code': 'SZ', 'Name': {'ru': 'Свазиленд', 'uk': 'Свазиленд', 'en': 'Swaziland'}}, {'Code': 'SE', 'Name': {'ru': 'Швеция', 'uk': 'Швеция', 'en': 'Sweden'}}, {'Code': 'CH', 'Name': {'ru': 'Швейцария', 'uk': 'Швейцария', 'en': 'Switzerland'}}, {'Code': 'SY', 'Name': {'ru': 'Сирия', 'uk': 'Сирия', 'en': 'Syrian Arab Republic'}}, {'Code': 'TW', 'Name': {'ru': 'Тайвань', 'uk': 'Тайвань', 'en': 'Taiwan, Province of China'}}, {'Code': 'TJ', 'Name': {'ru': 'Таджикистан', 'uk': 'Таджикистан', 'en': 'Tajikistan'}}, {'Code': 'TZ', 'Name': {'ru': 'Танзания', 'uk': 'Танзания', 'en': 'Tanzania, United Republic of'}}, {'Code': 'TH', 'Name': {'ru': 'Таиланд', 'uk': 'Таиланд', 'en': 'Thailand'}}, {'Code': 'TL', 'Name': {'ru': 'Восточный Тимор', 'uk': 'Восточный Тимор', 'en': 'Timor-Leste'}}, {'Code': 'TG', 'Name': {'ru': 'Того', 'uk': 'Того', 'en': 'Togo'}}, {'Code': 'TK', 'Name': {'ru': 'Токелау', 'uk': 'Токелау', 'en': 'Tokelau'}}, {'Code': 'TO', 'Name': {'ru': 'Тонга', 'uk': 'Тонга', 'en': 'Tonga'}}, {'Code': 'TT', 'Name': {'ru': 'Тринидад и Тобаго', 'uk': 'Тринидад и Тобаго', 'en': 'Trinidad and Tobago'}}, {'Code': 'TN', 'Name': {'ru': 'Тунис', 'uk': 'Тунис', 'en': 'Tunisia'}}, {'Code': 'TR', 'Name': {'ru': 'Турция', 'uk': 'Туреччина', 'en': 'Turkey'}}, {'Code': 'TM', 'Name': {'ru': 'Туркменистан', 'uk': 'Туркменістан', 'en': 'Turkmenistan'}}, {'Code': 'TC', 'Name': {'ru': 'Теркс и Кайкос', 'uk': 'Теркс і Кайкос', 'en': 'Turks and Caicos Islands'}}, {'Code': 'TV', 'Name': {'ru': 'Тувалу', 'uk': 'Тувалу', 'en': 'Tuvalu'}}, {'Code': 'UG', 'Name': {'ru': 'Уганда', 'uk': 'Уганда', 'en': 'Uganda'}}, {'Code': 'UA', 'Name': {'ru': 'Украина', 'uk': 'Україна', 'en': 'Ukraine'}}, {'Code': 'AE', 'Name': {'ru': 'Объединенные Арабские Эмираты', 'uk': "Об'єднані Арабскі Емірати", 'en': 'United Arab Emirates'}}, {'Code': 'GB', 'Name': {'ru': 'Совединенное Королевство', 'uk': 'Сполучене Королівство', 'en': 'United Kingdom'}}, {'Code': 'US', 'Name': {'ru': 'США', 'uk': 'США', 'en': 'United States'}}, {'Code': 'UM', 'Name': {'ru': 'Малые Удаленные Острова США', 'uk': 'Малі Віддалені Острови США', 'en': 'United States Minor Outlying Islands'}}, {'Code': 'UY', 'Name': {'ru': 'Уругвай', 'uk': 'Уругвай', 'en': 'Uruguay'}}, {'Code': 'UZ', 'Name': {'ru': 'Узбекистан', 'uk': 'Узбекистан', 'en': 'Uzbekistan'}}, {'Code': 'VU', 'Name': {'ru': 'Вануату', 'uk': 'Вануату', 'en': 'Vanuatu'}}, {'Code': 'VE', 'Name': {'ru': 'Венесуэла', 'uk': 'Венесуела', 'en': 'Venezuela, Bolivarian Republic of'}}, {'Code': 'VN', 'Name': {'ru': 'Вьетнам', 'uk': "В'єтнам", 'en': 'Viet Nam'}}, {'Code': 'VG', 'Name': {'ru': 'Виргинские острова [Великобритания]', 'uk': 'Віргінскі острови [Великобританія]', 'en': 'Virgin Islands, British'}}, {'Code': 'VI', 'Name': {'ru': 'Виргинские острова [США]', 'uk': 'Віргінскі острови [США]', 'en': 'Virgin Islands, U.S.'}}, {'Code': 'WF', 'Name': {'ru': 'о-ва Уоллис и Футуна', 'uk': 'о-ви Уолліс і Футуна', 'en': 'Wallis and Futuna'}}, {'Code': 'EH', 'Name': {'ru': 'Западная Сахара', 'uk': 'Західна Сахара', 'en': 'Western Sahara'}}, {'Code': 'YE', 'Name': {'ru': 'Йемен', 'uk': 'Йемен', 'en': 'Yemen'}}, {'Code': 'ZM', 'Name': {'ru': 'Замбия', 'uk': 'Замбія', 'en': 'Zambia'}}, {'Code': 'ZW', 'Name': {'ru': 'Зимбабве', 'uk': 'Зімбабве', 'en': 'Zimbabwe'}}]
+
+
 SITE_URL = 'https://fellowtraveler.club'
 BASIC_TRAVELER = 'Teddy'
 ALL_TRAVELERS = ['Teddy']
@@ -160,255 +163,6 @@ def summarize_journey(traveller):
         6) list of countries visited
         Data are saved to document TeddyGo >> travellers >> <Traveller>
     '''
-    countries_name_codes = [{"Code": "AF", "Name": lazy_gettext("Afghanistan")},
-                            {"Code": "AX", "Name": lazy_gettext("\u00c5land Islands")},
-                            {"Code": "AL", "Name": lazy_gettext("Albania")},
-                            {"Code": "DZ", "Name": lazy_gettext("Algeria")},
-                            {"Code": "AS", "Name": lazy_gettext("American Samoa")},
-                            {"Code": "AD", "Name": lazy_gettext("Andorra")},
-                            {"Code": "AO", "Name": lazy_gettext("Angola")},
-                            {"Code": "AI", "Name": lazy_gettext("Anguilla")},
-                            {"Code": "AQ", "Name": lazy_gettext("Antarctica")},
-                            {"Code": "AG", "Name": lazy_gettext("Antigua and Barbuda")},
-                            {"Code": "AR", "Name": lazy_gettext("Argentina")},
-                            {"Code": "AM", "Name": lazy_gettext("Armenia")},
-                            {"Code": "AW", "Name": lazy_gettext("Aruba")},
-                            {"Code": "AU", "Name": lazy_gettext("Australia")},
-                            {"Code": "AT", "Name": lazy_gettext("Austria")},
-                            {"Code": "AZ", "Name": lazy_gettext("Azerbaijan")},
-                            {"Code": "BS", "Name": lazy_gettext("Bahamas")},
-                            {"Code": "BH", "Name": lazy_gettext("Bahrain")},
-                            {"Code": "BD", "Name": lazy_gettext("Bangladesh")},
-                            {"Code": "BB", "Name": lazy_gettext("Barbados")},
-                            {"Code": "BY", "Name": lazy_gettext("Belarus")},
-                            {"Code": "BE", "Name": lazy_gettext("Belgium")},
-                            {"Code": "BZ", "Name": lazy_gettext("Belize")},
-                            {"Code": "BJ", "Name": lazy_gettext("Benin")},
-                            {"Code": "BM", "Name": lazy_gettext("Bermuda")},
-                            {"Code": "BT", "Name": lazy_gettext("Bhutan")},
-                            {"Code": "BO", "Name": lazy_gettext("Bolivia, Plurinational State of")},
-                            {"Code": "BQ", "Name": lazy_gettext("Bonaire, Sint Eustatius and Saba")},
-                            {"Code": "BA", "Name": lazy_gettext("Bosnia and Herzegovina")},
-                            {"Code": "BW", "Name": lazy_gettext("Botswana")},
-                            {"Code": "BV", "Name": lazy_gettext("Bouvet Island")},
-                            {"Code": "BR", "Name": lazy_gettext("Brazil")},
-                            {"Code": "IO", "Name": lazy_gettext("British Indian Ocean Territory")},
-                            {"Code": "BN", "Name": lazy_gettext("Brunei Darussalam")},
-                            {"Code": "BG", "Name": lazy_gettext("Bulgaria")},
-                            {"Code": "BF", "Name": lazy_gettext("Burkina Faso")},
-                            {"Code": "BI", "Name": lazy_gettext("Burundi")},
-                            {"Code": "KH", "Name": lazy_gettext("Cambodia")},
-                            {"Code": "CM", "Name": lazy_gettext("Cameroon")},
-                            {"Code": "CA", "Name": lazy_gettext("Canada")},
-                            {"Code": "CV", "Name": lazy_gettext("Cape Verde")},
-                            {"Code": "KY", "Name": lazy_gettext("Cayman Islands")},
-                            {"Code": "CF", "Name": lazy_gettext("Central African Republic")},
-                            {"Code": "TD", "Name": lazy_gettext("Chad")},
-                            {"Code": "CL", "Name": lazy_gettext("Chile")},
-                            {"Code": "CN", "Name": lazy_gettext("China")},
-                            {"Code": "CX", "Name": lazy_gettext("Christmas Island")},
-                            {"Code": "CC", "Name": lazy_gettext("Cocos (Keeling) Islands")},
-                            {"Code": "CO", "Name": lazy_gettext("Colombia")},
-                            {"Code": "KM", "Name": lazy_gettext("Comoros")},
-                            {"Code": "CG", "Name": lazy_gettext("Congo")},
-                            {"Code": "CD", "Name": lazy_gettext("Congo, the Democratic Republic of the")},
-                            {"Code": "CK", "Name": lazy_gettext("Cook Islands")},
-                            {"Code": "CR", "Name": lazy_gettext("Costa Rica")},
-                            {"Code": "CI", "Name": lazy_gettext("C\u00f4te d'Ivoire")},
-                            {"Code": "HR", "Name": lazy_gettext("Croatia")},
-                            {"Code": "CU", "Name": lazy_gettext("Cuba")},
-                            {"Code": "CW", "Name": lazy_gettext("Cura\u00e7ao")},
-                            {"Code": "CY", "Name": lazy_gettext("Cyprus")},
-                            {"Code": "CZ", "Name": lazy_gettext("Czech Republic")},
-                            {"Code": "DK", "Name": lazy_gettext("Denmark")},
-                            {"Code": "DJ", "Name": lazy_gettext("Djibouti")},
-                            {"Code": "DM", "Name": lazy_gettext("Dominica")},
-                            {"Code": "DO", "Name": lazy_gettext("Dominican Republic")},
-                            {"Code": "EC", "Name": lazy_gettext("Ecuador")},
-                            {"Code": "EG", "Name": lazy_gettext("Egypt")},
-                            {"Code": "SV", "Name": lazy_gettext("El Salvador")},
-                            {"Code": "GQ", "Name": lazy_gettext("Equatorial Guinea")},
-                            {"Code": "ER", "Name": lazy_gettext("Eritrea")},
-                            {"Code": "EE", "Name": lazy_gettext("Estonia")},
-                            {"Code": "ET", "Name": lazy_gettext("Ethiopia")},
-                            {"Code": "FK", "Name": lazy_gettext("Falkland Islands (Malvinas)")},
-                            {"Code": "FO", "Name": lazy_gettext("Faroe Islands")},
-                            {"Code": "FJ", "Name": lazy_gettext("Fiji")},
-                            {"Code": "FI", "Name": lazy_gettext("Finland")},
-                            {"Code": "FR", "Name": lazy_gettext("France")},
-                            {"Code": "GF", "Name": lazy_gettext("French Guiana")},
-                            {"Code": "PF", "Name": lazy_gettext("French Polynesia")},
-                            {"Code": "TF", "Name": lazy_gettext("French Southern Territories")},
-                            {"Code": "GA", "Name": lazy_gettext("Gabon")},
-                            {"Code": "GM", "Name": lazy_gettext("Gambia")},
-                            {"Code": "GE", "Name": lazy_gettext("Georgia")},
-                            {"Code": "DE", "Name": lazy_gettext("Germany")},
-                            {"Code": "GH", "Name": lazy_gettext("Ghana")},
-                            {"Code": "GI", "Name": lazy_gettext("Gibraltar")},
-                            {"Code": "GR", "Name": lazy_gettext("Greece")},
-                            {"Code": "GL", "Name": lazy_gettext("Greenland")},
-                            {"Code": "GD", "Name": lazy_gettext("Grenada")},
-                            {"Code": "GP", "Name": lazy_gettext("Guadeloupe")},
-                            {"Code": "GU", "Name": lazy_gettext("Guam")},
-                            {"Code": "GT", "Name": lazy_gettext("Guatemala")},
-                            {"Code": "GG", "Name": lazy_gettext("Guernsey")},
-                            {"Code": "GN", "Name": lazy_gettext("Guinea")},
-                            {"Code": "GW", "Name": lazy_gettext("Guinea-Bissau")},
-                            {"Code": "GY", "Name": lazy_gettext("Guyana")},
-                            {"Code": "HT", "Name": lazy_gettext("Haiti")},
-                            {"Code": "HM", "Name": lazy_gettext("Heard Island and McDonald Islands")},
-                            {"Code": "VA", "Name": lazy_gettext("Holy See (Vatican City State)")},
-                            {"Code": "HN", "Name": lazy_gettext("Honduras")},
-                            {"Code": "HK", "Name": lazy_gettext("Hong Kong")},
-                            {"Code": "HU", "Name": lazy_gettext("Hungary")},
-                            {"Code": "IS", "Name": lazy_gettext("Iceland")},
-                            {"Code": "IN", "Name": lazy_gettext("India")},
-                            {"Code": "ID", "Name": lazy_gettext("Indonesia")},
-                            {"Code": "IR", "Name": lazy_gettext("Iran, Islamic Republic of")},
-                            {"Code": "IQ", "Name": lazy_gettext("Iraq")},
-                            {"Code": "IE", "Name": lazy_gettext("Ireland")},
-                            {"Code": "IM", "Name": lazy_gettext("Isle of Man")},
-                            {"Code": "IL", "Name": lazy_gettext("Israel")},
-                            {"Code": "IT", "Name": lazy_gettext("Italy")},
-                            {"Code": "JM", "Name": lazy_gettext("Jamaica")},
-                            {"Code": "JP", "Name": lazy_gettext("Japan")},
-                            {"Code": "JE", "Name": lazy_gettext("Jersey")},
-                            {"Code": "JO", "Name": lazy_gettext("Jordan")},
-                            {"Code": "KZ", "Name": lazy_gettext("Kazakhstan")},
-                            {"Code": "KE", "Name": lazy_gettext("Kenya")},
-                            {"Code": "KI", "Name": lazy_gettext("Kiribati")},
-                            {"Code": "KP", "Name": lazy_gettext("Korea, Democratic People's Republic of")},
-                            {"Code": "KR", "Name": lazy_gettext("Korea, Republic of")},
-                            {"Code": "KW", "Name": lazy_gettext("Kuwait")},
-                            {"Code": "KG", "Name": lazy_gettext("Kyrgyzstan")},
-                            {"Code": "LA", "Name": lazy_gettext("Lao People's Democratic Republic")},
-                            {"Code": "LV", "Name": lazy_gettext("Latvia")},
-                            {"Code": "LB", "Name": lazy_gettext("Lebanon")},
-                            {"Code": "LS", "Name": lazy_gettext("Lesotho")},
-                            {"Code": "LR", "Name": lazy_gettext("Liberia")},
-                            {"Code": "LY", "Name": lazy_gettext("Libya")},
-                            {"Code": "LI", "Name": lazy_gettext("Liechtenstein")},
-                            {"Code": "LT", "Name": lazy_gettext("Lithuania")},
-                            {"Code": "LU", "Name": lazy_gettext("Luxembourg")},
-                            {"Code": "MO", "Name": lazy_gettext("Macao")},
-                            {"Code": "MK", "Name": lazy_gettext("Macedonia, the Former Yugoslav Republic of")},
-                            {"Code": "MG", "Name": lazy_gettext("Madagascar")},
-                            {"Code": "MW", "Name": lazy_gettext("Malawi")},
-                            {"Code": "MY", "Name": lazy_gettext("Malaysia")},
-                            {"Code": "MV", "Name": lazy_gettext("Maldives")},
-                            {"Code": "ML", "Name": lazy_gettext("Mali")}, {"Code": "MT", "Name": lazy_gettext("Malta")},
-                            {"Code": "MH", "Name": lazy_gettext("Marshall Islands")},
-                            {"Code": "MQ", "Name": lazy_gettext("Martinique")},
-                            {"Code": "MR", "Name": lazy_gettext("Mauritania")},
-                            {"Code": "MU", "Name": lazy_gettext("Mauritius")},
-                            {"Code": "YT", "Name": lazy_gettext("Mayotte")},
-                            {"Code": "MX", "Name": lazy_gettext("Mexico")},
-                            {"Code": "FM", "Name": lazy_gettext("Micronesia, Federated States of")},
-                            {"Code": "MD", "Name": lazy_gettext("Moldova, Republic of")},
-                            {"Code": "MC", "Name": lazy_gettext("Monaco")},
-                            {"Code": "MN", "Name": lazy_gettext("Mongolia")},
-                            {"Code": "ME", "Name": lazy_gettext("Montenegro")},
-                            {"Code": "MS", "Name": lazy_gettext("Montserrat")},
-                            {"Code": "MA", "Name": lazy_gettext("Morocco")},
-                            {"Code": "MZ", "Name": lazy_gettext("Mozambique")},
-                            {"Code": "MM", "Name": lazy_gettext("Myanmar")},
-                            {"Code": "NA", "Name": lazy_gettext("Namibia")},
-                            {"Code": "NR", "Name": lazy_gettext("Nauru")},
-                            {"Code": "NP", "Name": lazy_gettext("Nepal")},
-                            {"Code": "NL", "Name": lazy_gettext("Netherlands")},
-                            {"Code": "NC", "Name": lazy_gettext("New Caledonia")},
-                            {"Code": "NZ", "Name": lazy_gettext("New Zealand")},
-                            {"Code": "NI", "Name": lazy_gettext("Nicaragua")},
-                            {"Code": "NE", "Name": lazy_gettext("Niger")},
-                            {"Code": "NG", "Name": lazy_gettext("Nigeria")},
-                            {"Code": "NU", "Name": lazy_gettext("Niue")},
-                            {"Code": "NF", "Name": lazy_gettext("Norfolk Island")},
-                            {"Code": "MP", "Name": lazy_gettext("Northern Mariana Islands")},
-                            {"Code": "NO", "Name": lazy_gettext("Norway")},
-                            {"Code": "OM", "Name": lazy_gettext("Oman")},
-                            {"Code": "PK", "Name": lazy_gettext("Pakistan")},
-                            {"Code": "PW", "Name": lazy_gettext("Palau")},
-                            {"Code": "PS", "Name": lazy_gettext("Palestine, State of")},
-                            {"Code": "PA", "Name": lazy_gettext("Panama")},
-                            {"Code": "PG", "Name": lazy_gettext("Papua New Guinea")},
-                            {"Code": "PY", "Name": lazy_gettext("Paraguay")},
-                            {"Code": "PE", "Name": lazy_gettext("Peru")},
-                            {"Code": "PH", "Name": lazy_gettext("Philippines")},
-                            {"Code": "PN", "Name": lazy_gettext("Pitcairn")},
-                            {"Code": "PL", "Name": lazy_gettext("Poland")},
-                            {"Code": "PT", "Name": lazy_gettext("Portugal")},
-                            {"Code": "PR", "Name": lazy_gettext("Puerto Rico")},
-                            {"Code": "QA", "Name": lazy_gettext("Qatar")},
-                            {"Code": "RE", "Name": lazy_gettext("R\u00e9union")},
-                            {"Code": "RO", "Name": lazy_gettext("Romania")},
-                            {"Code": "RU", "Name": lazy_gettext("Russian Federation")},
-                            {"Code": "RW", "Name": lazy_gettext("Rwanda")},
-                            {"Code": "BL", "Name": lazy_gettext("Saint Barth\u00e9lemy")},
-                            {"Code": "SH", "Name": lazy_gettext("Saint Helena, Ascension and Tristan da Cunha")},
-                            {"Code": "KN", "Name": lazy_gettext("Saint Kitts and Nevis")},
-                            {"Code": "LC", "Name": lazy_gettext("Saint Lucia")},
-                            {"Code": "MF", "Name": lazy_gettext("Saint Martin (French part)")},
-                            {"Code": "PM", "Name": lazy_gettext("Saint Pierre and Miquelon")},
-                            {"Code": "VC", "Name": lazy_gettext("Saint Vincent and the Grenadines")},
-                            {"Code": "WS", "Name": lazy_gettext("Samoa")},
-                            {"Code": "SM", "Name": lazy_gettext("San Marino")},
-                            {"Code": "ST", "Name": lazy_gettext("Sao Tome and Principe")},
-                            {"Code": "SA", "Name": lazy_gettext("Saudi Arabia")},
-                            {"Code": "SN", "Name": lazy_gettext("Senegal")},
-                            {"Code": "RS", "Name": lazy_gettext("Serbia")},
-                            {"Code": "SC", "Name": lazy_gettext("Seychelles")},
-                            {"Code": "SL", "Name": lazy_gettext("Sierra Leone")},
-                            {"Code": "SG", "Name": lazy_gettext("Singapore")},
-                            {"Code": "SX", "Name": lazy_gettext("Sint Maarten (Dutch part)")},
-                            {"Code": "SK", "Name": lazy_gettext("Slovakia")},
-                            {"Code": "SI", "Name": lazy_gettext("Slovenia")},
-                            {"Code": "SB", "Name": lazy_gettext("Solomon Islands")},
-                            {"Code": "SO", "Name": lazy_gettext("Somalia")},
-                            {"Code": "ZA", "Name": lazy_gettext("South Africa")},
-                            {"Code": "GS", "Name": lazy_gettext("South Georgia and the South Sandwich Islands")},
-                            {"Code": "SS", "Name": lazy_gettext("South Sudan")},
-                            {"Code": "ES", "Name": lazy_gettext("Spain")},
-                            {"Code": "LK", "Name": lazy_gettext("Sri Lanka")},
-                            {"Code": "SD", "Name": lazy_gettext("Sudan")},
-                            {"Code": "SR", "Name": lazy_gettext("Suriname")},
-                            {"Code": "SJ", "Name": lazy_gettext("Svalbard and Jan Mayen")},
-                            {"Code": "SZ", "Name": lazy_gettext("Swaziland")},
-                            {"Code": "SE", "Name": lazy_gettext("Sweden")},
-                            {"Code": "CH", "Name": lazy_gettext("Switzerland")},
-                            {"Code": "SY", "Name": lazy_gettext("Syrian Arab Republic")},
-                            {"Code": "TW", "Name": lazy_gettext("Taiwan, Province of China")},
-                            {"Code": "TJ", "Name": lazy_gettext("Tajikistan")},
-                            {"Code": "TZ", "Name": lazy_gettext("Tanzania, United Republic of")},
-                            {"Code": "TH", "Name": lazy_gettext("Thailand")},
-                            {"Code": "TL", "Name": lazy_gettext("Timor-Leste")},
-                            {"Code": "TG", "Name": lazy_gettext("Togo")},
-                            {"Code": "TK", "Name": lazy_gettext("Tokelau")},
-                            {"Code": "TO", "Name": lazy_gettext("Tonga")},
-                            {"Code": "TT", "Name": lazy_gettext("Trinidad and Tobago")},
-                            {"Code": "TN", "Name": lazy_gettext("Tunisia")},
-                            {"Code": "TR", "Name": lazy_gettext("Turkey")},
-                            {"Code": "TM", "Name": lazy_gettext("Turkmenistan")},
-                            {"Code": "TC", "Name": lazy_gettext("Turks and Caicos Islands")},
-                            {"Code": "TV", "Name": lazy_gettext("Tuvalu")},
-                            {"Code": "UG", "Name": lazy_gettext("Uganda")},
-                            {"Code": "UA", "Name": lazy_gettext("Ukraine")},
-                            {"Code": "AE", "Name": lazy_gettext("United Arab Emirates")},
-                            {"Code": "GB", "Name": lazy_gettext("United Kingdom")},
-                            {"Code": "US", "Name": lazy_gettext("United States")},
-                            {"Code": "UM", "Name": lazy_gettext("United States Minor Outlying Islands")},
-                            {"Code": "UY", "Name": lazy_gettext("Uruguay")},
-                            {"Code": "UZ", "Name": lazy_gettext("Uzbekistan")},
-                            {"Code": "VU", "Name": lazy_gettext("Vanuatu")},
-                            {"Code": "VE", "Name": lazy_gettext("Venezuela, Bolivarian Republic of")},
-                            {"Code": "VN", "Name": lazy_gettext("Viet Nam")},
-                            {"Code": "VG", "Name": lazy_gettext("Virgin Islands, British")},
-                            {"Code": "VI", "Name": lazy_gettext("Virgin Islands, U.S.")},
-                            {"Code": "WF", "Name": lazy_gettext("Wallis and Futuna")},
-                            {"Code": "EH", "Name": lazy_gettext("Western Sahara")},
-                            {"Code": "YE", "Name": lazy_gettext("Yemen")},
-                            {"Code": "ZM", "Name": lazy_gettext("Zambia")},
-                            {"Code": "ZW", "Name": lazy_gettext("Zimbabwe")}]
-
     client = MongoClient()
     db = client.TeddyGo
     locations = db[traveller].find()
@@ -424,11 +178,7 @@ def summarize_journey(traveller):
     for location in locations:
         total_locations += 1
 
-        country_code = location['country']
-        contry_name = None
-        for country in countries_name_codes:
-            if country['Code'] == country_code:
-                contry_name = country['Name']
+        contry_name = location['country']
         if contry_name not in countries_visited:
             total_countries += 1
             countries_visited.append(contry_name)
@@ -465,7 +215,13 @@ def summarize_journey(traveller):
 
 def get_journey_summary(traveller):
     '''
-    Retrieves journey summary for a given traveller
+    Composes journey summary for a given traveller, returns 6 values:
+    - total_locations
+    - total_countries
+    - journey_duration
+    - total_distance
+    - distance_from_home
+    - [countries_visited]
     '''
     try:
         client = MongoClient()
@@ -481,21 +237,9 @@ def get_journey_summary(traveller):
             journey_duration = time_passed(traveller)
             total_distance = round(traveller_summary['total_distance'] / 1000, 1)
             distance_from_home = round(traveller_summary['distance_from_home'] / 1000, 1)
-            if total_countries == 1:
-                countries_form = gettext('country')
-            else:
-                countries_form = gettext('countries')
-            if journey_duration == 1:
-                day_or_days = gettext('day')
-            else:
-                day_or_days = gettext('days')
-
-            speech = gettext('So far I\'ve checked in <b>{}</b> places located in <b>{}</b> {} ({}) and have been traveling for <b>{}</b> {}.\n\nI covered about <b>{}</b> km it total and currently I\'m nearly <b>{}</b> km from home').format(
-                total_locations, total_countries, countries_form, countries, journey_duration, day_or_days, total_distance,
-                distance_from_home)
-            return {'speech': speech, 'total_locations': total_locations}
+            return {'total_locations': total_locations, 'total_countries': total_countries, 'journey_duration': journey_duration, 'total_distance': total_distance, 'distance_from_home': distance_from_home, 'countries_visited': countries_visited}
         else:
-            return {'speech': '', 'total_locations': 0}
+            return {'total_locations': 0, 'total_countries': 0, 'total_distance': 0, 'distance_from_home': 0, 'countries_visited': []}
     except Exception as e:
         print('get_journey_summary() exception: {}'.format(e))
         return False
@@ -673,3 +417,17 @@ def get_traveler():
     if OURTRAVELER not in ALL_TRAVELERS:
         OURTRAVELER = BASIC_TRAVELER
     return OURTRAVELER
+
+
+def translate_countries(countries_list, language):
+    '''
+        Function gets a list of countries and language code and returns
+        these countries in appropriate language
+    '''
+    countries_translated = []
+    for country_code in countries_list:
+        for country in COUNTRIES_CODES_NAMES: # {'Code': 'AF', 'Name': {'ru': 'Афганистан', 'uk': 'Афганістан', 'en': 'Afghanistan'}}
+            if country_code == country['Code']:
+                country_translated = country['Name'][language]
+                countries_translated.append(country_translated)
+    return countries_translated
