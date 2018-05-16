@@ -739,7 +739,7 @@ def get_geodata_from_gm():
                 elif 'country' in types:
                     country = short_name
             place_id = mygeodata[0].get('place_id')
-            print("Marker position on GMAPS ({}) was saved to session".format(mygeodata[0].get('formatted_address')))
+            #print("Marker position on GMAPS ({}) was saved to session".format(mygeodata[0].get('formatted_address')))
 
         parsed_geodata = {
             'latitude': latitude,

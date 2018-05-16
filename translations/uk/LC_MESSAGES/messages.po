@@ -47,7 +47,7 @@ msgstr "Секретний код з іграшки (обов'язково)"
 
 #: ft.py:80
 msgid "Please enter the code which you can find on the toy"
-msgstr "Будь ласка, введить код, який Ви можете знайти на іграшці"
+msgstr "Будь ласка, введіть код, який Ви можете знайти на іграшці"
 
 #: ft.py:81
 msgid "Secret code must have 4 digits"
