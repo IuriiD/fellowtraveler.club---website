@@ -101,6 +101,7 @@ def get_location_history(traveller, PHOTO_DIR):
     '''
     Return locations history for a given traveller (will be substituted with Twitter's timeline)
     '''
+    print('get_location_history() is working...')
     client = MongoClient()
     db = client.TeddyGo
     teddys_locations = db[traveller].find().sort([('_id', -1)])
@@ -131,10 +132,12 @@ def get_location_history(traveller, PHOTO_DIR):
             start_lat = location['latitude']
             start_long = location['longitude']
         infobox = '{}<br>'.format(location_data['time'])
+
         if len(photos) > 0:
-            infobox += '<img src="{}/{}/{}" style="max-height: 70px; max-width:120px"/>'.format(PHOTO_DIR, traveller, photos[0])
-        infobox += '<br>'
-        infobox += gettext('By <b>{}</b>').format(author)
+            infobox += '<img src="{}/{}/{}" style="max-height: 70px; max-width:120px"/><br>'.format(PHOTO_DIR, traveller, photos[0])
+
+        #infobox += gettext('By <b>{}</b>').format(author)
+        infobox += 'By <b>{}</b>'.format(author)
         if comment != '':
             infobox += '<br>'
             infobox += '<i>{}</i>'.format(comment)

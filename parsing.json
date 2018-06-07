@@ -1,3 +1,259 @@
+// My original 'Yes'
+{
+    "object": "page",
+    "entry": [
+        {
+            "id": "179374839354264",
+            "time": 1528356481924,
+            "messaging": [
+                {
+                    "sender": {
+                        "id": "1953498254661052"
+                    },
+                    "recipient": {
+                        "id": "179374839354264"
+                    },
+                    "timestamp": 1528356481502,
+                    "message": {
+                        "mid": "mid.$cAAD51gHPijRqCmpx3lj2SUmTC5ud",
+                        "seq": 14232,
+                        "text": "yes"
+                    }
+                }
+            ]
+        }
+    ]
+}
+
+// Second 'Yes' that I didn't really post
+{
+    "object": "page",
+    "entry": [
+        {
+            "id": "179374839354264",
+            "time": 1528356496459,
+            "messaging": [
+                {
+                    "sender": {
+                        "id": "1953498254661052"
+                    },
+                    "recipient": {
+                        "id": "179374839354264"
+                    },
+                    "timestamp": 1528356481502,
+                    "message": {
+                        "mid": "mid.$cAAD51gHPijRqCmpx3lj2SUmTC5ud",
+                        "seq": 14232,
+                        "text": "yes"
+                    }
+                }
+            ]
+        }
+    ]
+}
+
+// Getting started button hit
+{
+    "object": "page",
+    "entry": [
+        {
+            "id": "179374839354264",
+            "time": 1528030718599,
+            "messaging": [
+                {
+                    "recipient": {
+                        "id": "179374839354264"
+                    },
+                    "timestamp": 1528030718599,
+                    "sender": {
+                        "id": "1953498254661052"
+                    },
+                    "postback": {
+                        "payload": "GETTING_STARTED",
+                        "title": "Get Started"
+                    }
+                }
+            ]
+        }
+    ]
+},
+
+
+// Location
+{
+    "object": "page",
+    "entry": [
+        {
+            "id": "179374839354264",
+            "time": 1528027084377,
+            "messaging": [
+                {
+                    "sender": {
+                        "id": "1953498254661052"
+                    },
+                    "recipient": {
+                        "id": "179374839354264"
+                    },
+                    "timestamp": 1528027083999,
+                    "message": {
+                        "mid": "mid.$cAAD51gHPijRp9sg831jxYMRqxRlY",
+                        "seq": 12217,
+                        "attachments": [
+                            {
+                                "title": "Pinned Location",
+                                "url": "https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.bing.com%2Fmaps%2Fdefault.aspx%3Fv%3D2%26pc%3DFACEBK%26mid%3D8100%26where1%3D49.453865%252C%2B32.038401%26FORM%3DFBKPL1%26mkt%3Den-GB&h=ATNITad9Dp_-Ikr0qpssadKW9r4UFkNXeM9M3cTqlcYPFHH4pIY-4I2A44mb-Jlcmf-saDlvG8HFhpc22BpyR-GscmJ855cIBdlMEg9C8Gv1UW72xx6LWqo2P3Y6xFg&s=1",
+                                "type": "location",
+                                "payload": {
+                                    "coordinates": {
+                                        "lat": 49.453865,
+                                        "long": 32.038401
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+},
+
+// gif - json same as for photos
+{
+    "object": "page",
+    "entry": [
+        {
+            "id": "179374839354264",
+            "time": 1528023887955,
+            "messaging": [
+                {
+                    "sender": {
+                        "id": "1953498254661052"
+                    },
+                    "recipient": {
+                        "id": "179374839354264"
+                    },
+                    "timestamp": 1528023887680,
+                    "message": {
+                        "mid": "mid.$cAAD51gHPijRp9pd3QFjxVIjajcOu",
+                        "seq": 12191,
+                        "attachments": [
+                            {
+                                "type": "image",
+                                "payload": {
+                                    "url": "https://cdn.fbsbx.com/v/t59.2708-21/31997190_831320757071632_76222226256363520_n.gif?_nc_cat=0&oh=9c7dc7495fbb52f697fb42522fd08db4&oe=5B1678F7"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+},
+
+
+// sticker
+{
+    "object": "page",
+    "entry": [
+        {
+            "id": "179374839354264",
+            "time": 1528023789451,
+            "messaging": [
+                {
+                    "sender": {
+                        "id": "1953498254661052"
+                    },
+                    "recipient": {
+                        "id": "179374839354264"
+                    },
+                    "timestamp": 1528023789171,
+                    "message": {
+                        "mid": "mid.$cAAD51gHPijRp9pX2c1jxVCk0UXAy",
+                        "seq": 12187,
+                        "sticker_id": 144884905685776, // specific for stickers
+                        "attachments": [
+                            {
+                                "type": "image",
+                                "payload": {
+                                    "url": "https://scontent.xx.fbcdn.net/v/t39.1997-6/p100x100/851537_272700479570884_548566067_n.png?_nc_cat=0&_nc_ad=z-m&_nc_cid=0&oh=5a0177e876736c610135711b42257c15&oe=5B815C3B",
+                                    "sticker_id": 144884905685776
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+},
+
+// FB user sent an image
+{
+    "object": "page",
+    "entry": [
+        {
+            "id": "179374839354264",
+            "time": 1528021153642,
+            "messaging": [
+                { // 'message' start
+                    "sender": {
+                        "id": "1953498254661052"
+                    },
+                    "recipient": {
+                        "id": "179374839354264"
+                    },
+                    "timestamp": 1528021153342,
+                    "message": {
+                        "mid": "mid.$cAAD51gHPijRp9m2-PljxShgPrTO5",
+                        "seq": 12145,
+                        "attachments": [
+                            {
+                                "type": "image",
+                                "payload": {
+                                    "url": "https://scontent.xx.fbcdn.net/v/t1.15752-9/34337233_445902722500161_8046480598941827072_n.jpg?_nc_cat=0&_nc_ad=z-m&_nc_cid=0&oh=47a7a7d54d30a6a48fd6cd4b29076282&oe=5BB38452"
+                                }
+                            }
+                        ]
+                    }
+                } // 'message' end
+            ]
+        }
+    ]
+},
+
+
+
+// FB user sent text
+{
+    "object": "page",
+    "entry": [
+        {
+            "id": "179374839354264",
+            "time": 1528020832185,
+            "messaging": [
+                {
+                    "sender": {
+                        "id": "1953498254661052"
+                    },
+                    "recipient": {
+                        "id": "179374839354264"
+                    },
+                    "timestamp": 1528020831829,
+                    "message": {
+                        "mid": "mid.$cAAD51gHPijRp9mjWVVjxSOEt7jj7",
+                        "seq": 12141,
+                        "text": "ok"
+                    }
+                }
+            ]
+        }
+    ]
+}
+
+
+
 
 {
   'voice': None,
