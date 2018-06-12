@@ -39,7 +39,8 @@ from keys import (FLASK_SECRET_KEY,
                   TWITTER_ACCESS_TOKEN_SECRET,
                   MAIL_PWD,
                   FB_ACCESS_TOKEN,
-                  FB_VERIFY_TOKEN)
+                  FB_VERIFY_TOKEN,
+                  DF_TOKEN)
 
 import ft_functions
 
@@ -3573,6 +3574,7 @@ def file_too_large(error):
     return render_template('413.html'), 413
 
 @app.route("/webhook/", methods=['GET', 'POST'])
+@csrf.exempt
 def message_webhook():
     global LAST_COMMAND
 

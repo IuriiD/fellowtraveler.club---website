@@ -222,9 +222,9 @@ L10N = {
     },
     # messages 40-42 - one sentence
     'message40': {
-        'en': 'New location added!\n\nSecret code for adding the next location:',
-        'ru': 'Новое местоположение успешно добавлено!\n\nСекретный код для добавления следующего местоположения:',
-        'uk': 'Нове месцезнаходження успішно додано!\n\nСекретний код для додавання наступного місцезнаходження:'
+        'en': 'New location added!\n\nIMPORTANT: Secret code for adding the next location:',
+        'ru': 'Новое местоположение успешно добавлено!\n\nВАЖНО: Секретный код для добавления следующего местоположения:',
+        'uk': 'Нове месцезнаходження успішно додано!\n\nВАЖЛИВО: Секретний код для додавання наступного місцезнаходження:'
     },
     'message41': {
         'en': 'Please save it somewhere or don\'t delete this message.\nIf you are going to pass',
@@ -252,9 +252,9 @@ L10N = {
         'uk': 'ЧаПи'
     },
     'message46': {
-        'en': 'You got',
-        'ru': 'У Вас',
-        'uk': 'У Вас'
+        'en': 'I got',
+        'ru': 'У меня',
+        'uk': 'У мене'
     },
     'message47': {
         'en': 'Yes',
@@ -452,9 +452,9 @@ L10N = {
         'uk': 'Розкажи свою історію'
     },
     'message85': {
-        'en': 'You got fellowtraveler',
-        'ru': 'У вас попутчик',
-        'uk': 'У вас попутник'
+        'en': 'I got fellowtraveler!',
+        'ru': 'Попутчик у меня!',
+        'uk': 'Попутник у мене'
     },
     'message86': {
         'en': 'Change language to English',
