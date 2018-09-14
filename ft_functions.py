@@ -263,7 +263,7 @@ def time_passed(traveller):
 
 def get_distance(origin, destination):
     '''
-        Uusing Distance Matrix API calculates and returns approximate distance (m) between origin and destination
+        Using Distance Matrix API calculates and returns approximate distance (m) between origin and destination
         (lists of latitude/longitude)
         https://developers.google.com/maps/documentation/distance-matrix/intro
     '''
